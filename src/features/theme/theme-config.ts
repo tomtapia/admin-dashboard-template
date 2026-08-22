@@ -14,6 +14,18 @@ export const themeDefinitions = [
     mode: "dark",
     preview: ["#111827", "#1f2937", "#7dd3fc"],
   },
+  {
+    id: "sunset-ember",
+    label: "Sunset Ember",
+    mode: "light",
+    preview: ["#fdf6f3", "#f3ddd3", "#f97316"],
+  },
+  {
+    id: "forest-deep",
+    label: "Forest Deep",
+    mode: "dark",
+    preview: ["#0a1410", "#1c3326", "#34d399"],
+  },
 ] as const;
 
 export type ThemeId = (typeof themeDefinitions)[number]["id"];
