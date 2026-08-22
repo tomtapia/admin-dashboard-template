@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { SearchFilterBar } from "@/components/shared/search-filter-bar";
 import { StatePanel } from "@/components/shared/state-panel";
 import { UsersTable } from "@/components/users/users-table";
-import { getUsersRequest } from "@/features/auth/auth-api";
+import { getUsersRequest } from "@/features/users/users-api";
 import type { UserRecord } from "@/types";
 
 export const UsersPage = () => {

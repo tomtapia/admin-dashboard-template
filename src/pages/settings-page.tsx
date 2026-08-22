@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
 import { SettingsForm } from "@/components/settings/settings-form";
-import { getSettingsRequest, updateSettingsRequest } from "@/features/auth/auth-api";
+import { getSettingsRequest, updateSettingsRequest } from "@/features/settings/settings-api";
 import type { SettingsPayload } from "@/types";
 
 export const SettingsPage = () => {

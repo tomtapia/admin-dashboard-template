@@ -1,4 +1,17 @@
-import type { OverviewPayload, SettingsPayload, Session, UserRecord } from "@/types";
+import type {
+  ApiKey,
+  BillingPayload,
+  AnalyticsPayload,
+  Integration,
+  NotificationItem,
+  OverviewPayload,
+  Session,
+  SettingsPayload,
+  TeamMember,
+  Ticket,
+  Transaction,
+  UserRecord,
+} from "@/types";
 
 export const defaultSession: Session = {
   user: {
@@ -79,3 +92,126 @@ export const settingsPayload: SettingsPayload = {
     productUpdates: false,
   },
 };
+
+export const billingPayload: BillingPayload = {
+  subscription: {
+    planId: "plan_scale",
+    planName: "Scale",
+    status: "active",
+    renewsAt: "2026-09-01",
+    seatsUsed: 18,
+    seatsTotal: 25,
+    usagePercent: 72,
+  },
+  plans: [
+    {
+      id: "plan_starter",
+      name: "Starter",
+      priceMonthly: 49,
+      seats: 5,
+      features: ["1 workspace", "Email support", "7-day history"],
+    },
+    {
+      id: "plan_scale",
+      name: "Scale",
+      priceMonthly: 199,
+      seats: 25,
+      features: ["5 workspaces", "Priority support", "90-day history", "Audit log"],
+      highlighted: true,
+    },
+    {
+      id: "plan_enterprise",
+      name: "Enterprise",
+      priceMonthly: 699,
+      seats: 100,
+      features: ["Unlimited workspaces", "Dedicated CSM", "SSO/SAML", "Custom retention"],
+    },
+  ],
+  invoices: [
+    { id: "inv_001", number: "INV-2026-08", issuedAt: "2026-08-01", amount: 199, status: "paid" },
+    { id: "inv_002", number: "INV-2026-07", issuedAt: "2026-07-01", amount: 199, status: "paid" },
+    { id: "inv_003", number: "INV-2026-06", issuedAt: "2026-06-01", amount: 199, status: "paid" },
+    { id: "inv_004", number: "INV-2026-05", issuedAt: "2026-05-01", amount: 149, status: "open" },
+    { id: "inv_005", number: "INV-2026-04", issuedAt: "2026-04-01", amount: 149, status: "void" },
+  ],
+};
+
+export const analyticsPayload: AnalyticsPayload = {
+  funnel: [
+    { stage: "Visited", value: 12480 },
+    { stage: "Signed up", value: 3120 },
+    { stage: "Activated", value: 1480 },
+    { stage: "Converted", value: 612 },
+  ],
+  channels: [
+    { channel: "Organic", visitors: 5200, conversions: 268 },
+    { channel: "Paid", visitors: 4100, conversions: 196 },
+    { channel: "Referral", visitors: 1980, conversions: 104 },
+    { channel: "Social", visitors: 1200, conversions: 44 },
+  ],
+  cohorts: [
+    { cohort: "Jan", retention: [100, 82, 71, 64] },
+    { cohort: "Feb", retention: [100, 79, 68, 61] },
+    { cohort: "Mar", retention: [100, 85, 76, 70] },
+    { cohort: "Apr", retention: [100, 88, 81, 75] },
+  ],
+  mrr: [
+    { name: "Jan", revenue: 31000, activeUsers: 320 },
+    { name: "Feb", revenue: 35000, activeUsers: 360 },
+    { name: "Mar", revenue: 39800, activeUsers: 410 },
+    { name: "Apr", revenue: 44200, activeUsers: 465 },
+    { name: "May", revenue: 50100, activeUsers: 520 },
+    { name: "Jun", revenue: 56800, activeUsers: 592 },
+  ],
+};
+
+export const teamPayload: TeamMember[] = [
+  { id: "tm_001", name: "Avery Stone", email: "avery@northstar.app", role: "Owner", status: "Active", lastActiveAt: "Just now" },
+  { id: "tm_002", name: "Jules Carter", email: "jules@northstar.app", role: "Admin", status: "Active", lastActiveAt: "12 minutes ago" },
+  { id: "tm_003", name: "Maya Lin", email: "maya@northstar.app", role: "Member", status: "Invited", lastActiveAt: "Pending invite" },
+  { id: "tm_004", name: "Noah Kim", email: "noah@northstar.app", role: "Billing", status: "Paused", lastActiveAt: "2 days ago" },
+  { id: "tm_005", name: "Sandra Lee", email: "sandra@northstar.app", role: "Member", status: "Active", lastActiveAt: "1 hour ago" },
+];
+
+export const notificationsPayload: NotificationItem[] = [
+  { id: "nt_001", title: "Invoice paid", body: "INV-2026-08 was paid successfully.", channel: "email", level: "success", triggeredAt: "8m ago", read: false },
+  { id: "nt_002", title: "New team invite accepted", body: "Sandra Lee joined Customer Ops.", channel: "in-app", level: "info", triggeredAt: "1h ago", read: false },
+  { id: "nt_003", title: "Usage at 72%", body: "Scale plan seats are filling up.", channel: "email", level: "warning", triggeredAt: "3h ago", read: false },
+  { id: "nt_004", title: "Weekly digest sent", body: "Your product health summary is ready.", channel: "email", level: "info", triggeredAt: "1d ago", read: true },
+  { id: "nt_005", title: "Integration disconnected", body: "Slack lost its connection.", channel: "sms", level: "warning", triggeredAt: "2d ago", read: true },
+  { id: "nt_006", title: "Password changed", body: "Your account password was updated.", channel: "email", level: "success", triggeredAt: "4d ago", read: true },
+];
+
+export const transactionsPayload: Transaction[] = [
+  { id: "txn_001", customer: "Northstar Labs", email: "billing@northstar.app", date: "2026-08-13", amount: 199, status: "succeeded", method: "card" },
+  { id: "txn_002", customer: "Aperture Group", email: "ap@aperture.co", date: "2026-08-12", amount: 49, status: "succeeded", method: "ach" },
+  { id: "txn_003", customer: "Granite Ops", email: "ops@granite.io", date: "2026-08-11", amount: 699, status: "pending", method: "card" },
+  { id: "txn_004", customer: "Helio Commerce", email: "fin@helio.shop", date: "2026-08-10", amount: 199, status: "succeeded", method: "paypal" },
+  { id: "txn_005", customer: "Cobalt Health", email: "pay@cobalt.health", date: "2026-08-09", amount: 49, status: "failed", method: "card" },
+  { id: "txn_006", customer: "Fernlight", email: "hello@fernlight.co", date: "2026-08-08", amount: 199, status: "refunded", method: "card" },
+  { id: "txn_007", customer: "Northstar Labs", email: "billing@northstar.app", date: "2026-08-07", amount: 199, status: "succeeded", method: "card" },
+  { id: "txn_008", customer: "Aperture Group", email: "ap@aperture.co", date: "2026-08-06", amount: 49, status: "succeeded", method: "ach" },
+];
+
+export const integrationsPayload: Integration[] = [
+  { id: "int_slack", name: "Slack", category: "Messaging", description: "Send alerts to channels.", status: "connected", connectedAt: "2026-03-02" },
+  { id: "int_stripe", name: "Stripe", category: "Payments", description: "Sync billing events.", status: "connected", connectedAt: "2026-01-15" },
+  { id: "int_ga", name: "Google Analytics", category: "Analytics", description: "Product usage reporting.", status: "available" },
+  { id: "int_zendesk", name: "Zendesk", category: "Support", description: "Two-way ticket sync.", status: "available" },
+  { id: "int_webhook", name: "Webhooks", category: "Developer", description: "Event streaming to your endpoint.", status: "connected", connectedAt: "2026-05-20" },
+];
+
+export const apiKeysPayload: ApiKey[] = [
+  { id: "key_001", label: "Production", prefix: "sk_live_a1b2", scopes: ["read", "billing"], createdAt: "2026-02-10", lastUsedAt: "2m ago", revoked: false },
+  { id: "key_002", label: "Staging", prefix: "sk_test_c3d4", scopes: ["read"], createdAt: "2026-04-18", lastUsedAt: "1d ago", revoked: false },
+  { id: "key_003", label: "Legacy", prefix: "sk_live_e5f6", scopes: ["read", "write"], createdAt: "2025-11-02", lastUsedAt: "30d ago", revoked: true },
+];
+
+export const supportPayload: Ticket[] = [
+  { id: "tkt_001", subject: "Cannot upgrade plan", requester: "jules@northstar.app", priority: "high", status: "open", createdAt: "2026-08-13", assignee: "Maya Lin" },
+  { id: "tkt_002", subject: "SSO login loop", requester: "noah@northstar.app", priority: "urgent", status: "open", createdAt: "2026-08-13" },
+  { id: "tkt_003", subject: "Export missing fields", requester: "sandra@northstar.app", priority: "medium", status: "pending", createdAt: "2026-08-12", assignee: "Jules Carter" },
+  { id: "tkt_004", subject: "Feature request: dark labels", requester: "ops@northstar.app", priority: "low", status: "pending", createdAt: "2026-08-11" },
+  { id: "tkt_005", subject: "Billing discrepancy", requester: "ap@aperture.co", priority: "high", status: "closed", createdAt: "2026-08-09", assignee: "Avery Stone" },
+  { id: "tkt_006", subject: "API rate limits", requester: "dev@granite.io", priority: "medium", status: "closed", createdAt: "2026-08-08", assignee: "Noah Kim" },
+];

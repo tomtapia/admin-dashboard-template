@@ -48,11 +48,21 @@ admin-dashboard-template/
 │   │   ├── users/               # UsersTable
 │   │   └── settings/            # SettingsForm
 │   ├── features/
-│   │   ├── auth/                # AuthProvider, auth-api, ProtectedRoute
-│   │   └── theme/               # ThemeProvider, theme-config
+│   │   ├── auth/                # AuthProvider, auth-api, protected-route
+│   │   ├── theme/               # ThemeProvider, theme-config
+│   │   ├── overview/            # overview-api (dashboard data access)
+│   │   ├── users/               # users-api
+│   │   ├── settings/            # settings-api
+│   │   ├── billing/             # billing-api (plans, subscription, invoices)
+│   │   ├── analytics/           # analytics-api (funnel, channels, cohorts, mrr)
+│   │   ├── team/                # team-api (members, invites, roles)
+│   │   ├── notifications/       # notifications-api (read state)
+│   │   ├── transactions/        # transactions-api (ledger)
+│   │   ├── integrations/        # integrations-api (apps + api keys)
+│   │   └── support/             # support-api (tickets)
 │   ├── lib/                     # http() fetch wrapper, cn() util, formatters
 │   ├── mocks/                   # MSW handlers, browser worker, mock data
-│   ├── pages/                   # Route components (login, overview, users, settings, not-found)
+│   ├── pages/                   # Route components (one per module + login + not-found)
 │   ├── test/                    # Vitest setup, node MSW server, test-app, tests
 │   ├── types/                   # Shared domain TypeScript types
 │   └── styles.css               # Tailwind v4 entry + CSS theme variables
@@ -81,11 +91,18 @@ admin-dashboard-template/
    |     ├── AuthProvider  (session in localStorage)
    |     └── Toaster (sonner)
    |
-   |-- AppRouter (lazy routes)
+   |-- AppRouter (lazy routes, grouped sidebar nav)
    |     ├── /login              → LoginPage (public)
-   |     ├── /app/overview       → OverviewPage  (protected)
-   |     ├── /app/users          → UsersPage     (protected)
-   |     ├── /app/settings       → SettingsPage  (protected)
+   |     ├── /app/overview       → OverviewPage  (protected, Dashboard)
+   |     ├── /app/analytics      → AnalyticsPage (protected, Dashboard)
+   |     ├── /app/users          → UsersPage     (protected, Manage)
+   |     ├── /app/team           → TeamPage       (protected, Manage)
+   |     ├── /app/billing        → BillingPage    (protected, Manage)
+   |     ├── /app/transactions   → TransactionsPage (protected, Manage)
+   |     ├── /app/notifications  → NotificationsPage (protected, Engage)
+   |     ├── /app/support        → SupportPage    (protected, Engage)
+   |     ├── /app/integrations   → IntegrationsPage (protected, Engage)
+   |     ├── /app/settings       → SettingsPage   (protected, Settings)
    |     └── *                   → NotFoundPage
    |
    |  API calls via lib/http.ts (fetch)
@@ -117,8 +134,9 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
 | `lib/http.ts` | Thin `fetch` wrapper; sets JSON headers; throws on non-2xx. | Fetch API | Bundled SPA |
 | shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, DropdownMenu, Input, Switch, Avatar, Badge, Label. | Radix UI, Tailwind, CVA | Bundled SPA |
-| Pages (`src/pages`) | Login, Overview (KPIs + charts), Users (table + search), Settings (form), NotFound. | React, Recharts, RHF+Zod | Bundled SPA |
-| Vitest test harness (`src/test`) | Node MSW server, jsdom env, `renderApp` helper, routing tests. | Vitest, Testing Library | Test only |
+| Pages (`src/pages`) | Login, Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, NotFound. | React, Recharts, RHF+Zod | Bundled SPA |
+| `DataTable` / `DetailDrawer` | Reusable generic table (`data-table.tsx`) and right-side detail panel + `DefinitionList` (`detail-drawer.tsx`). | React | Bundled SPA |
+| Vitest test harness (`src/test`) | Node MSW server, jsdom env, `renderApp` helper, routing + module smoke tests. | Vitest, Testing Library | Test only |
 
 ---
 
@@ -228,3 +246,10 @@ No explicit roadmap or architectural debt (beyond the mock-backend substitution 
 | `http()` | Thin fetch wrapper in `src/lib/http.ts` that throws on non-2xx responses. |
 | `renderApp` | Test helper in `src/test/test-app.tsx` that renders the app with a configurable router history. |
 | `defaultSession` | Seed session fixture in `src/mocks/data.ts`, used to authenticate tests. |
+| BillingPayload | Mock aggregate of `subscription` + `plans` + `invoices` served at `/api/billing`. |
+| TeamMember | Roster entry with `role` (Owner/Admin/Member/Billing) and `status`; served at `/api/team`. |
+| Transaction | Ledger entry (status succeeded/pending/failed/refunded, method card/ach/paypal) at `/api/transactions`. |
+| Integration / ApiKey | Connected third-party app and programmatic key, served at `/api/integrations` and `/api/integrations/api-keys`. |
+| Ticket | Support item with `priority` (low/medium/high/urgent) and `status` (open/pending/closed) at `/api/support/tickets`. |
+| `DataTable` | Generic column-based table helper (`src/components/shared/data-table.tsx`) used by module pages. |
+| `DetailDrawer` | Right-side detail panel + `DefinitionList` (`src/components/shared/detail-drawer.tsx`). |

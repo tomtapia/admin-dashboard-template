@@ -1,34 +1,32 @@
 import {
   BarChart3,
-  ChartColumnBig,
-  CircleHelp,
-  FileBarChart2,
+  Bell,
+  CreditCard,
   LayoutDashboard,
-  LogOut,
-  Package,
+  LifeBuoy,
+  LineChart,
+  Plug,
+  Receipt,
   Settings,
-  ShoppingBag,
+  UserCog,
   Users,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { navItems } from "@/components/layout/nav-items";
+import { navGroups } from "@/components/layout/nav-items";
 import { cn } from "@/lib/utils";
 
 const iconMap = {
   LayoutDashboard,
+  LineChart,
   Users,
+  UserCog,
+  CreditCard,
+  Receipt,
+  Bell,
+  LifeBuoy,
+  Plug,
   Settings,
-  BarChart3,
 };
-
-const secondaryItems = [
-  { title: "Analytics", icon: ChartColumnBig },
-  { title: "Sales", icon: ShoppingBag },
-  { title: "Products", icon: Package },
-  { title: "Reports", icon: FileBarChart2 },
-  { title: "Help", icon: CircleHelp },
-  { title: "Logout", icon: LogOut },
-] as const;
 
 export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => (
   <aside
@@ -49,45 +47,36 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => (
       ) : null}
     </div>
 
-    <nav className="space-y-1">
-      {navItems.map((item) => {
-        const Icon = iconMap[item.icon as keyof typeof iconMap];
-        return (
-          <NavLink
-            key={item.href}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-                isActive
-                  ? "bg-[var(--sidebar-active)] text-[var(--sidebar-active-foreground)]"
-                  : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]",
-              )
-            }
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {!collapsed ? <span>{item.title}</span> : null}
-          </NavLink>
-        );
-      })}
-
-      {!collapsed ? (
-        <>
-          {secondaryItems.map((item) => {
-            const Icon = item.icon;
+    <nav className="space-y-6 overflow-y-auto">
+      {navGroups.map((group) => (
+        <div key={group.label} className="space-y-1">
+          {!collapsed ? (
+            <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sidebar-muted)]">
+              {group.label}
+            </p>
+          ) : null}
+          {group.items.map((item) => {
+            const Icon = iconMap[item.icon as keyof typeof iconMap];
             return (
-              <button
-                key={item.title}
-                type="button"
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-[var(--sidebar-muted)] transition-colors hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]"
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                    isActive
+                      ? "bg-[var(--sidebar-active)] text-[var(--sidebar-active-foreground)]"
+                      : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]",
+                  )
+                }
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                <span>{item.title}</span>
-              </button>
+                {!collapsed ? <span>{item.title}</span> : null}
+              </NavLink>
             );
           })}
-        </>
-      ) : null}
+        </div>
+      ))}
     </nav>
 
     <div className="mt-auto rounded-[0.9rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-elevated)] p-4">

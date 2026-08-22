@@ -8,7 +8,22 @@ const LoginPage = lazy(() => import("@/pages/login-page").then((module) => ({ de
 const OverviewPage = lazy(() =>
   import("@/pages/overview-page").then((module) => ({ default: module.OverviewPage })),
 );
+const AnalyticsPage = lazy(() =>
+  import("@/pages/analytics-page").then((module) => ({ default: module.AnalyticsPage })),
+);
 const UsersPage = lazy(() => import("@/pages/users-page").then((module) => ({ default: module.UsersPage })));
+const TeamPage = lazy(() => import("@/pages/team-page").then((module) => ({ default: module.TeamPage })));
+const BillingPage = lazy(() => import("@/pages/billing-page").then((module) => ({ default: module.BillingPage })));
+const TransactionsPage = lazy(() =>
+  import("@/pages/transactions-page").then((module) => ({ default: module.TransactionsPage })),
+);
+const NotificationsPage = lazy(() =>
+  import("@/pages/notifications-page").then((module) => ({ default: module.NotificationsPage })),
+);
+const SupportPage = lazy(() => import("@/pages/support-page").then((module) => ({ default: module.SupportPage })));
+const IntegrationsPage = lazy(() =>
+  import("@/pages/integrations-page").then((module) => ({ default: module.IntegrationsPage })),
+);
 const SettingsPage = lazy(() =>
   import("@/pages/settings-page").then((module) => ({ default: module.SettingsPage })),
 );
@@ -29,7 +44,14 @@ export const AppRouter = () => (
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route path="/app/overview" element={<OverviewPage />} />
+          <Route path="/app/analytics" element={<AnalyticsPage />} />
           <Route path="/app/users" element={<UsersPage />} />
+          <Route path="/app/team" element={<TeamPage />} />
+          <Route path="/app/billing" element={<BillingPage />} />
+          <Route path="/app/transactions" element={<TransactionsPage />} />
+          <Route path="/app/notifications" element={<NotificationsPage />} />
+          <Route path="/app/support" element={<SupportPage />} />
+          <Route path="/app/integrations" element={<IntegrationsPage />} />
           <Route path="/app/settings" element={<SettingsPage />} />
         </Route>
       </Route>

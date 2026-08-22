@@ -65,3 +65,128 @@ export type SettingsPayload = {
     productUpdates: boolean;
   };
 };
+
+// Billing & Plans
+export type PlanStatus = "active" | "past_due" | "canceled";
+export type InvoiceStatus = "paid" | "open" | "void";
+
+export type PlanTier = {
+  id: string;
+  name: string;
+  priceMonthly: number;
+  seats: number;
+  features: string[];
+  highlighted?: boolean;
+};
+
+export type Subscription = {
+  planId: string;
+  planName: string;
+  status: PlanStatus;
+  renewsAt: string;
+  seatsUsed: number;
+  seatsTotal: number;
+  usagePercent: number;
+};
+
+export type Invoice = {
+  id: string;
+  number: string;
+  issuedAt: string;
+  amount: number;
+  status: InvoiceStatus;
+};
+
+export type BillingPayload = {
+  subscription: Subscription;
+  plans: PlanTier[];
+  invoices: Invoice[];
+};
+
+// Analytics & Reports
+export type FunnelStep = { stage: string; value: number };
+export type ChannelPerf = { channel: string; visitors: number; conversions: number };
+export type CohortRow = { cohort: string; retention: number[] };
+
+export type AnalyticsPayload = {
+  funnel: FunnelStep[];
+  channels: ChannelPerf[];
+  cohorts: CohortRow[];
+  mrr: ChartPoint[];
+};
+
+// Team & Roles
+export type TeamRole = "Owner" | "Admin" | "Member" | "Billing";
+
+export type TeamMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: TeamRole;
+  status: UserStatus;
+  lastActiveAt: string;
+};
+
+// Notifications
+export type NotificationLevel = "info" | "success" | "warning";
+export type NotificationChannel = "email" | "in-app" | "sms";
+
+export type NotificationItem = {
+  id: string;
+  title: string;
+  body: string;
+  channel: NotificationChannel;
+  level: NotificationLevel;
+  triggeredAt: string;
+  read: boolean;
+};
+
+// Transactions
+export type TransactionStatus = "succeeded" | "pending" | "failed" | "refunded";
+export type PaymentMethod = "card" | "ach" | "paypal";
+
+export type Transaction = {
+  id: string;
+  customer: string;
+  email: string;
+  date: string;
+  amount: number;
+  status: TransactionStatus;
+  method: PaymentMethod;
+};
+
+// Integrations & API keys
+export type IntegrationStatus = "connected" | "available";
+
+export type Integration = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  status: IntegrationStatus;
+  connectedAt?: string;
+};
+
+export type ApiKey = {
+  id: string;
+  label: string;
+  prefix: string;
+  scopes: string[];
+  createdAt: string;
+  lastUsedAt: string;
+  revoked: boolean;
+};
+
+// Support & Feedback
+export type TicketPriority = "low" | "medium" | "high" | "urgent";
+export type TicketStatus = "open" | "pending" | "closed";
+
+export type Ticket = {
+  id: string;
+  subject: string;
+  requester: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  createdAt: string;
+  assignee?: string;
+};

@@ -1,16 +1,52 @@
 import { delay, http, HttpResponse } from "msw";
-import { defaultSession, overviewPayload, settingsPayload, usersPayload } from "@/mocks/data";
-import type { SettingsPayload } from "@/types";
+import {
+  analyticsPayload,
+  apiKeysPayload,
+  billingPayload,
+  defaultSession,
+  integrationsPayload,
+  notificationsPayload,
+  overviewPayload,
+  settingsPayload,
+  supportPayload,
+  teamPayload,
+  transactionsPayload,
+  usersPayload,
+} from "@/mocks/data";
+import type {
+  ApiKey,
+  BillingPayload,
+  Integration,
+  NotificationItem,
+  SettingsPayload,
+  TeamMember,
+  Ticket,
+} from "@/types";
 
 let activeSession = defaultSession;
 let activeSettings = settingsPayload;
+let activeNotifications: NotificationItem[] = notificationsPayload;
+let activeTeam: TeamMember[] = teamPayload;
+let activeIntegrations: Integration[] = integrationsPayload;
+let activeApiKeys: ApiKey[] = apiKeysPayload;
+let activeTickets: Ticket[] = supportPayload;
+let activeBilling: BillingPayload = billingPayload;
 
 export const resetMockState = () => {
   activeSession = defaultSession;
   activeSettings = settingsPayload;
+  activeNotifications = notificationsPayload;
+  activeTeam = teamPayload;
+  activeIntegrations = integrationsPayload;
+  activeApiKeys = apiKeysPayload;
+  activeTickets = supportPayload;
+  activeBilling = billingPayload;
 };
 
+const readQuery = (request: Request, key: string) => new URL(request.url).searchParams.get(key)?.toLowerCase() ?? "";
+
 export const handlers = [
+  // Auth
   http.get("/api/auth/session", async () => {
     await delay(250);
     return HttpResponse.json(activeSession);
@@ -25,19 +61,18 @@ export const handlers = [
     activeSession = { ...defaultSession, isAuthenticated: false };
     return HttpResponse.json({ success: true });
   }),
+
+  // Dashboard
   http.get("/api/dashboard/overview", async () => {
     await delay(320);
     return HttpResponse.json(overviewPayload);
   }),
   http.get("/api/users", async ({ request }) => {
     await delay(260);
-    const url = new URL(request.url);
-    const search = url.searchParams.get("search")?.toLowerCase() ?? "";
-
+    const search = readQuery(request, "search");
     if (!search) {
       return HttpResponse.json(usersPayload);
     }
-
     return HttpResponse.json(
       usersPayload.filter((user) => {
         const haystack = `${user.name} ${user.email} ${user.role}`.toLowerCase();
@@ -54,5 +89,188 @@ export const handlers = [
     const updates = (await request.json()) as SettingsPayload;
     activeSettings = updates;
     return HttpResponse.json(activeSettings);
+  }),
+
+  // Billing & Plans
+  http.get("/api/billing", async () => {
+    await delay(280);
+    return HttpResponse.json(activeBilling);
+  }),
+  http.post("/api/billing/subscriptions", async ({ request }) => {
+    await delay(380);
+    const { planId } = (await request.json()) as { planId: string };
+    const plan = activeBilling.plans.find((entry) => entry.id === planId);
+    if (!plan) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    activeBilling = {
+      ...activeBilling,
+      subscription: {
+        ...activeBilling.subscription,
+        planId: plan.id,
+        planName: plan.name,
+        seatsTotal: plan.seats,
+        usagePercent: Math.round((activeBilling.subscription.seatsUsed / plan.seats) * 100),
+      },
+    };
+    return HttpResponse.json(activeBilling.subscription);
+  }),
+
+  // Analytics & Reports
+  http.get("/api/analytics/summary", async () => {
+    await delay(300);
+    return HttpResponse.json(analyticsPayload);
+  }),
+
+  // Team & Roles
+  http.get("/api/team", async ({ request }) => {
+    await delay(240);
+    const search = readQuery(request, "search");
+    if (!search) {
+      return HttpResponse.json(activeTeam);
+    }
+    return HttpResponse.json(
+      activeTeam.filter((member) =>
+        `${member.name} ${member.email} ${member.role}`.toLowerCase().includes(search),
+      ),
+    );
+  }),
+  http.post("/api/team/invite", async ({ request }) => {
+    await delay(360);
+    const next = (await request.json()) as { name: string; email: string; role: TeamMember["role"] };
+    const member: TeamMember = {
+      id: `tm_${Date.now()}`,
+      name: next.name,
+      email: next.email,
+      role: next.role,
+      status: "Invited",
+      lastActiveAt: "Pending invite",
+    };
+    activeTeam = [member, ...activeTeam];
+    return HttpResponse.json(member);
+  }),
+  http.patch("/api/team/:id", async ({ params, request }) => {
+    await delay(280);
+    const { id } = params as { id: string };
+    const { role } = (await request.json()) as { role: TeamMember["role"] };
+    activeTeam = activeTeam.map((member) => (member.id === id ? { ...member, role } : member));
+    return HttpResponse.json(activeTeam.find((member) => member.id === id));
+  }),
+  http.delete("/api/team/:id", async ({ params }) => {
+    await delay(220);
+    const { id } = params as { id: string };
+    activeTeam = activeTeam.filter((member) => member.id !== id);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Notifications
+  http.get("/api/notifications", async () => {
+    await delay(220);
+    return HttpResponse.json(activeNotifications);
+  }),
+  http.patch("/api/notifications/:id/read", async ({ params }) => {
+    await delay(160);
+    const { id } = params as { id: string };
+    activeNotifications = activeNotifications.map((item) =>
+      item.id === id ? { ...item, read: true } : item,
+    );
+    return HttpResponse.json(activeNotifications.find((item) => item.id === id));
+  }),
+  http.post("/api/notifications/read-all", async () => {
+    await delay(200);
+    activeNotifications = activeNotifications.map((item) => ({ ...item, read: true }));
+    return HttpResponse.json(activeNotifications);
+  }),
+
+  // Transactions
+  http.get("/api/transactions", async ({ request }) => {
+    await delay(260);
+    const status = readQuery(request, "status");
+    const search = readQuery(request, "search");
+    return HttpResponse.json(
+      transactionsPayload.filter((txn) => {
+        const matchesStatus = !status || txn.status === status;
+        const matchesSearch =
+          !search ||
+          `${txn.customer} ${txn.email} ${txn.status} ${txn.method}`.toLowerCase().includes(search);
+        return matchesStatus && matchesSearch;
+      }),
+    );
+  }),
+
+  // Integrations & API keys
+  http.get("/api/integrations", async () => {
+    await delay(240);
+    return HttpResponse.json(activeIntegrations);
+  }),
+  http.post("/api/integrations/:id/connect", async ({ params }) => {
+    await delay(320);
+    const { id } = params as { id: string };
+    activeIntegrations = activeIntegrations.map((integration) =>
+      integration.id === id
+        ? { ...integration, status: "connected", connectedAt: new Date().toISOString().slice(0, 10) }
+        : integration,
+    );
+    return HttpResponse.json(activeIntegrations.find((integration) => integration.id === id));
+  }),
+  http.get("/api/integrations/api-keys", async () => {
+    await delay(220);
+    return HttpResponse.json(activeApiKeys);
+  }),
+  http.post("/api/integrations/api-keys", async ({ request }) => {
+    await delay(340);
+    const next = (await request.json()) as { label: string; scopes: string[] };
+    const key: ApiKey = {
+      id: `key_${Date.now()}`,
+      label: next.label,
+      prefix: `sk_live_${Math.random().toString(36).slice(2, 6)}`,
+      scopes: next.scopes,
+      createdAt: new Date().toISOString().slice(0, 10),
+      lastUsedAt: "Never",
+      revoked: false,
+    };
+    activeApiKeys = [key, ...activeApiKeys];
+    return HttpResponse.json(key);
+  }),
+  http.delete("/api/integrations/api-keys/:id", async ({ params }) => {
+    await delay(220);
+    const { id } = params as { id: string };
+    activeApiKeys = activeApiKeys.map((key) => (key.id === id ? { ...key, revoked: true } : key));
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // Support & Feedback
+  http.get("/api/support/tickets", async ({ request }) => {
+    await delay(260);
+    const status = readQuery(request, "status");
+    const priority = readQuery(request, "priority");
+    return HttpResponse.json(
+      supportPayload.filter((ticket) => {
+        const matchesStatus = !status || ticket.status === status;
+        const matchesPriority = !priority || ticket.priority === priority;
+        return matchesStatus && matchesPriority;
+      }),
+    );
+  }),
+  http.post("/api/support/tickets", async ({ request }) => {
+    await delay(360);
+    const next = (await request.json()) as { subject: string; requester: string; priority: Ticket["priority"] };
+    const ticket: Ticket = {
+      id: `tkt_${Date.now()}`,
+      subject: next.subject,
+      requester: next.requester,
+      priority: next.priority,
+      status: "open",
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+    activeTickets = [ticket, ...activeTickets];
+    return HttpResponse.json(ticket);
+  }),
+  http.patch("/api/support/tickets/:id", async ({ params, request }) => {
+    await delay(280);
+    const { id } = params as { id: string };
+    const { status } = (await request.json()) as { status: Ticket["status"] };
+    activeTickets = activeTickets.map((ticket) => (ticket.id === id ? { ...ticket, status } : ticket));
+    return HttpResponse.json(activeTickets.find((ticket) => ticket.id === id));
   }),
 ];

@@ -20,7 +20,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
 import { cn } from "@/lib/utils";
-import { getOverviewRequest } from "@/features/auth/auth-api";
+import { getOverviewRequest } from "@/features/overview/overview-api";
 import type { OverviewPayload } from "@/types";
 
 const salesByCategory = [
