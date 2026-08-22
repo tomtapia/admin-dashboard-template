@@ -12,7 +12,8 @@ describe("app routing", () => {
 
     await screen.findByText(/dashboard overview/i);
     await user.click(screen.getByRole("button", { name: /theme switcher/i }));
-    await user.click(screen.getByRole("menuitemradio", { name: /midnight ops/i }));
+    const midnightOption = await screen.findByRole("menuitemradio", { name: /midnight ops/i });
+    await user.click(midnightOption);
 
     await waitFor(() => {
       expect(document.documentElement.dataset.theme).toBe("midnight-ops");
@@ -40,7 +41,9 @@ describe("app routing", () => {
 
     await user.click(screen.getByRole("button", { name: /enter dashboard/i }));
 
-    expect(await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(
+      await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
   });
 
   it("renders the denser overview modules for an authenticated session", async () => {
@@ -61,7 +64,9 @@ describe("app routing", () => {
     expect(await screen.findByText(/access control and roster visibility/i)).toBeInTheDocument();
     expect((await screen.findAllByText("Jules Carter")).length).toBeGreaterThan(0);
     expect(await screen.findByRole("searchbox", { name: /search users/i })).toBeInTheDocument();
-    expect((await screen.findAllByRole("button", { name: /open actions for avery stone/i })).length).toBeGreaterThan(0);
+    expect(
+      (await screen.findAllByRole("button", { name: /open actions for avery stone/i })).length,
+    ).toBeGreaterThan(0);
   });
 
   it("loads settings and submits the form", async () => {
