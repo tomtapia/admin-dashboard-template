@@ -41,7 +41,7 @@ export const SettingsPage = () => {
         description="Configuration stays primary, while policy and audit context remain available without competing for attention."
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+      <div className="grid items-start gap-6 xl:grid-cols-[1.35fr_0.65fr]">
         <SectionCard tone="primary" title="Workspace configuration" description="Profile and notification preferences powered by mock persistence.">
           <SettingsForm
             defaultValues={settingsQuery.data}
@@ -52,8 +52,13 @@ export const SettingsPage = () => {
           />
         </SectionCard>
 
-        <SectionCard tone="auxiliary" title="Policy summary" description="A compact rail for policy, regional context and recent audit status.">
-          <div className="space-y-4">
+        <SectionCard
+          tone="auxiliary"
+          title="Policy summary"
+          description="A compact rail for policy, regional context and recent audit status."
+          className="xl:sticky xl:top-24"
+        >
+          <div className="space-y-3">
             <div className="rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
               <p className="text-sm font-medium">Notification routing</p>
               <p className="mt-1 text-sm text-[var(--muted-foreground)]">

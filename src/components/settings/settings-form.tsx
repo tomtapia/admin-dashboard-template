@@ -50,7 +50,7 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
   });
 
   return (
-    <form className="space-y-8" onSubmit={submit}>
+    <form className="space-y-6" onSubmit={submit}>
       <div className="space-y-4">
         <div>
           <p className="text-sm font-semibold">Workspace identity</p>
@@ -65,19 +65,25 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
             <Label htmlFor="contactEmail">Contact email</Label>
             <Input id="contactEmail" {...form.register("contactEmail")} />
           </div>
-          <div className="space-y-2 md:col-span-2">
+          <div className="space-y-2">
             <Label htmlFor="timezone">Timezone</Label>
             <Input id="timezone" {...form.register("timezone")} />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Regional behavior</p>
+            <p className="self-center text-sm text-[var(--muted-foreground)]">
+              Drives export windows, digest scheduling and workforce assumptions.
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4 rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] p-5">
+      <div className="space-y-4 border-t border-[var(--border)] pt-6">
         <div>
           <p className="text-sm font-semibold">Delivery preferences</p>
           <p className="text-sm text-[var(--muted-foreground)]">Control what the ops team receives by default.</p>
         </div>
-        <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
             <p className="font-medium">Weekly digest</p>
             <p className="text-sm text-[var(--muted-foreground)]">Receive a weekly summary of product health.</p>
@@ -87,7 +93,7 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
             onCheckedChange={(checked) => form.setValue("weeklyDigest", checked)}
           />
         </div>
-        <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
             <p className="font-medium">Product updates</p>
             <p className="text-sm text-[var(--muted-foreground)]">Get notified about new releases and changes.</p>
