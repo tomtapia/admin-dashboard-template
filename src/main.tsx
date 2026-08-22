@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/app/app";
 import { AppProviders } from "@/app/providers";
+import { ErrorBoundary } from "@/app/error-boundary";
 import "@/styles.css";
 
 const enableMocking = async () => {
@@ -17,7 +18,9 @@ void enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <AppProviders>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </AppProviders>
     </React.StrictMode>,
   );

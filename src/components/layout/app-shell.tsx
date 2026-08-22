@@ -2,13 +2,17 @@ import { useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { ErrorBoundary } from "@/app/error-boundary";
 import { cn } from "@/lib/utils";
 
 export const AppShell = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
-  const pageKey = useMemo(() => location.pathname.split("/").at(-1) ?? "overview", [location.pathname]);
+  const pageKey = useMemo(
+    () => location.pathname.split("/").at(-1) ?? "overview",
+    [location.pathname],
+  );
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -29,7 +33,9 @@ export const AppShell = () => {
         <div className="mx-auto max-w-7xl space-y-5 md:space-y-6">
           <Topbar collapsed={collapsed} onToggleSidebar={() => setCollapsed((value) => !value)} />
           <div key={pageKey} className="animate-[fade-in_320ms_ease]">
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </div>
         </div>
       </main>
