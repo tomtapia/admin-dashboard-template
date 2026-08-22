@@ -68,11 +68,17 @@ export const IntegrationsPage = () => {
         </div>
       ),
     },
-    { key: "description", header: "Description", render: (row) => <span className="text-[var(--foreground-muted)]">{row.description}</span> },
+    {
+      key: "description",
+      header: "Description",
+      render: (row) => <span className="text-[var(--foreground-muted)]">{row.description}</span>,
+    },
     {
       key: "status",
       header: "Status",
-      render: (row) => <Badge variant={row.status === "connected" ? "success" : "outline"}>{row.status}</Badge>,
+      render: (row) => (
+        <Badge variant={row.status === "connected" ? "success" : "outline"}>{row.status}</Badge>
+      ),
     },
     {
       key: "actions",
@@ -80,7 +86,9 @@ export const IntegrationsPage = () => {
       headerClassName: "w-40",
       render: (row) =>
         row.status === "connected" ? (
-          <span className="text-sm text-[var(--muted-foreground)]">Connected {row.connectedAt}</span>
+          <span className="text-sm text-[var(--muted-foreground)]">
+            Connected {row.connectedAt}
+          </span>
         ) : (
           <Button variant="outline" size="sm" onClick={() => connect.mutate(row.id)}>
             Connect
@@ -90,8 +98,16 @@ export const IntegrationsPage = () => {
   ];
 
   const keyColumns: Column<ApiKey>[] = [
-    { key: "label", header: "Label", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.label}</span> },
-    { key: "prefix", header: "Key", render: (row) => <code className="text-sm">{row.prefix}••••••••</code> },
+    {
+      key: "label",
+      header: "Label",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.label}</span>,
+    },
+    {
+      key: "prefix",
+      header: "Key",
+      render: (row) => <code className="text-sm">{row.prefix}••••••••</code>,
+    },
     { key: "scopes", header: "Scopes", render: (row) => row.scopes.join(", ") },
     { key: "lastUsed", header: "Last used", render: (row) => row.lastUsedAt },
     {
@@ -109,8 +125,6 @@ export const IntegrationsPage = () => {
     },
   ];
 
-  type ApiKeyDialogSafe = ApiKey;
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -120,18 +134,48 @@ export const IntegrationsPage = () => {
         actions={<Button onClick={() => createKey.mutate()}>Create API key</Button>}
       />
 
-      {integrationsQuery.isLoading ? <StatePanel kind="loading" title="Loading integrations" description="Checking connections." /> : null}
-      {integrationsQuery.isError ? <StatePanel kind="error" title="Integrations unavailable" description="The integrations endpoint failed." /> : null}
+      {integrationsQuery.isLoading ? (
+        <StatePanel
+          kind="loading"
+          title="Loading integrations"
+          description="Checking connections."
+        />
+      ) : null}
+      {integrationsQuery.isError ? (
+        <StatePanel
+          kind="error"
+          title="Integrations unavailable"
+          description="The integrations endpoint failed."
+        />
+      ) : null}
       {integrationsQuery.data ? (
-        <SectionCard title="Integrations" description="Toggle connections your workspace relies on.">
-          <DataTable columns={integrationColumns} rows={integrationsQuery.data} getRowKey={(row) => row.id} />
+        <SectionCard
+          title="Integrations"
+          description="Toggle connections your workspace relies on."
+        >
+          <DataTable
+            columns={integrationColumns}
+            rows={integrationsQuery.data}
+            getRowKey={(row) => row.id}
+          />
         </SectionCard>
       ) : null}
 
-      {keysQuery.isLoading ? <StatePanel kind="loading" title="Loading API keys" description="Fetching keys." /> : null}
-      {keysQuery.isError ? <StatePanel kind="error" title="API keys unavailable" description="The API keys endpoint failed." /> : null}
+      {keysQuery.isLoading ? (
+        <StatePanel kind="loading" title="Loading API keys" description="Fetching keys." />
+      ) : null}
+      {keysQuery.isError ? (
+        <StatePanel
+          kind="error"
+          title="API keys unavailable"
+          description="The API keys endpoint failed."
+        />
+      ) : null}
       {keysQuery.data && keysQuery.data.length > 0 ? (
-        <SectionCard title="API keys" description="Keep these secret; revoke immediately if leaked.">
+        <SectionCard
+          title="API keys"
+          description="Keep these secret; revoke immediately if leaked."
+        >
           <DataTable columns={keyColumns} rows={keysQuery.data} getRowKey={(row) => row.id} />
         </SectionCard>
       ) : null}

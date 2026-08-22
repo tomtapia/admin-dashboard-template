@@ -18,8 +18,6 @@ import { DataTable, type Column } from "@/components/shared/data-table";
 import { getAnalyticsRequest } from "@/features/analytics/analytics-api";
 import type { AnalyticsPayload, ChannelPerf, CohortRow } from "@/types";
 
-const cohortColors = ["#3b82f6", "#60a5fa", "#93c5fd", "#cbd5e1"];
-
 export const AnalyticsPage = () => {
   const analyticsQuery = useQuery<AnalyticsPayload>({
     queryKey: ["analytics"],
@@ -28,11 +26,23 @@ export const AnalyticsPage = () => {
   const canRenderChart = typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
 
   if (analyticsQuery.isLoading) {
-    return <StatePanel kind="loading" title="Loading analytics" description="Aggregating funnel and retention data." />;
+    return (
+      <StatePanel
+        kind="loading"
+        title="Loading analytics"
+        description="Aggregating funnel and retention data."
+      />
+    );
   }
 
   if (analyticsQuery.isError || !analyticsQuery.data) {
-    return <StatePanel kind="error" title="Analytics unavailable" description="The analytics endpoint failed." />;
+    return (
+      <StatePanel
+        kind="error"
+        title="Analytics unavailable"
+        description="The analytics endpoint failed."
+      />
+    );
   }
 
   const { funnel, channels, cohorts, mrr } = analyticsQuery.data;
@@ -40,13 +50,25 @@ export const AnalyticsPage = () => {
   const conversions = funnel[funnel.length - 1]?.value ?? 0;
 
   const channelColumns: Column<ChannelPerf>[] = [
-    { key: "channel", header: "Channel", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.channel}</span> },
+    {
+      key: "channel",
+      header: "Channel",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.channel}</span>,
+    },
     { key: "visitors", header: "Visitors", render: (row) => row.visitors.toLocaleString() },
-    { key: "conversions", header: "Conversions", render: (row) => row.conversions.toLocaleString() },
+    {
+      key: "conversions",
+      header: "Conversions",
+      render: (row) => row.conversions.toLocaleString(),
+    },
   ];
 
   const cohortColumns: Column<CohortRow>[] = [
-    { key: "cohort", header: "Cohort", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.cohort}</span> },
+    {
+      key: "cohort",
+      header: "Cohort",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.cohort}</span>,
+    },
     ...cohorts[0].retention.map((_, week) => ({
       key: `w${week}`,
       header: `W${week + 1}`,
@@ -63,9 +85,33 @@ export const AnalyticsPage = () => {
       />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <KpiCard kpi={{ id: "visitors", label: "Visitors", value: totalVisitors, change: 12, tone: "positive" }} />
-        <KpiCard kpi={{ id: "conversions", label: "Conversions", value: conversions, change: 6, tone: "positive" }} />
-        <KpiCard kpi={{ id: "mrr", label: "MRR", value: mrr[mrr.length - 1]?.revenue ?? 0, change: 9, tone: "positive" }} />
+        <KpiCard
+          kpi={{
+            id: "visitors",
+            label: "Visitors",
+            value: totalVisitors,
+            change: 12,
+            tone: "positive",
+          }}
+        />
+        <KpiCard
+          kpi={{
+            id: "conversions",
+            label: "Conversions",
+            value: conversions,
+            change: 6,
+            tone: "positive",
+          }}
+        />
+        <KpiCard
+          kpi={{
+            id: "mrr",
+            label: "MRR",
+            value: mrr[mrr.length - 1]?.revenue ?? 0,
+            change: 9,
+            tone: "positive",
+          }}
+        />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -75,8 +121,20 @@ export const AnalyticsPage = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={funnel} layout="vertical">
                   <CartesianGrid horizontal={false} stroke="var(--chart-grid)" />
-                  <XAxis type="number" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
-                  <YAxis type="category" dataKey="stage" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} width={90} />
+                  <XAxis
+                    type="number"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="stage"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                    width={90}
+                  />
                   <Tooltip />
                   <Bar dataKey="value" fill="var(--accent)" radius={[0, 6, 6, 0]} />
                 </BarChart>
@@ -91,7 +149,12 @@ export const AnalyticsPage = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={channels}>
                   <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-                  <XAxis dataKey="channel" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
+                  <XAxis
+                    dataKey="channel"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
                   <Tooltip />
                   <Bar dataKey="visitors" fill="var(--accent)" radius={[6, 6, 0, 0]} />
@@ -115,10 +178,26 @@ export const AnalyticsPage = () => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="var(--chart-grid)" vertical />
-                <XAxis dataKey="name" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--muted-foreground)" tickLine={false} axisLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
+                <XAxis
+                  dataKey="name"
+                  stroke="var(--muted-foreground)"
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="var(--muted-foreground)"
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `$${value / 1000}k`}
+                />
                 <Tooltip />
-                <Area type="monotone" dataKey="revenue" stroke="var(--chart-line)" strokeWidth={2} fill="url(#mrrFill)" />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="var(--chart-line)"
+                  strokeWidth={2}
+                  fill="url(#mrrFill)"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
