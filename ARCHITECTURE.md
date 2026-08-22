@@ -9,8 +9,8 @@ Architectural reference for the **admin-dashboard-template** repository. The rep
 | Field | Value |
 | --- | --- |
 | Project Name | admin-dashboard-template |
-| Repository URL | Unknown - not identified in repository analysis (working copy is not a git repository). |
-| Primary Team | Unknown - not identified in repository analysis. |
+| Repository URL | Initialize your own remote (e.g. `git remote add origin <url>`); the working copy is a git repository with a baseline history. |
+| Primary Team | Your team — set when the repository is published. |
 | Date of Last Update | 2026-08-22 |
 
 ---
@@ -127,10 +127,13 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | Name | Description | Technologies | Deployment |
 | --- | --- | --- | --- |
 | `AppProviders` | Composition root wiring React Query, Router, Theme, Auth, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
-| `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` for `/app/*`. | React Router v7 | Bundled SPA |
+| `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` + `RoleRoute` for `/app/*`. | React Router v7 | Bundled SPA |
 | `AuthProvider` / `auth-api` | Client-side session state; reads/writes session to `localStorage`; calls mock auth endpoints. | React Context, `lib/http.ts` | Bundled SPA |
 | `ProtectedRoute` | Guards `/app/*`; redirects unauthenticated users to `/login`. | React Router | Bundled SPA |
-| `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. | React Context | Bundled SPA |
+| `RoleRoute` / `lib/rbac` | Enforces client-side RBAC: `canAccess(role, allowed)` gates nav visibility and protected routes by `AppRole`. | React Router, React Context | Bundled SPA |
+| `ErrorBoundary` | Global + route-level error boundary with a recoverable fallback (Try again / back to dashboard). | React | Bundled SPA |
+| `lib/notify` | Centralized toast helpers; all TanStack Query mutation errors surface via `notifyError`. | sonner | Bundled SPA |
+| `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. Four presets: Core Light, Midnight Ops, Sunset Ember, Forest Deep. | React Context | Bundled SPA |
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
 | `lib/http.ts` | Thin `fetch` wrapper; sets JSON headers; throws on non-2xx. | Fetch API | Bundled SPA |
 | shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, DropdownMenu, Input, Switch, Avatar, Badge, Label. | Radix UI, Tailwind, CVA | Bundled SPA |
@@ -182,8 +185,8 @@ There are no backend, payment, auth-provider, or third-party SDK integrations. A
 ## 8. Security
 
 - **Authentication (mock):** A `Session` object (with `isAuthenticated`) is stored in `localStorage` under `admin-dashboard-template:session`. `AuthProvider` reads it on init; `ProtectedRoute` redirects to `/login` when absent/invalid. This is a client-side mock only — there is no real credential verification or backend auth.
-- **Authorization:** Role strings exist in the `Session` (`Owner`/`Admin`/`Manager`) and `UserRecord` (`Owner`/`Admin`/`Support`/`Analyst`) types, but no RBAC enforcement is implemented in code.
-- **Transport:** `lib/http.ts` only adds JSON `Content-Type` headers; no tokens, signing, or encryption are applied.
+- **Authorization (client-side, mock):** Role strings exist in the `Session` (`Owner`/`Admin`/`Manager` — typed as `AppRole`) and `UserRecord` (`Owner`/`Admin`/`Support`/`Analyst`). RBAC is now enforced in the UI: `RoleRoute` redirects unauthorized roles away from gated `/app/*` routes, and `SidebarNav`/`Topbar` hide nav items the user's role cannot access (`canAccess`). This is a UI convenience only — real authorization must be enforced server-side when a backend is connected.
+- **Transport:** `lib/http.ts` only adds JSON `Content-Type` headers; no tokens, signing, or encryption are applied. It optionally prefixes requests with `import.meta.env.VITE_API_BASE_URL` so a real backend can replace MSW.
 - **Secrets management:** None present; no environment variables or secret files are used.
 - **Security middleware:** None (no server). The only boundary is the client-side `ProtectedRoute`.
 
@@ -213,8 +216,8 @@ No database, cache, object store, or queue is used.
 
 - **Build:** `pnpm build` runs `tsc -b` (typecheck via project references) then `vite build`, emitting static assets to `dist/`.
 - **Serve:** `pnpm preview` serves the built `dist/`; `pnpm dev` runs the Vite dev server (auto-starting the MSW worker).
-- **CI/CD:** Unknown - not identified in repository analysis (no GitHub Actions, GitLab CI, Jenkins, or pipeline files present).
-- **Infrastructure / hosting:** Unknown - not identified in repository analysis (no Docker, Kubernetes, Terraform, or cloud manifests present). The output is a static SPA that can be hosted on any static file host.
+- **CI/CD:** A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs typecheck (`tsc -b`), `eslint`, `vitest`, and `vite build` on push/PR to `main`/`master`.
+- **Infrastructure / hosting:** No Docker/Kubernetes/Terraform manifests present. The output is a static SPA that can be hosted on any static file host (Vercel, Netlify, S3+CloudFront, etc.).
 
 ---
 
@@ -222,8 +225,9 @@ No database, cache, object store, or queue is used.
 
 - The entire data and auth layer is mocked via MSW (`src/mocks/`). To become production-ready, a real backend must replace the `/api/*` handlers, and the client-side `localStorage` session model must be replaced with server-issued credentials (cookie/session/token) and real auth verification.
 - `localStorage` is used to store the session; this is not secure for real credentials and should be reconsidered before production use.
-- No automated lint or format scripts exist in `package.json` (only `dev`, `build`, `preview`, `test`, `test:watch`); a lint/format step is likely needed as the project grows.
-- No TODO/FIXME markers, deprecated modules, or migration plans were found in the source.
+- A real backend can be wired in without touching feature code: set `VITE_API_BASE_URL` (see `.env.example`) and implement the same `/api/*` paths the MSW handlers expose. In a production build the MSW worker is not started, so requests go straight to the configured base URL.
+- Client-side RBAC (nav gating + `RoleRoute`) is a UI convenience only; enforce authorization server-side on the real backend.
+- Lint/format are configured: ESLint (flat config), Prettier, a Husky pre-commit running `lint-staged`, plus `pnpm lint` / `pnpm format` scripts. There are no TODO/FIXME markers or deprecated modules in the source.
 
 No explicit roadmap or architectural debt (beyond the mock-backend substitution noted above) identified in repository analysis.
 
