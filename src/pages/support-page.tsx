@@ -4,12 +4,15 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
-import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { DetailDrawer, DefinitionList } from "@/components/shared/detail-drawer";
-import { getTicketsRequest, createTicketRequest, updateTicketRequest } from "@/features/support/support-api";
+import {
+  getTicketsRequest,
+  createTicketRequest,
+  updateTicketRequest,
+} from "@/features/support/support-api";
 import type { Ticket, TicketStatus } from "@/types";
 
 const priorityVariant: Record<string, "success" | "warning" | "outline" | "default"> = {
@@ -34,7 +37,12 @@ export const SupportPage = () => {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["tickets"] });
 
   const createTicket = useMutation({
-    mutationFn: () => createTicketRequest({ subject: "New support request", requester: "ops@northstar.app", priority: "medium" }),
+    mutationFn: () =>
+      createTicketRequest({
+        subject: "New support request",
+        requester: "ops@northstar.app",
+        priority: "medium",
+      }),
     onSuccess: () => {
       invalidate();
       toast.success("Ticket created");
@@ -42,7 +50,8 @@ export const SupportPage = () => {
   });
 
   const updateTicket = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: TicketStatus }) => updateTicketRequest(id, status),
+    mutationFn: ({ id, status }: { id: string; status: TicketStatus }) =>
+      updateTicketRequest(id, status),
     onSuccess: () => {
       invalidate();
       setSelected(null);
@@ -50,13 +59,23 @@ export const SupportPage = () => {
   });
 
   const columns: Column<Ticket>[] = [
-    { key: "subject", header: "Subject", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.subject}</span> },
+    {
+      key: "subject",
+      header: "Subject",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.subject}</span>,
+    },
     { key: "requester", header: "Requester", render: (row) => row.requester },
-    { key: "priority", header: "Priority", render: (row) => <Badge variant={priorityVariant[row.priority]}>{row.priority}</Badge> },
+    {
+      key: "priority",
+      header: "Priority",
+      render: (row) => <Badge variant={priorityVariant[row.priority]}>{row.priority}</Badge>,
+    },
     {
       key: "status",
       header: "Status",
-      render: (row) => <Badge variant={row.status === "closed" ? "outline" : "success"}>{row.status}</Badge>,
+      render: (row) => (
+        <Badge variant={row.status === "closed" ? "outline" : "success"}>{row.status}</Badge>
+      ),
     },
     { key: "assignee", header: "Assignee", render: (row) => row.assignee ?? "—" },
     {
@@ -97,11 +116,24 @@ export const SupportPage = () => {
         ))}
       </div>
 
-      {ticketsQuery.isLoading ? <StatePanel kind="loading" title="Loading tickets" description="Fetching the queue." /> : null}
-      {ticketsQuery.isError ? <StatePanel kind="error" title="Support unavailable" description="The support endpoint failed." /> : null}
+      {ticketsQuery.isLoading ? (
+        <StatePanel kind="loading" title="Loading tickets" description="Fetching the queue." />
+      ) : null}
+      {ticketsQuery.isError ? (
+        <StatePanel
+          kind="error"
+          title="Support unavailable"
+          description="The support endpoint failed."
+        />
+      ) : null}
 
       {ticketsQuery.data && ticketsQuery.data.length > 0 ? (
-        <DataTable columns={columns} rows={ticketsQuery.data} getRowKey={(row) => row.id} caption={`${ticketsQuery.data.length} tickets`} />
+        <DataTable
+          columns={columns}
+          rows={ticketsQuery.data}
+          getRowKey={(row) => row.id}
+          caption={`${ticketsQuery.data.length} tickets`}
+        />
       ) : null}
 
       {ticketsQuery.data && ticketsQuery.data.length === 0 ? (
@@ -134,7 +166,12 @@ export const SupportPage = () => {
           <DefinitionList
             items={[
               { label: "Requester", value: selected.requester },
-              { label: "Priority", value: <Badge variant={priorityVariant[selected.priority]}>{selected.priority}</Badge> },
+              {
+                label: "Priority",
+                value: (
+                  <Badge variant={priorityVariant[selected.priority]}>{selected.priority}</Badge>
+                ),
+              },
               { label: "Status", value: selected.status },
               { label: "Assignee", value: selected.assignee ?? "Unassigned" },
               { label: "Created", value: selected.createdAt },

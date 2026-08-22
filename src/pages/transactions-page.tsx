@@ -4,7 +4,6 @@ import { formatCurrency } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
-import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DataTable, type Column } from "@/components/shared/data-table";
@@ -19,7 +18,13 @@ const statusVariant: Record<TransactionStatus, "success" | "warning" | "outline"
   refunded: "outline",
 };
 
-const statusFilters: (TransactionStatus | "all")[] = ["all", "succeeded", "pending", "failed", "refunded"];
+const statusFilters: (TransactionStatus | "all")[] = [
+  "all",
+  "succeeded",
+  "pending",
+  "failed",
+  "refunded",
+];
 
 export const TransactionsPage = () => {
   const [status, setStatus] = useState<TransactionStatus | "all">("all");
@@ -28,15 +33,28 @@ export const TransactionsPage = () => {
 
   const transactionsQuery = useQuery<Transaction[]>({
     queryKey: ["transactions", status, search],
-    queryFn: () => getTransactionsRequest({ status: status === "all" ? undefined : status, search }),
+    queryFn: () =>
+      getTransactionsRequest({ status: status === "all" ? undefined : status, search }),
   });
 
   const columns: Column<Transaction>[] = [
-    { key: "customer", header: "Customer", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.customer}</span> },
+    {
+      key: "customer",
+      header: "Customer",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.customer}</span>,
+    },
     { key: "date", header: "Date", render: (row) => row.date },
     { key: "amount", header: "Amount", render: (row) => formatCurrency(row.amount) },
-    { key: "method", header: "Method", render: (row) => <span className="capitalize">{row.method}</span> },
-    { key: "status", header: "Status", render: (row) => <Badge variant={statusVariant[row.status]}>{row.status}</Badge> },
+    {
+      key: "method",
+      header: "Method",
+      render: (row) => <span className="capitalize">{row.method}</span>,
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (row) => <Badge variant={statusVariant[row.status]}>{row.status}</Badge>,
+    },
   ];
 
   return (
@@ -72,8 +90,20 @@ export const TransactionsPage = () => {
         />
       </div>
 
-      {transactionsQuery.isLoading ? <StatePanel kind="loading" title="Loading transactions" description="Fetching the ledger." /> : null}
-      {transactionsQuery.isError ? <StatePanel kind="error" title="Transactions unavailable" description="The transactions endpoint failed." /> : null}
+      {transactionsQuery.isLoading ? (
+        <StatePanel
+          kind="loading"
+          title="Loading transactions"
+          description="Fetching the ledger."
+        />
+      ) : null}
+      {transactionsQuery.isError ? (
+        <StatePanel
+          kind="error"
+          title="Transactions unavailable"
+          description="The transactions endpoint failed."
+        />
+      ) : null}
 
       {transactionsQuery.data && transactionsQuery.data.length > 0 ? (
         <DataTable
@@ -86,7 +116,10 @@ export const TransactionsPage = () => {
       ) : null}
 
       {transactionsQuery.data && transactionsQuery.data.length === 0 ? (
-        <EmptyState title="No transactions found" description="Adjust filters or search to see charges." />
+        <EmptyState
+          title="No transactions found"
+          description="Adjust filters or search to see charges."
+        />
       ) : null}
 
       <DetailDrawer
@@ -99,7 +132,10 @@ export const TransactionsPage = () => {
           <DefinitionList
             items={[
               { label: "Amount", value: formatCurrency(selected.amount) },
-              { label: "Status", value: <Badge variant={statusVariant[selected.status]}>{selected.status}</Badge> },
+              {
+                label: "Status",
+                value: <Badge variant={statusVariant[selected.status]}>{selected.status}</Badge>,
+              },
               { label: "Method", value: <span className="capitalize">{selected.method}</span> },
               { label: "Email", value: selected.email },
               { label: "Date", value: selected.date },
