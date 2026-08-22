@@ -8,13 +8,28 @@ export type NavGroup = {
 export const navItems: NavItem[] = [
   { title: "Overview", href: "/app/overview", icon: "LayoutDashboard" },
   { title: "Analytics", href: "/app/analytics", icon: "LineChart" },
-  { title: "Users", href: "/app/users", icon: "Users" },
-  { title: "Team", href: "/app/team", icon: "UserCog" },
-  { title: "Billing", href: "/app/billing", icon: "CreditCard" },
-  { title: "Transactions", href: "/app/transactions", icon: "Receipt" },
-  { title: "Notifications", href: "/app/notifications", icon: "Bell" },
-  { title: "Support", href: "/app/support", icon: "LifeBuoy" },
-  { title: "Integrations", href: "/app/integrations", icon: "Plug" },
+  { title: "Users", href: "/app/users", icon: "Users", roles: ["Owner", "Admin", "Manager"] },
+  { title: "Team", href: "/app/team", icon: "UserCog", roles: ["Owner", "Admin"] },
+  { title: "Billing", href: "/app/billing", icon: "CreditCard", roles: ["Owner", "Admin"] },
+  {
+    title: "Transactions",
+    href: "/app/transactions",
+    icon: "Receipt",
+    roles: ["Owner", "Admin", "Manager"],
+  },
+  {
+    title: "Notifications",
+    href: "/app/notifications",
+    icon: "Bell",
+    roles: ["Owner", "Admin", "Manager"],
+  },
+  {
+    title: "Support",
+    href: "/app/support",
+    icon: "LifeBuoy",
+    roles: ["Owner", "Admin", "Manager"],
+  },
+  { title: "Integrations", href: "/app/integrations", icon: "Plug", roles: ["Owner", "Admin"] },
   { title: "Settings", href: "/app/settings", icon: "Settings" },
 ];
 

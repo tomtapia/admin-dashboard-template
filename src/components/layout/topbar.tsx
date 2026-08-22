@@ -1,7 +1,14 @@
 import { Bell, Mail, Menu, Palette, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { navItems } from "@/components/layout/nav-items";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +23,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/features/auth/auth-context";
 import { useTheme } from "@/features/theme/theme-context";
+import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 
 type TopbarProps = {
@@ -28,13 +36,19 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { theme, themeId, themes, setThemeId } = useTheme();
   const location = useLocation();
   const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
+  const visibleNavItems = navItems.filter((item) => canAccess(session?.user.role, item.roles));
 
   return (
     <header className="sticky top-4 z-10 flex flex-col gap-3 rounded-[0.9rem] border border-[var(--topbar-border)] bg-[var(--topbar)] px-3 py-3 shadow-[var(--shadow-topbar)] backdrop-blur md:flex-row md:items-center md:justify-between md:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden" aria-label="Open navigation">
+            <Button
+              variant="outline"
+              size="icon"
+              className="lg:hidden"
+              aria-label="Open navigation"
+            >
               <Menu className="h-4 w-4" />
             </Button>
           </DialogTrigger>
@@ -46,7 +60,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
               </DialogDescription>
             </div>
             <nav className="space-y-2 p-4">
-              {navItems.map((item) => (
+              {visibleNavItems.map((item) => (
                 <DialogClose asChild key={item.href}>
                   <NavLink
                     to={item.href}
@@ -74,7 +88,11 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           className="hidden lg:inline-flex"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          {collapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
         </Button>
 
         <div className="relative hidden flex-1 md:block">
@@ -103,13 +121,18 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
             <DropdownMenuLabel>Theme palette</DropdownMenuLabel>
-            <DropdownMenuRadioGroup value={themeId} onValueChange={(value) => setThemeId(value as typeof themeId)}>
+            <DropdownMenuRadioGroup
+              value={themeId}
+              onValueChange={(value) => setThemeId(value as typeof themeId)}
+            >
               {themes.map((entry) => (
                 <DropdownMenuRadioItem key={entry.id} value={entry.id}>
                   <div className="flex w-full items-center justify-between gap-4">
                     <div>
                       <p className="font-medium">{entry.label}</p>
-                      <p className="text-xs text-[var(--muted-foreground)]">{entry.mode === "dark" ? "Dark" : "Light"} palette</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">
+                        {entry.mode === "dark" ? "Dark" : "Light"} palette
+                      </p>
                     </div>
                     <div className="flex items-center gap-1.5">
                       {entry.preview.map((swatch) => (
@@ -130,7 +153,12 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
         <Button variant="ghost" size="icon" aria-label="Messages" className="hidden sm:inline-flex">
           <Mail className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" aria-label="Notifications" className="hidden sm:inline-flex">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Notifications"
+          className="hidden sm:inline-flex"
+        >
           <Bell className="h-4 w-4" />
         </Button>
 

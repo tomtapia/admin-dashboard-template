@@ -2,7 +2,10 @@ export type NavItem = {
   title: string;
   href: string;
   icon: string;
+  roles?: AppRole[];
 };
+
+export type AppRole = "Owner" | "Admin" | "Manager";
 
 export type Session = {
   user: {
