@@ -1,12 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { EmptyState } from "@/components/shared/empty-state";
-import { getNotificationsRequest, markNotificationReadRequest, markAllReadRequest } from "@/features/notifications/notifications-api";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  getNotificationsRequest,
+  markAllReadRequest,
+  markNotificationReadRequest,
+} from "@/features/notifications/notifications-api";
 import type { NotificationItem, NotificationLevel } from "@/types";
 
 const levelVariant: Record<NotificationLevel, "success" | "warning" | "outline"> = {
@@ -53,11 +57,26 @@ export const NotificationsPage = () => {
         }
       />
 
-      {notificationsQuery.isLoading ? <StatePanel kind="loading" title="Loading notifications" description="Fetching your alert feed." /> : null}
-      {notificationsQuery.isError ? <StatePanel kind="error" title="Notifications unavailable" description="The notifications endpoint failed." /> : null}
+      {notificationsQuery.isLoading ? (
+        <StatePanel
+          kind="loading"
+          title="Loading notifications"
+          description="Fetching your alert feed."
+        />
+      ) : null}
+      {notificationsQuery.isError ? (
+        <StatePanel
+          kind="error"
+          title="Notifications unavailable"
+          description="The notifications endpoint failed."
+        />
+      ) : null}
 
       {notifications.length > 0 ? (
-        <SectionCard title="Recent notifications" description={unread > 0 ? `${unread} unread` : "All caught up"}>
+        <SectionCard
+          title="Recent notifications"
+          description={unread > 0 ? `${unread} unread` : "All caught up"}
+        >
           <div className="space-y-3">
             {notifications.map((item) => (
               <div
@@ -87,7 +106,10 @@ export const NotificationsPage = () => {
       ) : null}
 
       {notifications.length === 0 ? (
-        <EmptyState title="No notifications" description="When something happens, it will show up here." />
+        <EmptyState
+          title="No notifications"
+          description="When something happens, it will show up here."
+        />
       ) : null}
     </div>
   );

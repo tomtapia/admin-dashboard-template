@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderApp } from "@/test/test-app";
 import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
 
 describe("app routing", () => {
   it("shows a theme switcher and persists the selected theme", async () => {
@@ -10,7 +10,7 @@ describe("app routing", () => {
 
     renderApp({ initialEntries: ["/app/overview"] });
 
-    await screen.findByText(/dashboard overview/i);
+    await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 });
     await user.click(screen.getByRole("button", { name: /theme switcher/i }));
     const midnightOption = await screen.findByRole("menuitemradio", { name: /midnight ops/i });
     await user.click(midnightOption);

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { ErrorBoundary } from "@/app/error-boundary";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Topbar } from "@/components/layout/topbar";
-import { ErrorBoundary } from "@/app/error-boundary";
 import { cn } from "@/lib/utils";
 
 export const AppShell = () => {

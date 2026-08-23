@@ -11,7 +11,14 @@ type DetailDrawerProps = {
   footer?: ReactNode;
 };
 
-export function DetailDrawer({ open, onOpenChange, title, description, children, footer }: DetailDrawerProps) {
+export function DetailDrawer({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  footer,
+}: DetailDrawerProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -21,7 +28,9 @@ export function DetailDrawer({ open, onOpenChange, title, description, children,
       >
         <div className="border-b border-[var(--border)] px-5 py-4">
           <DialogTitle className="text-base">{title}</DialogTitle>
-          {description ? <DialogDescription className="mt-1">{description}</DialogDescription> : null}
+          {description ? (
+            <DialogDescription className="mt-1">{description}</DialogDescription>
+          ) : null}
         </div>
         <div className="px-5 py-4">{children}</div>
         {footer ? <div className="border-t border-[var(--border)] px-5 py-4">{footer}</div> : null}

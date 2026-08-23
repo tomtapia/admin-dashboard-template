@@ -10,11 +10,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { type Column, DataTable } from "@/components/shared/data-table";
+import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { KpiCard } from "@/components/shared/kpi-card";
-import { DataTable, type Column } from "@/components/shared/data-table";
 import { getAnalyticsRequest } from "@/features/analytics/analytics-api";
 import type { AnalyticsPayload, ChannelPerf, CohortRow } from "@/types";
 

@@ -1,10 +1,10 @@
-import { useDeferredValue, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useDeferredValue, useState } from "react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SearchFilterBar } from "@/components/shared/search-filter-bar";
 import { StatePanel } from "@/components/shared/state-panel";
+import { Button } from "@/components/ui/button";
 import { UsersTable } from "@/components/users/users-table";
 import { getUsersRequest } from "@/features/users/users-api";
 import type { UserRecord } from "@/types";
@@ -25,7 +25,9 @@ export const UsersPage = () => {
         description="A compact roster with visible follow-up actions, better table density and cleaner admin hierarchy."
         actions={
           <>
-            <Button variant="outline" className="w-full md:w-auto">Export roster</Button>
+            <Button variant="outline" className="w-full md:w-auto">
+              Export roster
+            </Button>
             <Button className="w-full md:w-auto">Invite user</Button>
           </>
         }
@@ -34,14 +36,24 @@ export const UsersPage = () => {
       <SearchFilterBar value={search} onChange={setSearch} resultCount={usersQuery.data?.length} />
 
       {usersQuery.isLoading ? (
-        <StatePanel kind="loading" title="Loading users" description="Preparing the admin roster." />
+        <StatePanel
+          kind="loading"
+          title="Loading users"
+          description="Preparing the admin roster."
+        />
       ) : null}
 
       {usersQuery.isError ? (
-        <StatePanel kind="error" title="Users unavailable" description="The mock user directory did not respond." />
+        <StatePanel
+          kind="error"
+          title="Users unavailable"
+          description="The mock user directory did not respond."
+        />
       ) : null}
 
-      {usersQuery.data && usersQuery.data.length > 0 ? <UsersTable users={usersQuery.data} /> : null}
+      {usersQuery.data && usersQuery.data.length > 0 ? (
+        <UsersTable users={usersQuery.data} />
+      ) : null}
 
       {usersQuery.data && usersQuery.data.length === 0 ? (
         <EmptyState

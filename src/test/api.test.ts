@@ -1,9 +1,9 @@
-import { describe, it, expect, afterEach } from "vitest";
-import { http, HttpResponse } from "msw";
-import { server } from "@/test/server";
-import { getUsersRequest } from "@/features/users/users-api";
+import { HttpResponse, http } from "msw";
+import { afterEach, describe, expect, it } from "vitest";
 import { getOverviewRequest } from "@/features/overview/overview-api";
 import { updateSettingsRequest } from "@/features/settings/settings-api";
+import { getUsersRequest } from "@/features/users/users-api";
+import { server } from "@/test/server";
 import type { SettingsPayload } from "@/types";
 
 afterEach(() => server.resetHandlers());

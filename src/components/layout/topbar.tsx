@@ -1,6 +1,8 @@
 import { Bell, Mail, Menu, Palette, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { navItems } from "@/components/layout/nav-items";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -9,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/features/auth/auth-context";
 import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
@@ -164,7 +164,10 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 transition-colors hover:bg-[var(--surface-panel)]">
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 py-1.5 transition-colors hover:bg-[var(--surface-panel)]"
+            >
               <Avatar className="h-9 w-9">
                 <AvatarFallback>{session?.user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>

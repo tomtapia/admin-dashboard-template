@@ -14,17 +14,30 @@ export const SearchFilterBar = ({ value, onChange, resultCount }: SearchFilterBa
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-semibold">Directory controls</p>
-        {typeof resultCount === "number" ? <Badge variant="outline">{resultCount} visible</Badge> : null}
+        {typeof resultCount === "number" ? (
+          <Badge variant="outline">{resultCount} visible</Badge>
+        ) : null}
       </div>
-      <p className="text-sm text-[var(--muted-foreground)]">Search by name, email or role and keep follow-up work visible without opening a detail view.</p>
+      <p className="text-sm text-[var(--muted-foreground)]">
+        Search by name, email or role and keep follow-up work visible without opening a detail view.
+      </p>
       <div className="flex flex-wrap gap-2">
-        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Active only</span>
-        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Billing owners</span>
-        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Pending invites</span>
+        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+          Active only
+        </span>
+        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+          Billing owners
+        </span>
+        <span className="rounded-full bg-[var(--surface-panel)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+          Pending invites
+        </span>
       </div>
     </div>
     <div className="w-full md:max-w-sm">
-      <Label htmlFor="users-search" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+      <Label
+        htmlFor="users-search"
+        className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]"
+      >
         Search users
       </Label>
       <div className="relative">

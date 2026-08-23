@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { StatePanel } from "@/components/shared/state-panel";
+import { describe, expect, it } from "vitest";
+import { type Column, DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
-import { DataTable, type Column } from "@/components/shared/data-table";
+import { StatePanel } from "@/components/shared/state-panel";
 
 describe("shared components", () => {
   it("StatePanel renders loading and error variants", () => {

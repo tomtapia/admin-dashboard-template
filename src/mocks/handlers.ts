@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse } from "msw";
+import { delay, HttpResponse, http } from "msw";
 import {
   analyticsPayload,
   apiKeysPayload,
@@ -43,7 +43,8 @@ export const resetMockState = () => {
   activeBilling = billingPayload;
 };
 
-const readQuery = (request: Request, key: string) => new URL(request.url).searchParams.get(key)?.toLowerCase() ?? "";
+const readQuery = (request: Request, key: string) =>
+  new URL(request.url).searchParams.get(key)?.toLowerCase() ?? "";
 
 export const handlers = [
   // Auth
@@ -137,7 +138,11 @@ export const handlers = [
   }),
   http.post("/api/team/invite", async ({ request }) => {
     await delay(360);
-    const next = (await request.json()) as { name: string; email: string; role: TeamMember["role"] };
+    const next = (await request.json()) as {
+      name: string;
+      email: string;
+      role: TeamMember["role"];
+    };
     const member: TeamMember = {
       id: `tm_${Date.now()}`,
       name: next.name,
@@ -208,7 +213,11 @@ export const handlers = [
     const { id } = params as { id: string };
     activeIntegrations = activeIntegrations.map((integration) =>
       integration.id === id
-        ? { ...integration, status: "connected", connectedAt: new Date().toISOString().slice(0, 10) }
+        ? {
+            ...integration,
+            status: "connected",
+            connectedAt: new Date().toISOString().slice(0, 10),
+          }
         : integration,
     );
     return HttpResponse.json(activeIntegrations.find((integration) => integration.id === id));
@@ -254,7 +263,11 @@ export const handlers = [
   }),
   http.post("/api/support/tickets", async ({ request }) => {
     await delay(360);
-    const next = (await request.json()) as { subject: string; requester: string; priority: Ticket["priority"] };
+    const next = (await request.json()) as {
+      subject: string;
+      requester: string;
+      priority: Ticket["priority"];
+    };
     const ticket: Ticket = {
       id: `tkt_${Date.now()}`,
       subject: next.subject,
@@ -270,7 +283,9 @@ export const handlers = [
     await delay(280);
     const { id } = params as { id: string };
     const { status } = (await request.json()) as { status: Ticket["status"] };
-    activeTickets = activeTickets.map((ticket) => (ticket.id === id ? { ...ticket, status } : ticket));
+    activeTickets = activeTickets.map((ticket) =>
+      ticket.id === id ? { ...ticket, status } : ticket,
+    );
     return HttpResponse.json(activeTickets.find((ticket) => ticket.id === id));
   }),
 ];

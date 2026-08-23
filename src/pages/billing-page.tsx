@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { type Column, DataTable } from "@/components/shared/data-table";
+import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { KpiCard } from "@/components/shared/kpi-card";
-import { DataTable, type Column } from "@/components/shared/data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { changePlanRequest, getBillingRequest } from "@/features/billing/billing-api";
 import { formatCurrency } from "@/lib/format";
-import { getBillingRequest, changePlanRequest } from "@/features/billing/billing-api";
 import type { BillingPayload, Invoice, InvoiceStatus, PlanTier } from "@/types";
 
 const invoiceStatusVariant: Record<InvoiceStatus, "success" | "warning" | "outline"> = {
@@ -34,17 +34,33 @@ export const BillingPage = () => {
   });
 
   if (billingQuery.isLoading) {
-    return <StatePanel kind="loading" title="Loading billing" description="Fetching subscription and invoices." />;
+    return (
+      <StatePanel
+        kind="loading"
+        title="Loading billing"
+        description="Fetching subscription and invoices."
+      />
+    );
   }
 
   if (billingQuery.isError || !billingQuery.data) {
-    return <StatePanel kind="error" title="Billing unavailable" description="The billing endpoint failed." />;
+    return (
+      <StatePanel
+        kind="error"
+        title="Billing unavailable"
+        description="The billing endpoint failed."
+      />
+    );
   }
 
   const { subscription, plans, invoices } = billingQuery.data;
 
   const invoiceColumns: Column<Invoice>[] = [
-    { key: "number", header: "Invoice", render: (row) => <span className="font-medium text-[var(--foreground)]">{row.number}</span> },
+    {
+      key: "number",
+      header: "Invoice",
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.number}</span>,
+    },
     { key: "issuedAt", header: "Issued", render: (row) => row.issuedAt },
     { key: "amount", header: "Amount", render: (row) => formatCurrency(row.amount) },
     {
@@ -64,29 +80,64 @@ export const BillingPage = () => {
       />
 
       <div className="grid gap-4 md:grid-cols-3">
-        <KpiCard kpi={{ id: "mrr", label: "MRR", value: plans.find((p) => p.id === subscription.planId)?.priceMonthly ?? 0, change: 0, tone: "positive" }} />
-        <KpiCard kpi={{ id: "seats", label: "Seats used", value: subscription.seatsUsed, change: 0, tone: "neutral" }} />
-        <KpiCard kpi={{ id: "usage", label: "Usage", value: subscription.usagePercent, change: 0, tone: "positive" }} />
+        <KpiCard
+          kpi={{
+            id: "mrr",
+            label: "MRR",
+            value: plans.find((p) => p.id === subscription.planId)?.priceMonthly ?? 0,
+            change: 0,
+            tone: "positive",
+          }}
+        />
+        <KpiCard
+          kpi={{
+            id: "seats",
+            label: "Seats used",
+            value: subscription.seatsUsed,
+            change: 0,
+            tone: "neutral",
+          }}
+        />
+        <KpiCard
+          kpi={{
+            id: "usage",
+            label: "Usage",
+            value: subscription.usagePercent,
+            change: 0,
+            tone: "positive",
+          }}
+        />
       </div>
 
       <SectionCard tone="primary" title="Current subscription">
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-lg font-semibold text-[var(--foreground)]">{subscription.planName}</p>
+              <p className="text-lg font-semibold text-[var(--foreground)]">
+                {subscription.planName}
+              </p>
               <p className="text-sm text-[var(--muted-foreground)]">
-                Renews {subscription.renewsAt} · {subscription.seatsUsed}/{subscription.seatsTotal} seats
+                Renews {subscription.renewsAt} · {subscription.seatsUsed}/{subscription.seatsTotal}{" "}
+                seats
               </p>
             </div>
-            <Badge variant={subscription.status === "active" ? "success" : "warning"}>{subscription.status}</Badge>
+            <Badge variant={subscription.status === "active" ? "success" : "warning"}>
+              {subscription.status}
+            </Badge>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-secondary)]">
-            <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${subscription.usagePercent}%` }} />
+            <div
+              className="h-full rounded-full bg-[var(--accent)]"
+              style={{ width: `${subscription.usagePercent}%` }}
+            />
           </div>
         </div>
       </SectionCard>
 
-      <SectionCard title="Compare plans" description="Switch tiers instantly in this mock workspace.">
+      <SectionCard
+        title="Compare plans"
+        description="Switch tiers instantly in this mock workspace."
+      >
         <div className="grid gap-4 md:grid-cols-3">
           {plans.map((plan: PlanTier) => (
             <div
@@ -123,7 +174,12 @@ export const BillingPage = () => {
       </SectionCard>
 
       <SectionCard title="Invoices" description="Recent billing documents.">
-        <DataTable columns={invoiceColumns} rows={invoices} getRowKey={(row) => row.id} caption={`${invoices.length} invoices`} />
+        <DataTable
+          columns={invoiceColumns}
+          rows={invoices}
+          getRowKey={(row) => row.id}
+          caption={`${invoices.length} invoices`}
+        />
       </SectionCard>
     </div>
   );

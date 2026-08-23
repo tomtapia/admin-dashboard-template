@@ -14,13 +14,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Button } from "@/components/ui/button";
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { getOverviewRequest } from "@/features/overview/overview-api";
+import { cn } from "@/lib/utils";
 import type { OverviewPayload } from "@/types";
 
 const salesByCategory = [
@@ -58,11 +58,23 @@ export const OverviewPage = () => {
   const canRenderChart = typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
 
   if (overviewQuery.isLoading) {
-    return <StatePanel kind="loading" title="Loading overview" description="Hydrating metrics and dashboard state." />;
+    return (
+      <StatePanel
+        kind="loading"
+        title="Loading overview"
+        description="Hydrating metrics and dashboard state."
+      />
+    );
   }
 
   if (overviewQuery.isError || !overviewQuery.data) {
-    return <StatePanel kind="error" title="Could not load overview" description="The mock dashboard endpoint failed." />;
+    return (
+      <StatePanel
+        kind="error"
+        title="Could not load overview"
+        description="The mock dashboard endpoint failed."
+      />
+    );
   }
 
   return (
@@ -104,7 +116,12 @@ export const OverviewPage = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="var(--chart-grid)" vertical />
-                  <XAxis dataKey="name" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
+                  <XAxis
+                    dataKey="name"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis
                     stroke="var(--muted-foreground)"
                     tickLine={false}
@@ -131,7 +148,12 @@ export const OverviewPage = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salesByCategory} barGap={8}>
                   <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-                  <XAxis dataKey="name" stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
+                  <XAxis
+                    dataKey="name"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                  />
                   <YAxis stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
                   <Tooltip />
                   <Bar dataKey="current" fill="var(--accent)" radius={[4, 4, 0, 0]} />
@@ -155,7 +177,10 @@ export const OverviewPage = () => {
             </div>
             <div className="divide-y divide-[var(--border)]">
               {transactions.map((row) => (
-                <div key={row.id} className="grid grid-cols-[56px_1.4fr_1fr_0.8fr_0.9fr] gap-3 px-4 py-3 text-sm">
+                <div
+                  key={row.id}
+                  className="grid grid-cols-[56px_1.4fr_1fr_0.8fr_0.9fr] gap-3 px-4 py-3 text-sm"
+                >
                   <span>{row.id}</span>
                   <span className="font-medium text-[var(--foreground)]">{row.customer}</span>
                   <span className="text-[var(--muted-foreground)]">{row.date}</span>
@@ -183,7 +208,13 @@ export const OverviewPage = () => {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={demographics} dataKey="value" innerRadius={52} outerRadius={80} paddingAngle={3}>
+                  <Pie
+                    data={demographics}
+                    dataKey="value"
+                    innerRadius={52}
+                    outerRadius={80}
+                    paddingAngle={3}
+                  >
                     {demographics.map((entry) => (
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
@@ -195,8 +226,14 @@ export const OverviewPage = () => {
           ) : null}
           <div className="mt-2 grid grid-cols-2 gap-2">
             {demographics.map((entry) => (
-              <div key={entry.name} className="flex items-center gap-2 text-sm text-[var(--foreground-muted)]">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+              <div
+                key={entry.name}
+                className="flex items-center gap-2 text-sm text-[var(--foreground-muted)]"
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: entry.color }}
+                />
                 {entry.name}
               </div>
             ))}
@@ -206,7 +243,10 @@ export const OverviewPage = () => {
         <SectionCard tone="secondary" title="Platform Activity">
           <div className="space-y-3">
             {platformActivity.map((item) => (
-              <div key={item} className="flex gap-3 rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3 text-sm text-[var(--foreground-muted)]">
+              <div
+                key={item}
+                className="flex gap-3 rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3 text-sm text-[var(--foreground-muted)]"
+              >
                 <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
                 <span>{item}</span>
               </div>

@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
-import { renderApp } from "@/test/test-app";
+import { describe, expect, it } from "vitest";
 import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
 
 describe("accessibility", () => {
   it("login page has no detectable violations", async () => {

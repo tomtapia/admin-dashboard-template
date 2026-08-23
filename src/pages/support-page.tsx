@@ -1,16 +1,16 @@
-import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { type Column, DataTable } from "@/components/shared/data-table";
+import { DefinitionList, DetailDrawer } from "@/components/shared/detail-drawer";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatePanel } from "@/components/shared/state-panel";
-import { EmptyState } from "@/components/shared/empty-state";
-import { DataTable, type Column } from "@/components/shared/data-table";
-import { DetailDrawer, DefinitionList } from "@/components/shared/detail-drawer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  getTicketsRequest,
   createTicketRequest,
+  getTicketsRequest,
   updateTicketRequest,
 } from "@/features/support/support-api";
 import type { Ticket, TicketStatus } from "@/types";

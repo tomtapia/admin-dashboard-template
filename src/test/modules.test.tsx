@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
-import { renderApp } from "@/test/test-app";
 import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
 
 const routes: { path: string; heading: RegExp }[] = [
   { path: "/app/analytics", heading: /reports and product health/i },

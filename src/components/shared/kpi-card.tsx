@@ -70,7 +70,9 @@ export const KpiCard = ({ kpi }: { kpi: DashboardKpi }) => {
                 {formatValue(kpi)}
               </p>
             </div>
-            <span className={cn("flex h-10 w-10 items-center justify-center rounded-lg", meta.tone)}>
+            <span
+              className={cn("flex h-10 w-10 items-center justify-center rounded-lg", meta.tone)}
+            >
               <MetaIcon className="h-4 w-4" />
             </span>
           </div>

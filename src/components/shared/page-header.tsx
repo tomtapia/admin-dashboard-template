@@ -9,10 +9,18 @@ type PageHeaderProps = {
   className?: string;
 };
 
-export const PageHeader = ({ eyebrow, title, description, actions, className }: PageHeaderProps) => (
+export const PageHeader = ({
+  eyebrow,
+  title,
+  description,
+  actions,
+  className,
+}: PageHeaderProps) => (
   <div className={cn("flex flex-col gap-5 md:flex-row md:items-end md:justify-between", className)}>
     <div className="space-y-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">{eyebrow}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+        {eyebrow}
+      </p>
       <div className="space-y-2">
         <h1 className="text-[1.8rem] font-semibold leading-[1] tracking-[-0.04em] text-[var(--foreground)] md:text-[2.2rem]">
           {title}
@@ -20,6 +28,10 @@ export const PageHeader = ({ eyebrow, title, description, actions, className }: 
         <p className="max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">{description}</p>
       </div>
     </div>
-    {actions ? <div className="flex w-full flex-wrap items-center gap-3 md:w-auto md:justify-end">{actions}</div> : null}
+    {actions ? (
+      <div className="flex w-full flex-wrap items-center gap-3 md:w-auto md:justify-end">
+        {actions}
+      </div>
+    ) : null}
   </div>
 );

@@ -1,4 +1,4 @@
-import { screen, render, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "@/app/error-boundary";
 
 const Boom = ({ shouldThrow }: { shouldThrow: boolean }) => {

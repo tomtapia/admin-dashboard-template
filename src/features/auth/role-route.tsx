@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/auth-context";
 import { canAccess } from "@/lib/rbac";
 import type { AppRole } from "@/types";

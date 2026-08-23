@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderApp } from "@/test/test-app";
 import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
 
 describe("theme switching", () => {
   it("applies and persists each available theme", async () => {

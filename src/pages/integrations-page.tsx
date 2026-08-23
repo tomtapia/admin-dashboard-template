@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Plug } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { type Column, DataTable } from "@/components/shared/data-table";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { EmptyState } from "@/components/shared/empty-state";
-import { DataTable, type Column } from "@/components/shared/data-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  getIntegrationsRequest,
-  getApiKeysRequest,
   connectIntegrationRequest,
   createApiKeyRequest,
+  getApiKeysRequest,
+  getIntegrationsRequest,
   revokeApiKeyRequest,
 } from "@/features/integrations/integrations-api";
 import type { ApiKey, Integration } from "@/types";

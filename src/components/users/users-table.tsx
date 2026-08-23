@@ -1,4 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { UserCell } from "@/components/shared/user-cell";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,16 +10,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserCell } from "@/components/shared/user-cell";
 import type { UserRecord } from "@/types";
 
 export const UsersTable = ({ users }: { users: UserRecord[] }) => (
   <>
     <div className="space-y-3 md:hidden">
       {users.map((user) => (
-        <div key={user.id} className="rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]">
+        <div
+          key={user.id}
+          className="rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)]"
+        >
           <div className="flex items-start justify-between gap-3">
             <UserCell user={user} />
             <DropdownMenu>
@@ -36,17 +39,23 @@ export const UsersTable = ({ users }: { users: UserRecord[] }) => (
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3 rounded-[0.9rem] bg-[var(--surface-panel)] p-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">Role</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+                Role
+              </p>
               <p className="mt-1 text-sm text-[var(--foreground-muted)]">{user.role}</p>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">Status</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+                Status
+              </p>
               <div className="mt-1">
                 <StatusBadge status={user.status} />
               </div>
             </div>
             <div className="col-span-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">Last active</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+                Last active
+              </p>
               <p className="mt-1 text-sm text-[var(--muted-foreground)]">{user.lastActiveAt}</p>
             </div>
           </div>
@@ -58,12 +67,20 @@ export const UsersTable = ({ users }: { users: UserRecord[] }) => (
       <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface-panel)] px-5 py-4">
         <div>
           <p className="text-sm font-semibold">Workspace roster</p>
-          <p className="text-sm text-[var(--muted-foreground)]">Operational visibility for access, role ownership and recent activity.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Operational visibility for access, role ownership and recent activity.
+          </p>
         </div>
         <div className="hidden gap-2 lg:flex">
-          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Owners 1</span>
-          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Admins 1</span>
-          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">Invites 1</span>
+          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+            Owners 1
+          </span>
+          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+            Admins 1
+          </span>
+          <span className="rounded-full bg-[var(--surface)] px-3 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+            Invites 1
+          </span>
         </div>
       </div>
       <div className="grid grid-cols-[1.5fr_0.95fr_0.9fr_1fr_1.1fr_56px] gap-3 border-b border-[var(--border)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
@@ -81,12 +98,22 @@ export const UsersTable = ({ users }: { users: UserRecord[] }) => (
             className="grid grid-cols-[1.5fr_0.95fr_0.9fr_1fr_1.1fr_56px] items-center gap-3 px-5 py-4"
           >
             <UserCell user={user} />
-            <span className="text-sm text-[var(--foreground-muted)]">{user.role === "Support" ? "Customer Ops" : user.role === "Analyst" ? "Insights" : "Core Admin"}</span>
+            <span className="text-sm text-[var(--foreground-muted)]">
+              {user.role === "Support"
+                ? "Customer Ops"
+                : user.role === "Analyst"
+                  ? "Insights"
+                  : "Core Admin"}
+            </span>
             <span className="text-sm text-[var(--foreground-muted)]">{user.role}</span>
             <StatusBadge status={user.status} />
             <div className="space-y-1">
               <p className="text-sm font-medium text-[var(--foreground)]">
-                {user.status === "Active" ? "Review access" : user.status === "Invited" ? "Resend invite" : "Investigate risk"}
+                {user.status === "Active"
+                  ? "Review access"
+                  : user.status === "Invited"
+                    ? "Resend invite"
+                    : "Investigate risk"}
               </p>
               <p className="text-xs text-[var(--muted-foreground)]">{user.lastActiveAt}</p>
             </div>

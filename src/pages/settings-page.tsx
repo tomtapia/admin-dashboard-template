@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { SettingsForm } from "@/components/settings/settings-form";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
 import { StatePanel } from "@/components/shared/state-panel";
-import { SettingsForm } from "@/components/settings/settings-form";
 import { getSettingsRequest, updateSettingsRequest } from "@/features/settings/settings-api";
 import type { SettingsPayload } from "@/types";
 
@@ -15,7 +15,8 @@ export const SettingsPage = () => {
   });
 
   const saveMutation = useMutation({
-    mutationFn: (values: SettingsPayload) => updateSettingsRequest(values) as Promise<SettingsPayload>,
+    mutationFn: (values: SettingsPayload) =>
+      updateSettingsRequest(values) as Promise<SettingsPayload>,
     onSuccess: async (values) => {
       queryClient.setQueryData(["settings"], values);
       toast.success("Settings updated");
@@ -26,11 +27,23 @@ export const SettingsPage = () => {
   });
 
   if (settingsQuery.isLoading) {
-    return <StatePanel kind="loading" title="Loading settings" description="Fetching mock configuration state." />;
+    return (
+      <StatePanel
+        kind="loading"
+        title="Loading settings"
+        description="Fetching mock configuration state."
+      />
+    );
   }
 
   if (settingsQuery.isError || !settingsQuery.data) {
-    return <StatePanel kind="error" title="Settings unavailable" description="The settings endpoint returned an error." />;
+    return (
+      <StatePanel
+        kind="error"
+        title="Settings unavailable"
+        description="The settings endpoint returned an error."
+      />
+    );
   }
 
   return (
@@ -42,7 +55,11 @@ export const SettingsPage = () => {
       />
 
       <div className="grid items-start gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-        <SectionCard tone="primary" title="Workspace configuration" description="Profile and notification preferences powered by mock persistence.">
+        <SectionCard
+          tone="primary"
+          title="Workspace configuration"
+          description="Profile and notification preferences powered by mock persistence."
+        >
           <SettingsForm
             defaultValues={settingsQuery.data}
             isSaving={saveMutation.isPending}
@@ -62,7 +79,8 @@ export const SettingsPage = () => {
             <div className="rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
               <p className="text-sm font-medium">Notification routing</p>
               <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-                Critical alerts route to owners immediately. Weekly summaries go to the operations inbox.
+                Critical alerts route to owners immediately. Weekly summaries go to the operations
+                inbox.
               </p>
             </div>
             <div className="rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
@@ -73,7 +91,9 @@ export const SettingsPage = () => {
             </div>
             <div className="rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
               <p className="text-sm font-medium">Audit state</p>
-              <p className="mt-1 text-sm text-[var(--muted-foreground)]">Last configuration update saved successfully in this workspace.</p>
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                Last configuration update saved successfully in this workspace.
+              </p>
             </div>
           </div>
         </SectionCard>

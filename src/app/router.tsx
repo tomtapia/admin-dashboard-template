@@ -1,9 +1,9 @@
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { ProtectedRoute } from "@/features/auth/protected-route";
-import { RoleRoute } from "@/features/auth/role-route";
 import { AppShell } from "@/components/layout/app-shell";
 import { StatePanel } from "@/components/shared/state-panel";
+import { ProtectedRoute } from "@/features/auth/protected-route";
+import { RoleRoute } from "@/features/auth/role-route";
 
 const LoginPage = lazy(() =>
   import("@/pages/login-page").then((module) => ({ default: module.LoginPage })),

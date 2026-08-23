@@ -6,4 +6,5 @@ export const getNotificationsRequest = () => http<NotificationItem[]>("/api/noti
 export const markNotificationReadRequest = (id: string) =>
   http<NotificationItem>(`/api/notifications/${id}/read`, { method: "PATCH" });
 
-export const markAllReadRequest = () => http<NotificationItem[]>("/api/notifications/read-all", { method: "POST" });
+export const markAllReadRequest = () =>
+  http<NotificationItem[]>("/api/notifications/read-all", { method: "POST" });

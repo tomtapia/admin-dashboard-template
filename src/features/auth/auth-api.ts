@@ -18,4 +18,5 @@ export const authStorage = {
 
 export const loginRequest = () => http<Session>("/api/auth/login", { method: "POST" });
 
-export const logoutRequest = () => http<{ success: boolean }>("/api/auth/logout", { method: "POST" });
+export const logoutRequest = () =>
+  http<{ success: boolean }>("/api/auth/logout", { method: "POST" });

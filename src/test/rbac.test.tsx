@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
-import { renderApp } from "@/test/test-app";
 import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
 import type { Session } from "@/types";
 
 const managerSession: Session = {

@@ -1,7 +1,0 @@
-dist
-output
-node_modules
-coverage
-pnpm-lock.yaml
-public/mockServiceWorker.js
-*.md

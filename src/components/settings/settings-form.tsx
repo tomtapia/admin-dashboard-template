@@ -54,7 +54,9 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
       <div className="space-y-4">
         <div>
           <p className="text-sm font-semibold">Workspace identity</p>
-          <p className="text-sm text-[var(--muted-foreground)]">Core metadata used by notifications, exports and admin messaging.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Core metadata used by notifications, exports and admin messaging.
+          </p>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2">
@@ -81,12 +83,16 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
       <div className="space-y-4 border-t border-[var(--border)] pt-6">
         <div>
           <p className="text-sm font-semibold">Delivery preferences</p>
-          <p className="text-sm text-[var(--muted-foreground)]">Control what the ops team receives by default.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Control what the ops team receives by default.
+          </p>
         </div>
         <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
             <p className="font-medium">Weekly digest</p>
-            <p className="text-sm text-[var(--muted-foreground)]">Receive a weekly summary of product health.</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              Receive a weekly summary of product health.
+            </p>
           </div>
           <Switch
             checked={form.watch("weeklyDigest")}
@@ -96,7 +102,9 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
         <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
             <p className="font-medium">Product updates</p>
-            <p className="text-sm text-[var(--muted-foreground)]">Get notified about new releases and changes.</p>
+            <p className="text-sm text-[var(--muted-foreground)]">
+              Get notified about new releases and changes.
+            </p>
           </div>
           <Switch
             checked={form.watch("productUpdates")}

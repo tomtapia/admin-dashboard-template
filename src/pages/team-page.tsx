@@ -1,9 +1,16 @@
-import { useDeferredValue, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useDeferredValue, useState } from "react";
+import { toast } from "sonner";
+import { type Column, DataTable } from "@/components/shared/data-table";
+import { EmptyState } from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/shared/page-header";
+import { SearchFilterBar } from "@/components/shared/search-filter-bar";
+import { StatePanel } from "@/components/shared/state-panel";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { UserCell } from "@/components/shared/user-cell";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,14 +19,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { StatusBadge } from "@/components/shared/status-badge";
-import { UserCell } from "@/components/shared/user-cell";
-import { PageHeader } from "@/components/shared/page-header";
-import { SearchFilterBar } from "@/components/shared/search-filter-bar";
-import { StatePanel } from "@/components/shared/state-panel";
-import { EmptyState } from "@/components/shared/empty-state";
-import { DataTable, type Column } from "@/components/shared/data-table";
-import { getTeamRequest, inviteTeamRequest, changeTeamRoleRequest, removeTeamRequest } from "@/features/team/team-api";
+import {
+  changeTeamRoleRequest,
+  getTeamRequest,
+  inviteTeamRequest,
+  removeTeamRequest,
+} from "@/features/team/team-api";
 import type { TeamMember, TeamRole, UserRecord } from "@/types";
 
 const roleVariant: Record<TeamRole, "success" | "warning" | "outline" | "default"> = {
@@ -43,7 +48,8 @@ export const TeamPage = () => {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["team"] });
 
   const invite = useMutation({
-    mutationFn: (input: { name: string; email: string; role: TeamRole }) => inviteTeamRequest(input),
+    mutationFn: (input: { name: string; email: string; role: TeamRole }) =>
+      inviteTeamRequest(input),
     onSuccess: () => {
       invalidate();
       toast.success("Invite sent");
@@ -65,10 +71,22 @@ export const TeamPage = () => {
   });
 
   const columns: Column<TeamMember>[] = [
-    { key: "user", header: "Member", render: (row) => <UserCell user={row as unknown as UserRecord} /> },
-    { key: "role", header: "Role", render: (row) => <Badge variant={roleVariant[row.role]}>{row.role}</Badge> },
+    {
+      key: "user",
+      header: "Member",
+      render: (row) => <UserCell user={row as unknown as UserRecord} />,
+    },
+    {
+      key: "role",
+      header: "Role",
+      render: (row) => <Badge variant={roleVariant[row.role]}>{row.role}</Badge>,
+    },
     { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> },
-    { key: "lastActive", header: "Last active", render: (row) => <span className="text-[var(--muted-foreground)]">{row.lastActiveAt}</span> },
+    {
+      key: "lastActive",
+      header: "Last active",
+      render: (row) => <span className="text-[var(--muted-foreground)]">{row.lastActiveAt}</span>,
+    },
     {
       key: "actions",
       header: "",
@@ -104,8 +122,15 @@ export const TeamPage = () => {
         description="Invite teammates, adjust roles and keep the roster under control."
         actions={
           <>
-            <Button variant="outline" className="w-full md:w-auto">Export</Button>
-            <Button className="w-full md:w-auto" onClick={() => invite.mutate({ name: "New Member", email: "new@northstar.app", role: "Member" })}>
+            <Button variant="outline" className="w-full md:w-auto">
+              Export
+            </Button>
+            <Button
+              className="w-full md:w-auto"
+              onClick={() =>
+                invite.mutate({ name: "New Member", email: "new@northstar.app", role: "Member" })
+              }
+            >
               Invite member
             </Button>
           </>
@@ -114,13 +139,24 @@ export const TeamPage = () => {
 
       <SearchFilterBar value={search} onChange={setSearch} resultCount={teamQuery.data?.length} />
 
-      {teamQuery.isLoading ? <StatePanel kind="loading" title="Loading team" description="Preparing the member directory." /> : null}
-      {teamQuery.isError ? <StatePanel kind="error" title="Team unavailable" description="The team endpoint failed." /> : null}
+      {teamQuery.isLoading ? (
+        <StatePanel
+          kind="loading"
+          title="Loading team"
+          description="Preparing the member directory."
+        />
+      ) : null}
+      {teamQuery.isError ? (
+        <StatePanel kind="error" title="Team unavailable" description="The team endpoint failed." />
+      ) : null}
       {teamQuery.data && teamQuery.data.length > 0 ? (
         <DataTable columns={columns} rows={teamQuery.data} getRowKey={(row) => row.id} />
       ) : null}
       {teamQuery.data && teamQuery.data.length === 0 ? (
-        <EmptyState title="No members match this search" description="Try a broader query to see the full team." />
+        <EmptyState
+          title="No members match this search"
+          description="Try a broader query to see the full team."
+        />
       ) : null}
     </div>
   );
