@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, CircleAlert, Filter } from "lucide-react";
+import { CalendarDays, CircleAlert, SlidersHorizontal } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Area,
@@ -26,9 +27,25 @@ import {
 } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { getOverviewRequest } from "@/features/overview/overview-api";
 import { cn } from "@/lib/utils";
 import type { OverviewPayload } from "@/types";
+
+const periodOptions = [
+  { id: "3", label: "Last 3 months" },
+  { id: "6", label: "Last 6 months" },
+] as const;
+
+type PeriodId = (typeof periodOptions)[number]["id"];
 
 const salesByCategory = [
   { name: "Electronics", current: 4.6, previous: 3.1 },
@@ -59,11 +76,20 @@ const transactions = [
 
 export const OverviewPage = () => {
   const { t } = useTranslation();
+  const [periodId, setPeriodId] = useState<PeriodId>("6");
+  const [showCurrentSeries, setShowCurrentSeries] = useState(true);
+  const [showPreviousSeries, setShowPreviousSeries] = useState(true);
+
   const overviewQuery = useQuery<OverviewPayload>({
     queryKey: ["overview"],
     queryFn: getOverviewRequest,
   });
   const canRenderChart = typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
+
+  const chartData = useMemo(() => {
+    const data = overviewQuery.data?.chart ?? [];
+    return data.slice(-Number(periodId));
+  }, [overviewQuery.data, periodId]);
 
   if (overviewQuery.isLoading) {
     return (
@@ -106,14 +132,51 @@ export const OverviewPage = () => {
         description={t("overview.description")}
         actions={
           <>
-            <Button variant="outline" className="w-full gap-2 md:w-auto">
-              <CalendarDays className="h-4 w-4" />
-              October 2023
-            </Button>
-            <Button variant="outline" className="w-full gap-2 md:w-auto">
-              <Filter className="h-4 w-4" />
-              {t("overview.filters")}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full gap-2 md:w-auto">
+                  <CalendarDays className="h-4 w-4" aria-hidden="true" />
+                  {periodOptions.find((option) => option.id === periodId)?.label}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Chart period</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={periodId}
+                  onValueChange={(value) => setPeriodId(value as PeriodId)}
+                >
+                  {periodOptions.map((option) => (
+                    <DropdownMenuRadioItem key={option.id} value={option.id}>
+                      {option.label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full gap-2 md:w-auto">
+                  <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+                  {t("overview.filters")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Sales by Category series</DropdownMenuLabel>
+                <DropdownMenuCheckboxItem
+                  checked={showCurrentSeries}
+                  onCheckedChange={(checked) => setShowCurrentSeries(checked === true)}
+                >
+                  Current period
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem
+                  checked={showPreviousSeries}
+                  onCheckedChange={(checked) => setShowPreviousSeries(checked === true)}
+                >
+                  Previous period
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         }
       />
@@ -129,7 +192,7 @@ export const OverviewPage = () => {
           {canRenderChart ? (
             <div className="h-64 md:h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={overviewQuery.data.chart}>
+                <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
                       <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.24} />
@@ -177,8 +240,12 @@ export const OverviewPage = () => {
                   />
                   <YAxis stroke="var(--muted-foreground)" tickLine={false} axisLine={false} />
                   <Tooltip />
-                  <Bar dataKey="current" fill="var(--accent)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="previous" fill="#cbd5e1" radius={[4, 4, 0, 0]} />
+                  {showCurrentSeries ? (
+                    <Bar dataKey="current" fill="var(--accent)" radius={[4, 4, 0, 0]} />
+                  ) : null}
+                  {showPreviousSeries ? (
+                    <Bar dataKey="previous" fill="#cbd5e1" radius={[4, 4, 0, 0]} />
+                  ) : null}
                 </BarChart>
               </ResponsiveContainer>
             </div>
