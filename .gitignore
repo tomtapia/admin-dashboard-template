@@ -6,3 +6,7 @@ vite.config.js
 vite.config.d.ts
 .DS_Store
 *.log
+
+# Local/AI tooling — not part of the distributed template
+.codegraph/
+AGENTS.md
