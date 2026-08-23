@@ -63,12 +63,14 @@ export const SupportPage = () => {
     {
       key: "subject",
       header: "Subject",
+      sortValue: (row) => row.subject,
       render: (row) => <span className="font-medium text-[var(--foreground)]">{row.subject}</span>,
     },
     { key: "requester", header: "Requester", render: (row) => row.requester },
     {
       key: "priority",
       header: "Priority",
+      sortValue: (row) => row.priority,
       render: (row) => <Badge variant={priorityVariant[row.priority]}>{row.priority}</Badge>,
     },
     {

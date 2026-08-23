@@ -43,10 +43,16 @@ export const TransactionsPage = () => {
     {
       key: "customer",
       header: "Customer",
+      sortValue: (row) => row.customer,
       render: (row) => <span className="font-medium text-[var(--foreground)]">{row.customer}</span>,
     },
-    { key: "date", header: "Date", render: (row) => row.date },
-    { key: "amount", header: "Amount", render: (row) => formatCurrency(row.amount) },
+    { key: "date", header: "Date", sortValue: (row) => row.date, render: (row) => row.date },
+    {
+      key: "amount",
+      header: "Amount",
+      sortValue: (row) => row.amount,
+      render: (row) => formatCurrency(row.amount),
+    },
     {
       key: "method",
       header: "Method",

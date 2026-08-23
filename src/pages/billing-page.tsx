@@ -65,10 +65,21 @@ export const BillingPage = () => {
     {
       key: "number",
       header: "Invoice",
+      sortValue: (row) => row.number,
       render: (row) => <span className="font-medium text-[var(--foreground)]">{row.number}</span>,
     },
-    { key: "issuedAt", header: "Issued", render: (row) => row.issuedAt },
-    { key: "amount", header: "Amount", render: (row) => formatCurrency(row.amount) },
+    {
+      key: "issuedAt",
+      header: "Issued",
+      sortValue: (row) => row.issuedAt,
+      render: (row) => row.issuedAt,
+    },
+    {
+      key: "amount",
+      header: "Amount",
+      sortValue: (row) => row.amount,
+      render: (row) => formatCurrency(row.amount),
+    },
     {
       key: "status",
       header: "Status",

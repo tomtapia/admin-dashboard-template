@@ -67,12 +67,19 @@ export const AnalyticsPage = () => {
     {
       key: "channel",
       header: "Channel",
+      sortValue: (row) => row.channel,
       render: (row) => <span className="font-medium text-[var(--foreground)]">{row.channel}</span>,
     },
-    { key: "visitors", header: "Visitors", render: (row) => row.visitors.toLocaleString() },
+    {
+      key: "visitors",
+      header: "Visitors",
+      sortValue: (row) => row.visitors,
+      render: (row) => row.visitors.toLocaleString(),
+    },
     {
       key: "conversions",
       header: "Conversions",
+      sortValue: (row) => row.conversions,
       render: (row) => row.conversions.toLocaleString(),
     },
   ];
