@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal } from "lucide-react";
 import { useDeferredValue, useState } from "react";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { type Column, DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
@@ -64,12 +65,28 @@ export const TeamPage = () => {
   });
 
   const remove = useMutation({
-    mutationFn: (id: string) => removeTeamRequest(id),
-    onSuccess: () => {
+    mutationFn: (member: TeamMember) => removeTeamRequest(member.id),
+    onSuccess: (_data, member) => {
       invalidate();
-      toast.success("Member removed");
+      toast.success(`${member.name} was removed`, {
+        description: "You can undo this action for a short time.",
+        action: {
+          label: "Undo",
+          onClick: () => {
+            void inviteTeamRequest({
+              name: member.name,
+              email: member.email,
+              role: member.role,
+            })
+              .then(() => invalidate())
+              .catch(() => toast.error("Could not restore member"));
+          },
+        },
+      });
     },
   });
+
+  const [pendingRemoval, setPendingRemoval] = useState<TeamMember | null>(null);
 
   const columns: Column<TeamMember>[] = [
     {
@@ -108,7 +125,9 @@ export const TeamPage = () => {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => remove.mutate(row.id)}>Remove member</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPendingRemoval(row)}>
+              Remove member
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -142,7 +161,12 @@ export const TeamPage = () => {
 
       {teamQuery.isLoading ? <TableSkeleton /> : null}
       {teamQuery.isError ? (
-        <StatePanel kind="error" title="Team unavailable" description="The team endpoint failed." />
+        <StatePanel
+          kind="error"
+          title="Team unavailable"
+          description="The team endpoint failed."
+          onRetry={() => void teamQuery.refetch()}
+        />
       ) : null}
       {teamQuery.data && teamQuery.data.length > 0 ? (
         <DataTable columns={columns} rows={teamQuery.data} getRowKey={(row) => row.id} />
@@ -153,6 +177,19 @@ export const TeamPage = () => {
           description="Try a broader query to see the full team."
         />
       ) : null}
+
+      <ConfirmDialog
+        open={pendingRemoval !== null}
+        onOpenChange={(open) => !open && setPendingRemoval(null)}
+        title={`Remove ${pendingRemoval?.name ?? "member"}?`}
+        description="The member loses access to this workspace immediately. You can undo the removal from the confirmation toast for a short time."
+        confirmLabel="Remove member"
+        destructive
+        onConfirm={() => {
+          if (pendingRemoval) remove.mutate(pendingRemoval);
+          setPendingRemoval(null);
+        }}
+      />
     </div>
   );
 };

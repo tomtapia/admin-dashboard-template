@@ -54,6 +54,7 @@ export const AnalyticsPage = () => {
         kind="error"
         title="Analytics unavailable"
         description="The analytics endpoint failed."
+        onRetry={() => void analyticsQuery.refetch()}
       />
     );
   }

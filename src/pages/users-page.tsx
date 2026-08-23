@@ -43,6 +43,7 @@ export const UsersPage = () => {
           kind="error"
           title="Users unavailable"
           description="The mock user directory did not respond."
+          onRetry={() => void usersQuery.refetch()}
         />
       ) : null}
 

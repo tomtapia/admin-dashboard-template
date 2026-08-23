@@ -54,6 +54,7 @@ export const BillingPage = () => {
         kind="error"
         title="Billing unavailable"
         description="The billing endpoint failed."
+        onRetry={() => void billingQuery.refetch()}
       />
     );
   }

@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plug } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { type Column, DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
@@ -46,12 +48,24 @@ export const IntegrationsPage = () => {
   });
 
   const revokeKey = useMutation({
-    mutationFn: (id: string) => revokeApiKeyRequest(id),
-    onSuccess: () => {
+    mutationFn: (key: ApiKey) => revokeApiKeyRequest(key.id),
+    onSuccess: (_data, key) => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
-      toast.success("API key revoked");
+      toast.success(`API key “${key.label}” revoked`, {
+        description: "Applications using this key stop working immediately.",
+        action: {
+          label: "Undo",
+          onClick: () => {
+            void createApiKeyRequest({ label: key.label, scopes: key.scopes })
+              .then(() => queryClient.invalidateQueries({ queryKey: ["api-keys"] }))
+              .catch(() => toast.error("Could not restore API key"));
+          },
+        },
+      });
     },
   });
+
+  const [pendingRevoke, setPendingRevoke] = useState<ApiKey | null>(null);
 
   const integrationColumns: Column<Integration>[] = [
     {
@@ -119,7 +133,7 @@ export const IntegrationsPage = () => {
         row.revoked ? (
           <Badge variant="outline">Revoked</Badge>
         ) : (
-          <Button variant="ghost" size="sm" onClick={() => revokeKey.mutate(row.id)}>
+          <Button variant="ghost" size="sm" onClick={() => setPendingRevoke(row)}>
             Revoke
           </Button>
         ),
@@ -141,6 +155,7 @@ export const IntegrationsPage = () => {
           kind="error"
           title="Integrations unavailable"
           description="The integrations endpoint failed."
+          onRetry={() => void integrationsQuery.refetch()}
         />
       ) : null}
       {integrationsQuery.data ? (
@@ -162,6 +177,7 @@ export const IntegrationsPage = () => {
           kind="error"
           title="API keys unavailable"
           description="The API keys endpoint failed."
+          onRetry={() => void keysQuery.refetch()}
         />
       ) : null}
       {keysQuery.data && keysQuery.data.length > 0 ? (
@@ -175,6 +191,19 @@ export const IntegrationsPage = () => {
       {keysQuery.data && keysQuery.data.length === 0 ? (
         <EmptyState title="No API keys" description="Create a key to enable integrations." />
       ) : null}
+
+      <ConfirmDialog
+        open={pendingRevoke !== null}
+        onOpenChange={(open) => !open && setPendingRevoke(null)}
+        title={`Revoke API key “${pendingRevoke?.label ?? ""}”?`}
+        description="Any application authenticating with this key loses access immediately. You can recreate an equivalent key from the undo action for a short time."
+        confirmLabel="Revoke key"
+        destructive
+        onConfirm={() => {
+          if (pendingRevoke) revokeKey.mutate(pendingRevoke);
+          setPendingRevoke(null);
+        }}
+      />
     </div>
   );
 };

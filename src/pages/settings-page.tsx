@@ -46,6 +46,7 @@ export const SettingsPage = () => {
         kind="error"
         title="Settings unavailable"
         description="The settings endpoint returned an error."
+        onRetry={() => void settingsQuery.refetch()}
       />
     );
   }

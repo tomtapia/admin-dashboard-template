@@ -64,6 +64,7 @@ export const NotificationsPage = () => {
           kind="error"
           title="Notifications unavailable"
           description="The notifications endpoint failed."
+          onRetry={() => void notificationsQuery.refetch()}
         />
       ) : null}
 

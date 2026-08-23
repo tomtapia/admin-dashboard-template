@@ -97,6 +97,7 @@ export const TransactionsPage = () => {
           kind="error"
           title="Transactions unavailable"
           description="The transactions endpoint failed."
+          onRetry={() => void transactionsQuery.refetch()}
         />
       ) : null}
 

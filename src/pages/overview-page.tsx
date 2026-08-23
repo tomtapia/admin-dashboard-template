@@ -93,6 +93,7 @@ export const OverviewPage = () => {
         kind="error"
         title="Could not load overview"
         description="The mock dashboard endpoint failed."
+        onRetry={() => void overviewQuery.refetch()}
       />
     );
   }

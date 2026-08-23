@@ -123,6 +123,7 @@ export const SupportPage = () => {
           kind="error"
           title="Support unavailable"
           description="The support endpoint failed."
+          onRetry={() => void ticketsQuery.refetch()}
         />
       ) : null}
 
