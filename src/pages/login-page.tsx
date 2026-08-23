@@ -125,7 +125,7 @@ export const LoginPage = () => {
                   Includes
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[var(--foreground-muted)]">
-                  Overview, users, settings, theme switcher and mock auth flow.
+                  Overview, users, workspace and user settings, themes and mock auth flow.
                 </p>
               </div>
               <Button

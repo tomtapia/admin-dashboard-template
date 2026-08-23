@@ -30,6 +30,7 @@ export const navItems: NavItem[] = [
     roles: ["Owner", "Admin", "Manager"],
   },
   { title: "nav.integrations", href: "/app/integrations", icon: "Plug", roles: ["Owner", "Admin"] },
+  { title: "nav.userSettings", href: "/app/settings/user", icon: "UserRoundCog" },
   { title: "nav.settings", href: "/app/settings", icon: "Settings" },
 ];
 
@@ -37,5 +38,5 @@ export const navGroups: NavGroup[] = [
   { label: "nav.group.dashboard", items: [navItems[0], navItems[1]] },
   { label: "nav.group.manage", items: [navItems[2], navItems[3], navItems[4], navItems[5]] },
   { label: "nav.group.engage", items: [navItems[6], navItems[7], navItems[8]] },
-  { label: "nav.group.settings", items: [navItems[9]] },
+  { label: "nav.group.settings", items: [navItems[10], navItems[9]] },
 ];

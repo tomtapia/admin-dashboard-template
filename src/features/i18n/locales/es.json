@@ -9,7 +9,8 @@
     "notifications": "Notificaciones",
     "support": "Soporte",
     "integrations": "Integraciones",
-    "settings": "Ajustes",
+    "userSettings": "Ajustes de usuario",
+    "settings": "Ajustes del espacio de trabajo",
     "group": {
       "dashboard": "Panel",
       "manage": "Gestionar",
@@ -39,5 +40,22 @@
   },
   "notifications": {
     "allCaughtUp": "Todo al día"
+  },
+  "userSettings": {
+    "eyebrow": "Ajustes de usuario",
+    "title": "Personaliza tu experiencia.",
+    "description": "La apariencia y el idioma se aplican al instante, son específicos de tu usuario y se conservan en este dispositivo entre visitas.",
+    "appearance": {
+      "title": "Apariencia",
+      "description": "Elige la paleta utilizada en todas las pantallas; la selección se guarda automáticamente."
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Elige el idioma de la interfaz para menús, etiquetas y títulos de página."
+    },
+    "account": {
+      "title": "Sesión",
+      "description": "Datos de identidad de tu sesión actual."
+    }
   }
 }

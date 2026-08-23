@@ -9,7 +9,8 @@
     "notifications": "Notifications",
     "support": "Assistance",
     "integrations": "Intégrations",
-    "settings": "Paramètres",
+    "userSettings": "Paramètres utilisateur",
+    "settings": "Paramètres de l'espace de travail",
     "group": {
       "dashboard": "Tableau de bord",
       "manage": "Gérer",
@@ -39,5 +40,22 @@
   },
   "notifications": {
     "allCaughtUp": "Tout est à jour"
+  },
+  "userSettings": {
+    "eyebrow": "Paramètres utilisateur",
+    "title": "Personnalisez votre expérience.",
+    "description": "L'apparence et la langue s'appliquent instantanément, sont propres à votre utilisateur et sont conservées sur cet appareil d'une visite à l'autre.",
+    "appearance": {
+      "title": "Apparence",
+      "description": "Choisissez la palette utilisée sur tous les écrans ; la sélection est enregistrée automatiquement."
+    },
+    "language": {
+      "title": "Langue",
+      "description": "Choisissez la langue de l'interface pour les menus, les libellés et les titres de page."
+    },
+    "account": {
+      "title": "Session",
+      "description": "Informations d'identité de votre session actuelle."
+    }
   }
 }

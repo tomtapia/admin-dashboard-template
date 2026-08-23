@@ -8,6 +8,7 @@ import {
   Receipt,
   Settings,
   UserCog,
+  UserRoundCog,
   Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,7 @@ const iconMap = {
   LineChart,
   Users,
   UserCog,
+  UserRoundCog,
   CreditCard,
   Receipt,
   Bell,

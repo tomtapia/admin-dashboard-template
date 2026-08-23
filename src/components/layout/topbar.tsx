@@ -44,7 +44,7 @@ type TopbarProps = {
 
 export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { session, logout } = useAuth();
-  const { theme, themeId, themes, setThemeId } = useTheme();
+  const { themeId, themes, setThemeId } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -303,7 +303,9 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>{session?.user.organization}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="sm:hidden">{theme.label}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/app/settings/user")}>
+              {t("nav.userSettings")}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => void logout()}>{t("common.logout")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

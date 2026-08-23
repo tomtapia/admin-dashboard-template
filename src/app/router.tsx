@@ -38,6 +38,9 @@ const IntegrationsPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import("@/pages/settings-page").then((module) => ({ default: module.SettingsPage })),
 );
+const UserSettingsPage = lazy(() =>
+  import("@/pages/user-settings-page").then((module) => ({ default: module.UserSettingsPage })),
+);
 const NotFoundPage = lazy(() =>
   import("@/pages/not-found-page").then((module) => ({ default: module.NotFoundPage })),
 );
@@ -113,6 +116,7 @@ export const AppRouter = () => (
             }
           />
           <Route path="/app/settings" element={<SettingsPage />} />
+          <Route path="/app/settings/user" element={<UserSettingsPage />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/app/overview" replace />} />

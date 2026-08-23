@@ -55,6 +55,16 @@ describe("accessibility", () => {
     expect(results.violations).toHaveLength(0);
   });
 
+  it("user settings page has no detectable violations", async () => {
+    seedSession();
+    const { container } = renderApp({ initialEntries: ["/app/settings/user"] });
+    expect(
+      await screen.findByRole("heading", { name: /personalize your experience/i }),
+    ).toBeInTheDocument();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it("notifications page has no detectable violations", async () => {
     seedSession();
     const { container } = renderApp({ initialEntries: ["/app/notifications"] });

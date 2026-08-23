@@ -9,7 +9,8 @@
     "notifications": "Notifications",
     "support": "Support",
     "integrations": "Integrations",
-    "settings": "Settings",
+    "userSettings": "User settings",
+    "settings": "Workspace settings",
     "group": {
       "dashboard": "Dashboard",
       "manage": "Manage",
@@ -39,5 +40,22 @@
   },
   "notifications": {
     "allCaughtUp": "All caught up"
+  },
+  "userSettings": {
+    "eyebrow": "User settings",
+    "title": "Personalize your experience.",
+    "description": "Appearance and language apply instantly, are scoped to your user and persist on this device across visits.",
+    "appearance": {
+      "title": "Appearance",
+      "description": "Pick the palette used across every screen; the selection is saved automatically."
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose the interface language for menus, labels and page titles."
+    },
+    "account": {
+      "title": "Session",
+      "description": "Identity details from your current signed-in session."
+    }
   }
 }
