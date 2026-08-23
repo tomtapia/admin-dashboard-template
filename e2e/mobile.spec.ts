@@ -44,4 +44,23 @@ test.describe("mobile continuity", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
   });
+
+  test("switches the workspace from the mobile navigation dialog", async ({ page }) => {
+    await login(page);
+
+    await page.getByRole("button", { name: /open navigation/i }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByRole("button", { name: /switch workspace/i }).click();
+    await page.getByRole("menuitemradio", { name: /aurora labs/i }).click();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+
+    await page.getByRole("button", { name: /open navigation/i }).click();
+    await expect(
+      page.getByRole("dialog").getByRole("button", { name: /switch workspace/i }),
+    ).toHaveAccessibleName(/aurora labs/i);
+  });
 });

@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { navGroups } from "@/components/layout/nav-items";
+import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { useAuth } from "@/features/auth/auth-context";
 import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,10 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
         collapsed ? "w-24 rounded-[1rem]" : "w-[16.25rem] rounded-[1rem]",
       )}
     >
+      <div className={cn("mb-8 shrink-0", !collapsed && "px-2")}>
+        <WorkspaceSwitcher collapsed={collapsed} />
+      </div>
+
       <nav className="space-y-6 overflow-y-auto">
         {visibleGroups.map((group) => (
           <div key={group.label} className="space-y-1">

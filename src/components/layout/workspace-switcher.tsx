@@ -11,7 +11,12 @@ import {
 import { useTenant } from "@/features/tenants/tenant-context";
 import { cn } from "@/lib/utils";
 
-export const WorkspaceSwitcher = ({ className }: { className?: string }) => {
+type WorkspaceSwitcherProps = {
+  collapsed?: boolean;
+  className?: string;
+};
+
+export const WorkspaceSwitcher = ({ collapsed = false, className }: WorkspaceSwitcherProps) => {
   const { tenants, currentTenant, setCurrentTenant, isLoaded } = useTenant();
   const { t } = useTranslation();
 
@@ -27,7 +32,8 @@ export const WorkspaceSwitcher = ({ className }: { className?: string }) => {
           aria-label={label}
           disabled={!isLoaded}
           className={cn(
-            "flex min-h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-panel)] p-1.5 text-left transition-colors hover:bg-[var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:pointer-events-none disabled:opacity-70 sm:pr-2.5",
+            "flex min-h-11 items-center gap-2 rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-elevated)] p-1.5 text-left transition-colors hover:bg-[var(--sidebar-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:pointer-events-none disabled:opacity-70",
+            collapsed ? "w-full justify-center" : "w-full pr-2.5",
             className,
           )}
         >
@@ -37,16 +43,22 @@ export const WorkspaceSwitcher = ({ className }: { className?: string }) => {
           >
             <BarChart3 className="h-4 w-4" />
           </span>
-          <span className="hidden min-w-0 flex-col leading-tight sm:flex">
-            <span className="truncate text-sm font-semibold tracking-tight">ADMIN DASH</span>
-            <span className="max-w-[11rem] truncate text-xs text-[var(--muted-foreground)]">
-              {currentTenant?.name ?? t("common.workspace")}
+          {!collapsed ? (
+            <span className="min-w-0 flex-col leading-tight">
+              <span className="block truncate text-sm font-semibold tracking-tight">
+                ADMIN DASH
+              </span>
+              <span className="block max-w-[11rem] truncate text-xs text-[var(--sidebar-muted)]">
+                {currentTenant?.name ?? t("common.workspace")}
+              </span>
             </span>
-          </span>
-          <ChevronDown
-            aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-[var(--muted-foreground)]"
-          />
+          ) : null}
+          {!collapsed ? (
+            <ChevronDown
+              aria-hidden="true"
+              className="ml-auto h-4 w-4 shrink-0 text-[var(--sidebar-muted)]"
+            />
+          ) : null}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">

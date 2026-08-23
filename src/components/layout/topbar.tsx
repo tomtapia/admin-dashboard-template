@@ -76,8 +76,6 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   return (
     <header className="sticky top-4 z-10 flex flex-col gap-3 rounded-[0.9rem] border border-[var(--topbar-border)] bg-[var(--topbar)] px-3 py-3 shadow-[var(--shadow-topbar)] backdrop-blur md:flex-row md:items-center md:justify-between md:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <WorkspaceSwitcher className="shrink-0" />
-
         <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <DialogTrigger asChild>
             <Button
@@ -97,6 +95,9 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
               </DialogDescription>
             </div>
             <nav className="max-h-[70vh] space-y-5 overflow-y-auto p-4">
+              <div className="border-b border-[var(--border)] pb-5">
+                <WorkspaceSwitcher />
+              </div>
               {navGroups.map((group) => {
                 const items = group.items.filter((item) =>
                   canAccess(session?.user.role, item.roles),
