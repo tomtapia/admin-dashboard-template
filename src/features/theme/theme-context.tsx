@@ -23,7 +23,18 @@ const getInitialTheme = (): ThemeId => {
   }
 
   const storedTheme = window.localStorage.getItem(themeStorageKey);
-  return isThemeId(storedTheme) ? storedTheme : defaultThemeId;
+  if (isThemeId(storedTheme)) {
+    return storedTheme;
+  }
+
+  const prefersDark =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (prefersDark) {
+    return themeDefinitions.find((theme) => theme.mode === "dark")?.id ?? defaultThemeId;
+  }
+
+  return defaultThemeId;
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
