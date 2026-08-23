@@ -147,11 +147,20 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. Four presets: Core Light, Midnight Ops, Sunset Ember, Forest Deep. | React Context | Bundled SPA |
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
 | `lib/http.ts` | Thin `fetch` wrapper; attaches bearer token + `X-Tenant-Id`; on `401` refreshes once and retries; throws on non-2xx. | Fetch API | Bundled SPA |
-| shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, DropdownMenu, Input, Switch, Avatar, Badge, Label. | Radix UI, Tailwind, CVA | Bundled SPA |
+| shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, AlertDialog, DropdownMenu (+ CheckboxItem), Command, Input, Switch, Avatar, Badge, Label, Skeleton. | Radix UI, cmdk, Tailwind, CVA | Bundled SPA |
 | Pages (`src/pages`) | Login, Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, NotFound. | React, Recharts, RHF+Zod | Bundled SPA |
-| `DataTable` / `DetailDrawer` | Reusable generic table (`data-table.tsx`) and right-side detail panel + `DefinitionList` (`detail-drawer.tsx`). | React | Bundled SPA |
-| Vitest test harness (`src/test`) | Node MSW server, jsdom env, `renderApp` helper, routing + module smoke tests. | Vitest, Testing Library | Test only |
-| Playwright suite (`e2e/`) | Browser tests driving the running app (auth, routing, tenant, language, theme). | @playwright/test | E2E only |
+| `DataTable` / `DetailDrawer` | Reusable generic table (`data-table.tsx`) and right-side detail panel + `DefinitionList` (`detail-drawer.tsx`). The table is keyboard-operable (rows focusable, Enter/Space activates), sortable via `Column.sortValue` (`aria-sort` on headers), paginated client-side (default 10 rows/page) with a range footer, and exposes `getRowLabel` for row aria-labels. | React | Bundled SPA |
+| `skeletons.tsx` | Layout-stable loading placeholders (`KpiGridSkeleton`, `TableSkeleton`, `ChartSkeleton`, `ListSkeleton`, `FormSkeleton`) mirroring final content dimensions; each announces "loading" via `role="status"` + sr-only text. Pages render skeletons instead of swapping in spinner panels, eliminating layout shift; all motion is disabled under `prefers-reduced-motion`. | React, Tailwind | Bundled SPA |
+| `StatePanel` (retryable) | Loading/error panel; error variant accepts `onRetry`, wired to `query.refetch()` on every module page. | React | Bundled SPA |
+| `ConfirmDialog` / `alert-dialog.tsx` | Confirmation primitive over Radix AlertDialog for destructive actions (team-member removal, API-key revoke). Pairs with sonner **Undo** toasts that run compensating mutations (re-invite / recreate key). | Radix AlertDialog, sonner | Bundled SPA |
+| `CommandPalette` (`cmdk`) | `⌘K`/`Ctrl+K` command menu: fuzzy page navigation (RBAC-filtered), theme switching, sign-out. The topbar search field is its trigger button. | cmdk, Radix Dialog | Bundled SPA |
+| Topbar notifications dropdown | Live unread badge + mark-as-read + view-all over the notifications query cache; replaced decorative bell/mail buttons. | TanStack Query, Radix DropdownMenu | Bundled SPA |
+| `UsersTable` / `InviteUserDialog` | Roster with mobile card list + desktop grid; row actions open a profile drawer, resend invites (`POST /api/users/invite`), or toggle access with undo (`PATCH /api/users/:id`). Invite dialog uses RHF+Zod with inline errors. | RHF+Zod, Radix Dialog | Bundled SPA |
+| Route announcements (`AppShell`) | On navigation: sets `document.title`, updates an `aria-live=polite` region ("X page loaded"), and moves focus to the page `<h1>` (`tabIndex=-1` in `PageHeader`). | React Router | Bundled SPA |
+| Chart text alternatives | Every Recharts surface carries `role="img"` + descriptive `aria-label`; revenue/funnel/MRR charts add sr-only data tables so screen readers get equivalent data. | Recharts | Bundled SPA |
+| `lib/download.ts` | Client-side CSV export helper used by roster/team/transaction export buttons. | Blob API | Bundled SPA |
+| Vitest test harness (`src/test`) | Node MSW server, jsdom env, `renderApp` helper, routing + module smoke tests, and jest-axe accessibility checks across login/overview/users/transactions/settings/notifications. | Vitest, Testing Library, jest-axe | Test only |
+| Playwright suite (`e2e/`) | Browser tests driving the running app (auth, routing, tenant, language, theme) plus a mobile viewport suite (390×844: grouped nav, roster cards, invite dialog, palette). | @playwright/test | E2E only |
 
 ---
 
@@ -244,6 +253,7 @@ No database, cache, object store, or queue is used.
 - A real backend can be wired in without touching feature code: set `VITE_API_BASE_URL` (see `.env.example`) and implement the same `/api/*` paths the MSW handlers expose. In a production build the MSW worker is not started, so requests go straight to the configured base URL.
 - Client-side RBAC (nav gating + `RoleRoute`) is a UI convenience only; enforce authorization server-side on the real backend.
 - Lint/format use Biome (`biome.json`): `pnpm lint` → `biome check`, `pnpm format` → `biome format --write .`; a Husky pre-commit runs `lint-staged` (Biome) on changed files. There are no TODO/FIXME markers or deprecated modules in the source.
+- UX conventions introduced in the 0.4 overhaul are now part of the contract: skeleton-first loading (never swap full pages for spinners), retryable error panels, ConfirmDialog + Undo for destructive mutations, no decorative controls (every button must act), keyboard-operable tables with ≥44 px mobile touch targets, and WCAG 2.2 AA as the accessibility floor (jest-axe enforced in CI).
 
 No explicit roadmap or architectural debt (beyond the mock-backend substitution noted above) identified in repository analysis.
 

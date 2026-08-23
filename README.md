@@ -15,8 +15,13 @@ A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter. 
 - **Themeable design system** with four presets (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables; selection persists in `localStorage`.
 - **Role-based access control** — nav items and protected routes are gated by the signed-in user's role (Owner / Admin / Manager) via a shared `canAccess` helper and `RoleRoute`.
 - **Mock API via MSW** — the entire `/api/*` surface is served from in-browser mocking, with per-test reset. Swap in a real backend with a single env var (see [Going to production](#going-to-production)).
-- **Resilient UI** — global + route-level error boundaries, loading/empty/error states on every module page, and centralized mutation error toasts.
-- **Accessible** — skip link, focus-visible rings, semantic headings, and jest-axe checks in CI.
+- **Resilient UI** — global + route-level error boundaries, skeleton screens that mirror final layouts (no spinner swaps or layout shift), retryable error panels on every module page, empty states with recovery actions, and centralized mutation error toasts.
+- **Mistake-friendly flows** — destructive actions (team removal, API-key revoke) run through a confirm dialog with an **Undo** toast; the settings form shows inline validation, an unsaved-changes banner with discard, and pending-state buttons everywhere.
+- **Command palette** — `⌘K` / `Ctrl+K` opens a `cmdk` palette for fuzzy page navigation, theme switching, and sign-out; the topbar search is its trigger. The notification bell is live (unread badge, mark-as-read, view-all).
+- **Working controls** — no decorative buttons: role filter chips, roster/team/transaction CSV exports, invite-user flow, overview period selector, and chart-series filters are all wired to real state and mock endpoints.
+- **Accessible (WCAG 2.2 AA)** — skip link, focus-visible rings, route announcements (`document.title` + `aria-live`) with focus moved to the page heading, keyboard-operable sortable/paginated tables, ≥44 px touch targets on mobile, sr-only chart data tables, AA-contrast tokens in every palette, `prefers-reduced-motion` support, `prefers-color-scheme` default theme, and jest-axe checks across key routes in CI.
+- **Mobile-first continuity** — grouped scrollable mobile nav dialog, responsive roster cards vs. tables, safe-area insets, and a Playwright mobile viewport suite (`e2e/mobile.spec.ts`).
+- **Accessible** — see the WCAG 2.2 AA bullet above; jest-axe runs in CI.
 - **Tooling** — [Biome](https://biomejs.dev) (format + lint + import organization), Husky pre-commit, and a GitHub Actions CI pipeline (typecheck → biome → test → e2e → build).
 
 ## Tech stack
@@ -47,8 +52,8 @@ src/
 ├── components/
 │   ├── ui/         # shadcn/ui primitives (button, card, dialog, ...)
 │   ├── layout/     # AppShell, SidebarNav, Topbar, nav-items
-│   ├── shared/     # PageHeader, SectionCard, DataTable, DetailDrawer, StatePanel, EmptyState, KpiCard
-│   ├── users/      # UsersTable
+│   ├── shared/     # PageHeader, SectionCard, DataTable (sortable/paginated), DetailDrawer, StatePanel (retryable), EmptyState, KpiCard, skeletons, ConfirmDialog, CommandPalette
+│   ├── users/      # UsersTable, InviteUserDialog
 │   └── settings/   # SettingsForm
 ├── features/       # per-module context + data-access
 │   ├── auth/       # AuthProvider, auth-api, protected-route
@@ -56,13 +61,13 @@ src/
 │   ├── i18n/       # i18n init, provider, locale switcher, locale bundles
 │   ├── theme/      # ThemeProvider, theme-config
 │   └── <module>/   # overview, users, settings, billing, analytics, team, ...
-├── lib/            # http() fetch wrapper, cn(), rbac, notify, monitoring
+├── lib/            # http() fetch wrapper, cn(), rbac, notify, monitoring, download (CSV export)
 ├── mocks/          # MSW handlers, browser worker, seed data
 ├── pages/          # route components (one per module + login + not-found)
 ├── test/           # Vitest setup, node MSW server, renderApp, tests
 ├── types/          # shared domain types
 └── styles.css      # Tailwind v4 entry + theme CSS variables
-e2e/                # Playwright specs + helpers (auth, navigation)
+e2e/                # Playwright specs + helpers (auth, navigation, mobile)
 ```
 
 Path alias: `@/` → `src/`. Always import via the alias.
@@ -73,6 +78,8 @@ Themes are defined in `src/features/theme/theme-config.ts` and backed by CSS var
 
 1. Add a variable set under `:root[data-theme="your-theme"]` in `styles.css`.
 2. Register it in `themeDefinitions` with a `label`, `mode`, and three `preview` swatches.
+
+With no stored preference the app follows `prefers-color-scheme` (dark → first dark theme). All text tokens are verified against WCAG AA contrast on every palette; keep that true when adding one.
 
 ## Role-based access control
 
@@ -123,7 +130,7 @@ A small `monitoring` module (`src/lib/monitoring.ts`) provides a production-read
 `e2e/` holds a Playwright suite that runs against the live app (MSW stays active in dev):
 
 - `playwright.config.ts` boots `pnpm dev` as the web server on `:5173`.
-- `auth.spec.ts` exercises the mock sign-in flow; `navigation.spec.ts` covers routing, tenant switching, language switching, and theming.
+- `auth.spec.ts` exercises the mock sign-in flow; `navigation.spec.ts` covers routing, tenant switching, language switching, and theming; `mobile.spec.ts` runs a 390×844 viewport through grouped nav, roster cards, invite dialog, and the command palette.
 - Run with `pnpm e2e` (or `pnpm e2e:ui` / `pnpm e2e:report`). CI installs Chromium and runs the suite.
 
 ## Going to production
