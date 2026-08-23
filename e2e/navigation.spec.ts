@@ -14,10 +14,10 @@ test("navigates between module pages", async ({ page }) => {
 test("switches the active workspace", async ({ page }) => {
   await login(page);
 
-  await page.getByRole("button", { name: /switch tenant/i }).click();
+  await page.getByRole("button", { name: /switch workspace/i }).click();
   await page.getByRole("menuitemradio", { name: /aurora labs/i }).click();
 
-  await page.getByRole("button", { name: /switch tenant/i }).click();
+  await page.getByRole("button", { name: /switch workspace/i }).click();
   await expect(page.getByRole("menuitemradio", { name: /aurora labs/i })).toHaveAttribute(
     "aria-checked",
     "true",

@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Bell,
   CreditCard,
   LayoutDashboard,
@@ -49,18 +48,6 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
         collapsed ? "w-24 rounded-[1rem]" : "w-[16.25rem] rounded-[1rem]",
       )}
     >
-      <div className="mb-8 flex items-center gap-3 px-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)] text-[var(--accent-foreground)] shadow-[0_10px_24px_rgba(0,0,0,0.2)]">
-          <BarChart3 className="h-4 w-4" />
-        </div>
-        {!collapsed ? (
-          <div>
-            <p className="text-sm font-semibold text-[var(--sidebar-foreground)]">ADMIN DASH</p>
-            <p className="text-xs text-[var(--sidebar-muted)]">Workspace</p>
-          </div>
-        ) : null}
-      </div>
-
       <nav className="space-y-6 overflow-y-auto">
         {visibleGroups.map((group) => (
           <div key={group.label} className="space-y-1">

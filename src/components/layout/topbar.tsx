@@ -1,17 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Bell,
-  Building2,
-  Menu,
-  Palette,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Search,
-} from "lucide-react";
+import { Bell, Menu, Palette, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { navGroups, navItems } from "@/components/layout/nav-items";
+import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +32,6 @@ import {
   getNotificationsRequest,
   markNotificationReadRequest,
 } from "@/features/notifications/notifications-api";
-import { useTenant } from "@/features/tenants/tenant-context";
 import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
@@ -52,7 +44,6 @@ type TopbarProps = {
 
 export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { session, logout } = useAuth();
-  const { tenants, currentTenant, setCurrentTenant, isLoaded } = useTenant();
   const { theme, themeId, themes, setThemeId } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
@@ -90,6 +81,8 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   return (
     <header className="sticky top-4 z-10 flex flex-col gap-3 rounded-[0.9rem] border border-[var(--topbar-border)] bg-[var(--topbar)] px-3 py-3 shadow-[var(--shadow-topbar)] backdrop-blur md:flex-row md:items-center md:justify-between md:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
+        <WorkspaceSwitcher className="shrink-0" />
+
         <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <DialogTrigger asChild>
             <Button
@@ -191,32 +184,6 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Switch tenant" disabled={!isLoaded}>
-              <Building2 className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>{t("common.workspace")}</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              value={currentTenant?.id ?? ""}
-              onValueChange={(value) => setCurrentTenant(value)}
-            >
-              {tenants.map((tenant) => (
-                <DropdownMenuRadioItem key={tenant.id} value={tenant.id}>
-                  <div className="min-w-0">
-                    <p className="font-medium">{tenant.name}</p>
-                    <p className="text-xs capitalize text-[var(--muted-foreground)]">
-                      {tenant.plan} · {tenant.status}
-                    </p>
-                  </div>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Theme switcher">

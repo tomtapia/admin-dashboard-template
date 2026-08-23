@@ -15,16 +15,16 @@ describe("multi-tenancy", () => {
 
     await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 });
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: /switch tenant/i })).toBeEnabled(),
+      expect(screen.getByRole("button", { name: /switch workspace/i })).toBeEnabled(),
     );
 
-    await user.click(screen.getByRole("button", { name: /switch tenant/i }));
+    await user.click(screen.getByRole("button", { name: /switch workspace/i }));
     await user.click(await screen.findByRole("menuitemradio", { name: /aurora labs/i }));
 
     await waitFor(() => {
       expect(window.localStorage.getItem(TENANT_STORAGE_KEY)).toBe('"tn_aurora"');
     });
-    expect(screen.getByRole("button", { name: /switch tenant/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /switch workspace/i })).toBeInTheDocument();
   });
 
   it("scopes API requests with the X-Tenant-Id header", async () => {
@@ -44,9 +44,9 @@ describe("multi-tenancy", () => {
     await screen.findByText(/access control and roster visibility/i, {}, { timeout: 3000 });
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: /switch tenant/i })).toBeEnabled(),
+      expect(screen.getByRole("button", { name: /switch workspace/i })).toBeEnabled(),
     );
-    await user.click(screen.getByRole("button", { name: /switch tenant/i }));
+    await user.click(screen.getByRole("button", { name: /switch workspace/i }));
     await user.click(await screen.findByRole("menuitemradio", { name: /northstar/i }));
 
     await waitFor(() => expect(captured).toBe("tn_northstar"));

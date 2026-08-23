@@ -23,6 +23,7 @@
     "themePalette": "Theme palette",
     "logout": "Logout",
     "workspace": "Workspace",
+    "switchWorkspace": "Switch workspace",
     "navigation": "Navigation",
     "language": "Language"
   },
