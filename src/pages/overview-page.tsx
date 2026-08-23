@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { CalendarDays, CircleAlert, Filter } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Area,
   AreaChart,
@@ -51,6 +52,7 @@ const transactions = [
 ] as const;
 
 export const OverviewPage = () => {
+  const { t } = useTranslation();
   const overviewQuery = useQuery<OverviewPayload>({
     queryKey: ["overview"],
     queryFn: getOverviewRequest,
@@ -80,9 +82,9 @@ export const OverviewPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Overview"
-        title="Dashboard Overview"
-        description="Track revenue, acquisition, active work and platform activity in one place."
+        eyebrow={t("overview.eyebrow")}
+        title={t("overview.title")}
+        description={t("overview.description")}
         actions={
           <>
             <Button variant="outline" className="w-full gap-2 md:w-auto">
@@ -91,7 +93,7 @@ export const OverviewPage = () => {
             </Button>
             <Button variant="outline" className="w-full gap-2 md:w-auto">
               <Filter className="h-4 w-4" />
-              Filters
+              {t("overview.filters")}
             </Button>
           </>
         }

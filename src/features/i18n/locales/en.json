@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "users": "Users",
+    "team": "Team",
+    "billing": "Billing",
+    "transactions": "Transactions",
+    "notifications": "Notifications",
+    "support": "Support",
+    "integrations": "Integrations",
+    "settings": "Settings"
+  },
+  "nav.group": {
+    "dashboard": "Dashboard",
+    "manage": "Manage",
+    "engage": "Engage",
+    "settings": "Settings"
+  },
+  "common": {
+    "skipToMain": "Skip to main content",
+    "search": "Search data...",
+    "themePalette": "Theme palette",
+    "logout": "Logout",
+    "workspace": "Workspace",
+    "navigation": "Navigation",
+    "language": "Language"
+  },
+  "overview": {
+    "eyebrow": "Overview",
+    "title": "Dashboard Overview",
+    "description": "Track revenue, acquisition, active work and platform activity in one place.",
+    "filters": "Filters"
+  },
+  "login": {
+    "enter": "Enter dashboard"
+  }
+}

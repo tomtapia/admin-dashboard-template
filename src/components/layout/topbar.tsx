@@ -8,6 +8,7 @@ import {
   PanelLeftOpen,
   Search,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
 import { navItems } from "@/components/layout/nav-items";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -31,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-context";
+import { LocaleSwitcher } from "@/features/i18n/locale-switcher";
 import { useTenant } from "@/features/tenants/tenant-context";
 import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
@@ -45,6 +47,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { session, logout } = useAuth();
   const { tenants, currentTenant, setCurrentTenant, isLoaded } = useTenant();
   const { theme, themeId, themes, setThemeId } = useTheme();
+  const { t } = useTranslation();
   const location = useLocation();
   const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
   const visibleNavItems = navItems.filter((item) => canAccess(session?.user.role, item.roles));
@@ -65,7 +68,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           </DialogTrigger>
           <DialogContent className="w-[min(92vw,24rem)] p-0">
             <div className="border-b border-[var(--border)] px-5 py-4">
-              <DialogTitle className="text-base">Navigation</DialogTitle>
+              <DialogTitle className="text-base">{t("common.navigation")}</DialogTitle>
               <DialogDescription className="mt-1 text-sm text-[var(--muted-foreground)]">
                 Move through the admin template.
               </DialogDescription>
@@ -84,7 +87,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
                       )
                     }
                   >
-                    {item.title}
+                    {t(item.title)}
                   </NavLink>
                 </DialogClose>
               ))}
@@ -111,14 +114,14 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           <input
             aria-label="Search dashboard data"
             className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-panel)] pl-9 pr-4 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--ring)]"
-            placeholder="Search data..."
+            placeholder={t("common.search")}
             type="search"
           />
         </div>
 
         <div className="min-w-0 md:hidden">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-            {currentItem?.title ?? "Overview"}
+            {t(currentItem?.title ?? "nav.overview")}
           </p>
         </div>
       </div>
@@ -131,7 +134,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>Workspace</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("common.workspace")}</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={currentTenant?.id ?? ""}
               onValueChange={(value) => setCurrentTenant(value)}
@@ -157,7 +160,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>Theme palette</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("common.themePalette")}</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={themeId}
               onValueChange={(value) => setThemeId(value as typeof themeId)}
@@ -186,6 +189,8 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <LocaleSwitcher />
 
         <Button variant="ghost" size="icon" aria-label="Messages" className="hidden sm:inline-flex">
           <Mail className="h-4 w-4" />
@@ -218,7 +223,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
             <DropdownMenuLabel>{session?.user.organization}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="sm:hidden">{theme.label}</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void logout()}>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void logout()}>{t("common.logout")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

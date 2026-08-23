@@ -11,6 +11,7 @@ import {
   UserCog,
   Users,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { navGroups } from "@/components/layout/nav-items";
 import { useAuth } from "@/features/auth/auth-context";
@@ -32,6 +33,7 @@ const iconMap = {
 
 export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const role = session?.user.role;
   const visibleGroups = navGroups
     .map((group) => ({
@@ -64,7 +66,7 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
           <div key={group.label} className="space-y-1">
             {!collapsed ? (
               <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sidebar-muted)]">
-                {group.label}
+                {t(group.label)}
               </p>
             ) : null}
             {group.items.map((item) => {
@@ -83,7 +85,7 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
                   }
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  {!collapsed ? <span>{item.title}</span> : null}
+                  {!collapsed ? <span>{t(item.title)}</span> : null}
                 </NavLink>
               );
             })}

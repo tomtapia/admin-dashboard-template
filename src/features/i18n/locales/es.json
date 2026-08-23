@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Visión general",
+    "analytics": "Analíticas",
+    "users": "Usuarios",
+    "team": "Equipo",
+    "billing": "Facturación",
+    "transactions": "Transacciones",
+    "notifications": "Notificaciones",
+    "support": "Soporte",
+    "integrations": "Integraciones",
+    "settings": "Ajustes"
+  },
+  "nav.group": {
+    "dashboard": "Panel",
+    "manage": "Gestionar",
+    "engage": "Interactuar",
+    "settings": "Ajustes"
+  },
+  "common": {
+    "skipToMain": "Saltar al contenido principal",
+    "search": "Buscar datos...",
+    "themePalette": "Paleta de tema",
+    "logout": "Cerrar sesión",
+    "workspace": "Espacio de trabajo",
+    "navigation": "Navegación",
+    "language": "Idioma"
+  },
+  "overview": {
+    "eyebrow": "Resumen",
+    "title": "Resumen del panel",
+    "description": "Sigue ingresos, adquisición, trabajo activo y actividad en un solo lugar.",
+    "filters": "Filtros"
+  },
+  "login": {
+    "enter": "Entrar al panel"
+  }
+}

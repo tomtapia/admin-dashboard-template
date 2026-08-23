@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppRouter } from "@/app/router";
 import { AuthProvider } from "@/features/auth/auth-context";
+import { I18nProvider } from "@/features/i18n";
 import { TenantProvider } from "@/features/tenants/tenant-context";
 import { ThemeProvider } from "@/features/theme/theme-context";
 
@@ -23,14 +24,16 @@ export const renderApp = ({ initialEntries = ["/login"] }: RenderOptions = {}) =
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
-        <ThemeProvider>
-          <AuthProvider>
-            <TenantProvider>
-              <AppRouter />
-              <Toaster />
-            </TenantProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <TenantProvider>
+                <AppRouter />
+                <Toaster />
+              </TenantProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </I18nProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   );

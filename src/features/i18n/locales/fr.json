@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Vue d'ensemble",
+    "analytics": "Analytique",
+    "users": "Utilisateurs",
+    "team": "Équipe",
+    "billing": "Facturation",
+    "transactions": "Transactions",
+    "notifications": "Notifications",
+    "support": "Assistance",
+    "integrations": "Intégrations",
+    "settings": "Paramètres"
+  },
+  "nav.group": {
+    "dashboard": "Tableau de bord",
+    "manage": "Gérer",
+    "engage": "Engager",
+    "settings": "Paramètres"
+  },
+  "common": {
+    "skipToMain": "Aller au contenu principal",
+    "search": "Rechercher des données...",
+    "themePalette": "Palette de thème",
+    "logout": "Déconnexion",
+    "workspace": "Espace de travail",
+    "navigation": "Navigation",
+    "language": "Langue"
+  },
+  "overview": {
+    "eyebrow": "Aperçu",
+    "title": "Aperçu du tableau de bord",
+    "description": "Suivez les revenus, l'acquisition, le travail actif et l'activité sur une seule page.",
+    "filters": "Filtres"
+  },
+  "login": {
+    "enter": "Accéder au tableau de bord"
+  }
+}

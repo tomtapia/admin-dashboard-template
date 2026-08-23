@@ -1,9 +1,11 @@
 import { ArrowRight, LockKeyhole } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-context";
 
 export const LoginPage = () => {
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4 py-10">
@@ -116,7 +118,7 @@ export const LoginPage = () => {
                 </p>
               </div>
               <Button onClick={() => void login()} className="w-full justify-between" size="lg">
-                Enter dashboard
+                {t("login.enter")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>

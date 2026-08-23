@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/app/error-boundary";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 export const AppShell = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
 
   const pageKey = useMemo(
@@ -20,7 +22,7 @@ export const AppShell = () => {
         href="#main-content"
         className="absolute left-4 top-4 z-50 -translate-y-24 rounded-full bg-[var(--foreground)] px-4 py-2 text-sm font-medium text-[var(--background)] shadow-[var(--shadow-card)] transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
       >
-        Skip to main content
+        {t("common.skipToMain")}
       </a>
       <SidebarNav collapsed={collapsed} />
       <main
