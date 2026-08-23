@@ -15,7 +15,7 @@ export const AppearancePicker = () => {
           <label
             key={entry.id}
             className={cn(
-              "flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-[0.8rem] border p-4 text-left transition-colors has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring)]",
+              "relative flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-[0.8rem] border p-4 text-left transition-colors has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring)]",
               selected
                 ? "border-[var(--accent)] bg-[var(--surface-panel)]"
                 : "border-[var(--border)] bg-[var(--surface-subtle)] hover:bg-[var(--surface-panel)]",
@@ -27,7 +27,7 @@ export const AppearancePicker = () => {
               value={entry.id}
               checked={selected}
               onChange={() => setThemeId(entry.id)}
-              className="sr-only"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
             <span className="min-w-0">
               <span className="block truncate text-sm font-medium">{entry.label}</span>

@@ -16,7 +16,7 @@ export const LanguagePicker = () => {
           <label
             key={language.code}
             className={cn(
-              "flex min-h-11 min-w-36 cursor-pointer items-center justify-between gap-3 rounded-[0.8rem] border px-4 py-3 text-left transition-colors has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring)]",
+              "relative flex min-h-11 min-w-36 cursor-pointer items-center justify-between gap-3 rounded-[0.8rem] border px-4 py-3 text-left transition-colors has-[:focus-visible]:outline-none has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--ring)]",
               selected
                 ? "border-[var(--accent)] bg-[var(--surface-panel)]"
                 : "border-[var(--border)] bg-[var(--surface-subtle)] hover:bg-[var(--surface-panel)]",
@@ -28,7 +28,7 @@ export const LanguagePicker = () => {
               value={language.code}
               checked={selected}
               onChange={() => void i18n.changeLanguage(language.code)}
-              className="sr-only"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
             <span className="text-sm font-medium">{language.label}</span>
             {selected ? (
