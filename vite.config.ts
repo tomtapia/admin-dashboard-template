@@ -17,5 +17,12 @@ export default defineConfig({
     css: true,
     fileParallelism: false,
     testTimeout: 10000,
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "e2e/**",
+      "**/.{idea,git,cache,output,temp}/**",
+      "**/coverage/**",
+    ],
   },
 });
