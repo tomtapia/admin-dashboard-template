@@ -9,6 +9,7 @@ import { StatePanel } from "@/components/shared/state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getTransactionsRequest } from "@/features/transactions/transactions-api";
+import { downloadCsv } from "@/lib/download";
 import { formatCurrency } from "@/lib/format";
 import type { Transaction, TransactionStatus } from "@/types";
 
@@ -64,7 +65,30 @@ export const TransactionsPage = () => {
         eyebrow="Transactions"
         title="Payments and charges"
         description="Inspect every charge, refund and failed attempt across the workspace."
-        actions={<Button variant="outline">Export CSV</Button>}
+        actions={
+          <Button
+            variant="outline"
+            disabled={!transactionsQuery.data || transactionsQuery.data.length === 0}
+            onClick={() => {
+              const rows = transactionsQuery.data ?? [];
+              downloadCsv(
+                "northstar-transactions.csv",
+                ["ID", "Customer", "Email", "Date", "Amount", "Status", "Method"],
+                rows.map((row) => [
+                  row.id,
+                  row.customer,
+                  row.email,
+                  row.date,
+                  row.amount.toFixed(2),
+                  row.status,
+                  row.method,
+                ]),
+              );
+            }}
+          >
+            Export CSV
+          </Button>
+        }
       />
 
       <div className="flex flex-wrap gap-2">

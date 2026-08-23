@@ -27,6 +27,7 @@ import {
   inviteTeamRequest,
   removeTeamRequest,
 } from "@/features/team/team-api";
+import { downloadCsv } from "@/lib/download";
 import type { TeamMember, TeamRole, UserRecord } from "@/types";
 
 const roleVariant: Record<TeamRole, "success" | "warning" | "outline" | "default"> = {
@@ -142,7 +143,26 @@ export const TeamPage = () => {
         description="Invite teammates, adjust roles and keep the roster under control."
         actions={
           <>
-            <Button variant="outline" className="w-full md:w-auto">
+            <Button
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={() => {
+                const members = teamQuery.data ?? [];
+                downloadCsv(
+                  "northstar-team.csv",
+                  ["Name", "Email", "Role", "Status", "Last active"],
+                  members.map((member) => [
+                    member.name,
+                    member.email,
+                    member.role,
+                    member.status,
+                    member.lastActiveAt,
+                  ]),
+                );
+                toast.success(`Exported ${members.length} team members`);
+              }}
+              disabled={!teamQuery.data || teamQuery.data.length === 0}
+            >
               Export
             </Button>
             <Button
