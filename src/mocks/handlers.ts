@@ -23,6 +23,7 @@ import type {
   TeamMember,
   Tenant,
   Ticket,
+  UserRecord,
 } from "@/types";
 
 let activeSession = defaultSession;
@@ -93,6 +94,25 @@ export const handlers = [
         return haystack.includes(search);
       }),
     );
+  }),
+  http.post("/api/users/invite", async ({ request }) => {
+    await delay(320);
+    const body = (await request.json()) as { name: string; email: string; role: string };
+    const allowed = ["Owner", "Admin", "Support", "Analyst"] as const;
+    const role = (allowed as readonly string[]).includes(body.role)
+      ? (body.role as UserRecord["role"])
+      : "Analyst";
+    const nextId = `usr_${String(usersPayload.length + 1).padStart(3, "0")}`;
+    const invited: UserRecord = {
+      id: nextId,
+      name: body.name,
+      email: body.email,
+      role,
+      status: "Invited",
+      lastActiveAt: "Never",
+    };
+    usersPayload.push(invited);
+    return HttpResponse.json(invited, { status: 201 });
   }),
   http.get("/api/settings", async () => {
     await delay(220);
