@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { queryClient } from "@/app/query-client";
 import { AuthProvider } from "@/features/auth/auth-context";
+import { TenantProvider } from "@/features/tenants/tenant-context";
 import { ThemeProvider } from "@/features/theme/theme-context";
 
 const ReactQueryDevtools = import.meta.env.DEV
@@ -18,8 +19,10 @@ export const AppProviders = ({ children }: { children: ReactNode }) => (
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          {children}
-          <Toaster position="top-right" richColors />
+          <TenantProvider>
+            {children}
+            <Toaster position="top-right" richColors />
+          </TenantProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

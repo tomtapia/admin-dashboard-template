@@ -1,4 +1,13 @@
-import { Bell, Mail, Menu, Palette, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import {
+  Bell,
+  Building2,
+  Mail,
+  Menu,
+  Palette,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+} from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { navItems } from "@/components/layout/nav-items";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-context";
+import { useTenant } from "@/features/tenants/tenant-context";
 import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
@@ -33,6 +43,7 @@ type TopbarProps = {
 
 export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { session, logout } = useAuth();
+  const { tenants, currentTenant, setCurrentTenant, isLoaded } = useTenant();
   const { theme, themeId, themes, setThemeId } = useTheme();
   const location = useLocation();
   const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
@@ -113,6 +124,32 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Switch tenant" disabled={!isLoaded}>
+              <Building2 className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel>Workspace</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={currentTenant?.id ?? ""}
+              onValueChange={(value) => setCurrentTenant(value)}
+            >
+              {tenants.map((tenant) => (
+                <DropdownMenuRadioItem key={tenant.id} value={tenant.id}>
+                  <div className="min-w-0">
+                    <p className="font-medium">{tenant.name}</p>
+                    <p className="text-xs capitalize text-[var(--muted-foreground)]">
+                      {tenant.plan} · {tenant.status}
+                    </p>
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Theme switcher">

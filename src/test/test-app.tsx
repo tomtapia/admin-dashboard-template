@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppRouter } from "@/app/router";
 import { AuthProvider } from "@/features/auth/auth-context";
+import { TenantProvider } from "@/features/tenants/tenant-context";
 import { ThemeProvider } from "@/features/theme/theme-context";
 
 type RenderOptions = {
@@ -24,8 +25,10 @@ export const renderApp = ({ initialEntries = ["/login"] }: RenderOptions = {}) =
       <MemoryRouter initialEntries={initialEntries}>
         <ThemeProvider>
           <AuthProvider>
-            <AppRouter />
-            <Toaster />
+            <TenantProvider>
+              <AppRouter />
+              <Toaster />
+            </TenantProvider>
           </AuthProvider>
         </ThemeProvider>
       </MemoryRouter>

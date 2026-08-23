@@ -193,3 +193,16 @@ export type Ticket = {
   createdAt: string;
   assignee?: string;
 };
+
+// Multi-tenancy
+export type TenantPlan = "starter" | "scale" | "enterprise";
+export type TenantStatus = "active" | "suspended" | "trial";
+
+export type Tenant = {
+  id: string;
+  name: string;
+  slug: string;
+  plan: TenantPlan;
+  status: TenantStatus;
+  logoUrl?: string;
+};

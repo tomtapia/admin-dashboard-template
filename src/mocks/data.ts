@@ -8,6 +8,7 @@ import type {
   Session,
   SettingsPayload,
   TeamMember,
+  Tenant,
   Ticket,
   Transaction,
   UserRecord,
@@ -393,6 +394,30 @@ export const integrationsPayload: Integration[] = [
     description: "Event streaming to your endpoint.",
     status: "connected",
     connectedAt: "2026-05-20",
+  },
+];
+
+export const tenantsPayload: Tenant[] = [
+  {
+    id: "tn_northstar",
+    name: "Northstar",
+    slug: "northstar",
+    plan: "scale",
+    status: "active",
+  },
+  {
+    id: "tn_aurora",
+    name: "Aurora Labs",
+    slug: "aurora",
+    plan: "enterprise",
+    status: "active",
+  },
+  {
+    id: "tn_pivot",
+    name: "Pivot Cart",
+    slug: "pivot",
+    plan: "starter",
+    status: "trial",
   },
 ];
 

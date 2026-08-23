@@ -10,6 +10,7 @@ import {
   settingsPayload,
   supportPayload,
   teamPayload,
+  tenantsPayload,
   transactionsPayload,
   usersPayload,
 } from "@/mocks/data";
@@ -20,6 +21,7 @@ import type {
   NotificationItem,
   SettingsPayload,
   TeamMember,
+  Tenant,
   Ticket,
 } from "@/types";
 
@@ -31,6 +33,7 @@ let activeIntegrations: Integration[] = integrationsPayload;
 let activeApiKeys: ApiKey[] = apiKeysPayload;
 let activeTickets: Ticket[] = supportPayload;
 let activeBilling: BillingPayload = billingPayload;
+let activeTenants: Tenant[] = tenantsPayload;
 
 export const resetMockState = () => {
   activeSession = defaultSession;
@@ -41,6 +44,7 @@ export const resetMockState = () => {
   activeApiKeys = apiKeysPayload;
   activeTickets = supportPayload;
   activeBilling = billingPayload;
+  activeTenants = tenantsPayload;
 };
 
 const readQuery = (request: Request, key: string) =>
@@ -287,5 +291,29 @@ export const handlers = [
       ticket.id === id ? { ...ticket, status } : ticket,
     );
     return HttpResponse.json(activeTickets.find((ticket) => ticket.id === id));
+  }),
+
+  // Tenants
+  http.get("/api/tenants", async () => {
+    await delay(200);
+    return HttpResponse.json(activeTenants);
+  }),
+  http.get("/api/tenants/:id", async ({ params }) => {
+    await delay(160);
+    const { id } = params as { id: string };
+    const tenant = activeTenants.find((entry) => entry.id === id);
+    if (!tenant) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    return HttpResponse.json(tenant);
+  }),
+  http.put("/api/tenants/:id", async ({ params, request }) => {
+    await delay(240);
+    const { id } = params as { id: string };
+    const updates = (await request.json()) as Partial<Tenant>;
+    activeTenants = activeTenants.map((tenant) =>
+      tenant.id === id ? { ...tenant, ...updates } : tenant,
+    );
+    return HttpResponse.json(activeTenants.find((tenant) => tenant.id === id));
   }),
 ];
