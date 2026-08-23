@@ -9,3 +9,9 @@ export const inviteUserRequest = (input: { name: string; email: string; role: st
     method: "POST",
     body: JSON.stringify(input),
   });
+
+export const setUserStatusRequest = (id: string, status: "Active" | "Paused") =>
+  http<UserRecord>(`/api/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });

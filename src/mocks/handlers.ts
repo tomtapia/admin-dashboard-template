@@ -114,6 +114,19 @@ export const handlers = [
     usersPayload.push(invited);
     return HttpResponse.json(invited, { status: 201 });
   }),
+  http.patch("/api/users/:id", async ({ params, request }) => {
+    await delay(240);
+    const { id } = params;
+    const body = (await request.json()) as { status?: string };
+    const user = usersPayload.find((entry) => entry.id === id);
+    if (!user) {
+      return HttpResponse.json({ message: "User not found" }, { status: 404 });
+    }
+    if (body.status === "Active" || body.status === "Paused") {
+      user.status = body.status;
+    }
+    return HttpResponse.json(user);
+  }),
   http.get("/api/settings", async () => {
     await delay(220);
     return HttpResponse.json(activeSettings);
