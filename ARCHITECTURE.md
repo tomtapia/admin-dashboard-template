@@ -138,7 +138,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | `AppProviders` | Composition root wiring React Query, Router, I18n, Theme, Auth, Tenant, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
 | `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` + `RoleRoute` for `/app/*`. | React Router v7 | Bundled SPA |
 | `AuthProvider` / `auth-api` | Client-side session state with access/refresh tokens; reads/writes session to `localStorage`; registers HTTP auth handlers; silently refreshes expired sessions. | React Context, `lib/http.ts` | Bundled SPA |
-| `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. Switched from the branded **ADMIN DASH** workspace switcher in the top navbar (`workspace-switcher.tsx`). | React Context, `lib/http.ts` | Bundled SPA |
+| `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. Switched from the branded **ADMIN DASH** workspace switcher at the top of the left sidebar (`workspace-switcher.tsx`; logo-only when collapsed, and placed inside the mobile navigation dialog). | React Context, `lib/http.ts` | Bundled SPA |
 | `I18nProvider` / `i18n` | `react-i18next` integration with `en`/`es`/`fr` bundles and a browser language detector. | react-i18next, i18next | Bundled SPA |
 | `ProtectedRoute` | Guards `/app/*`; redirects unauthenticated users to `/login`. | React Router | Bundled SPA |
 | `RoleRoute` / `lib/rbac` | Enforces client-side RBAC: `canAccess(role, allowed)` gates nav visibility and protected routes by `AppRole`. | React Router, React Context | Bundled SPA |

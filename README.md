@@ -7,7 +7,7 @@ A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter. 
 ## Features
 
 - **11 module pages** wired through lazy routes and a protected shell: Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, plus Login and 404.
-- **Multi-tenant foundation** — a `TenantProvider` scopes every request with an `X-Tenant-Id` header and persists the active workspace; the branded **ADMIN DASH** workspace switcher in the top navbar lets users move between tenants.
+- **Multi-tenant foundation** — a `TenantProvider` scopes every request with an `X-Tenant-Id` header and persists the active workspace; the branded **ADMIN DASH** workspace switcher sits at the top of the left sidebar (and inside the mobile navigation dialog) so users can move between tenants.
 - **Hardened session lifecycle** — access/refresh tokens, automatic `401 → refresh → retry` on the `http()` layer, and a silent refresh on load when the session has expired.
 - **Internationalization** — `react-i18next` with `en` / `es` / `fr` bundles, selectable from User Settings; nav, shell, and key surfaces are translated through `t()`.
 - **User settings** — a per-user personalization screen (`/app/settings/user`) holding the theme palette and interface language switches (also reachable from the avatar menu); preferences apply instantly and persist on the device.
@@ -96,7 +96,7 @@ The app is built to serve multiple workspaces from one client.
 
 - `TenantProvider` (`src/features/tenants/tenant-context.tsx`) holds the active tenant and persists it to `localStorage`.
 - `src/lib/http.ts` attaches the active tenant as the `X-Tenant-Id` header on every request; changing the tenant invalidates all TanStack Query caches.
-- The branded workspace switcher in the top navbar (**ADMIN DASH** + active tenant, `src/components/layout/workspace-switcher.tsx`) lets users move between tenants.
+- The branded workspace switcher at the top of the left sidebar (**ADMIN DASH** logo + active tenant, `src/components/layout/workspace-switcher.tsx`) lets users move between tenants; on mobile it lives at the top of the navigation dialog, and it collapses to the logo mark when the sidebar is icon-only.
 - Seed tenants live in `src/mocks/data.ts` (`tenantsPayload`); the mock API serves `/api/tenants`.
 
 ## Authentication & session
