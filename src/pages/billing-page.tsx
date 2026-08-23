@@ -4,6 +4,7 @@ import { type Column, DataTable } from "@/components/shared/data-table";
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import { KpiGridSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,11 +36,15 @@ export const BillingPage = () => {
 
   if (billingQuery.isLoading) {
     return (
-      <StatePanel
-        kind="loading"
-        title="Loading billing"
-        description="Fetching subscription and invoices."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Billing"
+          title="Plans, usage and invoices"
+          description="Manage the active subscription, compare tiers and pull historical invoices."
+        />
+        <KpiGridSkeleton count={3} className="xl:grid-cols-3" />
+        <TableSkeleton count={5} />
+      </div>
     );
   }
 

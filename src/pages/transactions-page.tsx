@@ -4,6 +4,7 @@ import { type Column, DataTable } from "@/components/shared/data-table";
 import { DefinitionList, DetailDrawer } from "@/components/shared/detail-drawer";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,13 +91,7 @@ export const TransactionsPage = () => {
         />
       </div>
 
-      {transactionsQuery.isLoading ? (
-        <StatePanel
-          kind="loading"
-          title="Loading transactions"
-          description="Fetching the ledger."
-        />
-      ) : null}
+      {transactionsQuery.isLoading ? <TableSkeleton /> : null}
       {transactionsQuery.isError ? (
         <StatePanel
           kind="error"

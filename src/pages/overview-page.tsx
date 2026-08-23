@@ -18,6 +18,12 @@ import {
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import {
+  ChartSkeleton,
+  KpiGridSkeleton,
+  ListSkeleton,
+  TableSkeleton,
+} from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Button } from "@/components/ui/button";
 import { getOverviewRequest } from "@/features/overview/overview-api";
@@ -61,11 +67,23 @@ export const OverviewPage = () => {
 
   if (overviewQuery.isLoading) {
     return (
-      <StatePanel
-        kind="loading"
-        title="Loading overview"
-        description="Hydrating metrics and dashboard state."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow={t("overview.eyebrow")}
+          title={t("overview.title")}
+          description={t("overview.description")}
+        />
+        <KpiGridSkeleton />
+        <div className="grid gap-6 xl:grid-cols-[1.45fr_0.65fr]">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.7fr_0.8fr]">
+          <TableSkeleton count={4} />
+          <ChartSkeleton className="h-64 md:h-64" />
+          <ListSkeleton count={3} />
+        </div>
+      </div>
     );
   }
 

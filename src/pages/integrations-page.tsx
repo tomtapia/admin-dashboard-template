@@ -5,6 +5,7 @@ import { type Column, DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -134,13 +135,7 @@ export const IntegrationsPage = () => {
         actions={<Button onClick={() => createKey.mutate()}>Create API key</Button>}
       />
 
-      {integrationsQuery.isLoading ? (
-        <StatePanel
-          kind="loading"
-          title="Loading integrations"
-          description="Checking connections."
-        />
-      ) : null}
+      {integrationsQuery.isLoading ? <TableSkeleton /> : null}
       {integrationsQuery.isError ? (
         <StatePanel
           kind="error"
@@ -161,9 +156,7 @@ export const IntegrationsPage = () => {
         </SectionCard>
       ) : null}
 
-      {keysQuery.isLoading ? (
-        <StatePanel kind="loading" title="Loading API keys" description="Fetching keys." />
-      ) : null}
+      {keysQuery.isLoading ? <TableSkeleton count={3} /> : null}
       {keysQuery.isError ? (
         <StatePanel
           kind="error"

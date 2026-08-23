@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { SettingsForm } from "@/components/settings/settings-form";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import { FormSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { getSettingsRequest, updateSettingsRequest } from "@/features/settings/settings-api";
 import type { SettingsPayload } from "@/types";
@@ -28,11 +29,14 @@ export const SettingsPage = () => {
 
   if (settingsQuery.isLoading) {
     return (
-      <StatePanel
-        kind="loading"
-        title="Loading settings"
-        description="Fetching mock configuration state."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Settings"
+          title="Workspace settings without the visual noise."
+          description="Configuration stays primary, while policy and audit context remain available without competing for attention."
+        />
+        <FormSkeleton />
+      </div>
     );
   }
 

@@ -14,6 +14,7 @@ import { type Column, DataTable } from "@/components/shared/data-table";
 import { KpiCard } from "@/components/shared/kpi-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import { ChartSkeleton, KpiGridSkeleton, TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { getAnalyticsRequest } from "@/features/analytics/analytics-api";
 import type { AnalyticsPayload, ChannelPerf, CohortRow } from "@/types";
@@ -27,11 +28,23 @@ export const AnalyticsPage = () => {
 
   if (analyticsQuery.isLoading) {
     return (
-      <StatePanel
-        kind="loading"
-        title="Loading analytics"
-        description="Aggregating funnel and retention data."
-      />
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Analytics"
+          title="Reports and product health"
+          description="Conversion funnel, acquisition channels, retention cohorts and recurring revenue."
+        />
+        <KpiGridSkeleton count={3} className="xl:grid-cols-3" />
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+        <ChartSkeleton />
+        <div className="grid gap-6 xl:grid-cols-2">
+          <TableSkeleton count={4} />
+          <TableSkeleton count={4} />
+        </div>
+      </div>
     );
   }
 

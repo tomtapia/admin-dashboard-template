@@ -6,6 +6,7 @@ import { type Column, DataTable } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SearchFilterBar } from "@/components/shared/search-filter-bar";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { UserCell } from "@/components/shared/user-cell";
@@ -139,13 +140,7 @@ export const TeamPage = () => {
 
       <SearchFilterBar value={search} onChange={setSearch} resultCount={teamQuery.data?.length} />
 
-      {teamQuery.isLoading ? (
-        <StatePanel
-          kind="loading"
-          title="Loading team"
-          description="Preparing the member directory."
-        />
-      ) : null}
+      {teamQuery.isLoading ? <TableSkeleton /> : null}
       {teamQuery.isError ? (
         <StatePanel kind="error" title="Team unavailable" description="The team endpoint failed." />
       ) : null}

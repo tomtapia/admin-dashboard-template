@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SectionCard } from "@/components/shared/section-card";
+import { ListSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,13 +58,7 @@ export const NotificationsPage = () => {
         }
       />
 
-      {notificationsQuery.isLoading ? (
-        <StatePanel
-          kind="loading"
-          title="Loading notifications"
-          description="Fetching your alert feed."
-        />
-      ) : null}
+      {notificationsQuery.isLoading ? <ListSkeleton count={5} /> : null}
       {notificationsQuery.isError ? (
         <StatePanel
           kind="error"

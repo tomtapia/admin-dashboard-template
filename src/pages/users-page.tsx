@@ -3,6 +3,7 @@ import { useDeferredValue, useState } from "react";
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { SearchFilterBar } from "@/components/shared/search-filter-bar";
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { StatePanel } from "@/components/shared/state-panel";
 import { Button } from "@/components/ui/button";
 import { UsersTable } from "@/components/users/users-table";
@@ -35,13 +36,7 @@ export const UsersPage = () => {
 
       <SearchFilterBar value={search} onChange={setSearch} resultCount={usersQuery.data?.length} />
 
-      {usersQuery.isLoading ? (
-        <StatePanel
-          kind="loading"
-          title="Loading users"
-          description="Preparing the admin roster."
-        />
-      ) : null}
+      {usersQuery.isLoading ? <TableSkeleton /> : null}
 
       {usersQuery.isError ? (
         <StatePanel
