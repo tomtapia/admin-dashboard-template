@@ -34,8 +34,20 @@ export const KpiGridSkeleton = ({ count = 4, className }: SkeletonGroupProps) =>
   </div>
 );
 
-const TABLE_HEADER_WIDTHS = ["16%", "24%", "14%", "14%", "12%"];
-const TABLE_ROW_WIDTHS = ["18%", "22%", "14%", "14%", "10%"];
+const TABLE_HEADER_CELLS = [
+  { id: "header-name", width: "16%" },
+  { id: "header-email", width: "24%" },
+  { id: "header-role", width: "14%" },
+  { id: "header-status", width: "14%" },
+  { id: "header-actions", width: "12%" },
+];
+const TABLE_ROW_CELLS = [
+  { id: "cell-a", width: "18%" },
+  { id: "cell-b", width: "22%" },
+  { id: "cell-c", width: "14%" },
+  { id: "cell-d", width: "14%" },
+  { id: "cell-e", width: "10%" },
+];
 
 export const TableSkeleton = ({ count = 6, className }: SkeletonGroupProps) => (
   <div
@@ -50,15 +62,15 @@ export const TableSkeleton = ({ count = 6, className }: SkeletonGroupProps) => (
       aria-hidden="true"
       className="flex items-center gap-4 border-b border-[var(--border)] bg-[var(--surface-panel)] px-5 py-3"
     >
-      {TABLE_HEADER_WIDTHS.map((width) => (
-        <Skeleton key={width} className="h-3" style={{ width }} />
+      {TABLE_HEADER_CELLS.map((cell) => (
+        <Skeleton key={cell.id} className="h-3" style={{ width: cell.width }} />
       ))}
     </div>
     <div aria-hidden="true" className="divide-y divide-[var(--border)]">
       {keyRange(count, "row").map((rowKey) => (
         <div key={rowKey} className="flex items-center gap-4 px-5 py-4">
-          {TABLE_ROW_WIDTHS.map((width) => (
-            <Skeleton key={width} className="h-4" style={{ width }} />
+          {TABLE_ROW_CELLS.map((cell) => (
+            <Skeleton key={`${rowKey}-${cell.id}`} className="h-4" style={{ width: cell.width }} />
           ))}
         </div>
       ))}
