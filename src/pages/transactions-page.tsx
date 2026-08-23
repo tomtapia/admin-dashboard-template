@@ -114,6 +114,7 @@ export const TransactionsPage = () => {
         ))}
         <input
           aria-label="Search transactions"
+          type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search customer or email"
