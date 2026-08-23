@@ -7,12 +7,13 @@ A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter. 
 ## Features
 
 - **11 module pages** wired through lazy routes and a protected shell: Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, plus Login and 404.
-- **Multi-tenant foundation** — a `TenantProvider` scopes every request with an `X-Tenant-Id` header and persists the active workspace; a topbar switcher lets users move between tenants.
+- **Multi-tenant foundation** — a `TenantProvider` scopes every request with an `X-Tenant-Id` header and persists the active workspace; the branded **ADMIN DASH** workspace switcher in the top navbar lets users move between tenants.
 - **Hardened session lifecycle** — access/refresh tokens, automatic `401 → refresh → retry` on the `http()` layer, and a silent refresh on load when the session has expired.
-- **Internationalization** — `react-i18next` with `en` / `es` / `fr` bundles and a locale switcher; nav, shell, and key surfaces are translated through `t()`.
+- **Internationalization** — `react-i18next` with `en` / `es` / `fr` bundles, selectable from User Settings; nav, shell, and key surfaces are translated through `t()`.
+- **User settings** — a per-user personalization screen (`/app/settings/user`) holding the theme palette and interface language switches (also reachable from the avatar menu); preferences apply instantly and persist on the device.
 - **Observability-ready** — a `monitoring` module reports errors/events to Sentry when `VITE_SENTRY_DSN` is set, and captures window errors/unhandled rejections; it is inert (console fallback) in the demo.
 - **End-to-end tests** — a Playwright suite (`e2e/`) drives the running app (MSW-backed) across auth, routing, theming, tenancy, and language.
-- **Themeable design system** with four presets (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables; selection persists in `localStorage`.
+- **Themeable design system** with four presets (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables; selected from User Settings and persisted in `localStorage`.
 - **Role-based access control** — nav items and protected routes are gated by the signed-in user's role (Owner / Admin / Manager) via a shared `canAccess` helper and `RoleRoute`.
 - **Mock API via MSW** — the entire `/api/*` surface is served from in-browser mocking, with per-test reset. Swap in a real backend with a single env var (see [Going to production](#going-to-production)).
 - **Resilient UI** — global + route-level error boundaries, skeleton screens that mirror final layouts (no spinner swaps or layout shift), retryable error panels on every module page, empty states with recovery actions, and centralized mutation error toasts.
@@ -54,7 +55,7 @@ src/
 │   ├── layout/     # AppShell, SidebarNav, Topbar, nav-items
 │   ├── shared/     # PageHeader, SectionCard, DataTable (sortable/paginated), DetailDrawer, StatePanel (retryable), EmptyState, KpiCard, skeletons, ConfirmDialog, CommandPalette
 │   ├── users/      # UsersTable, InviteUserDialog
-│   └── settings/   # SettingsForm
+│   └── settings/   # SettingsForm, AppearancePicker, LanguagePicker (user settings)
 ├── features/       # per-module context + data-access
 │   ├── auth/       # AuthProvider, auth-api, protected-route
 │   ├── tenants/    # TenantProvider, tenants-api (X-Tenant-Id scoping)
@@ -74,7 +75,7 @@ Path alias: `@/` → `src/`. Always import via the alias.
 
 ## Theming
 
-Themes are defined in `src/features/theme/theme-config.ts` and backed by CSS variable blocks in `src/styles.css` (`[data-theme="..."]`). To add a theme:
+Themes are defined in `src/features/theme/theme-config.ts` and backed by CSS variable blocks in `src/styles.css` (`[data-theme="..."]`). Users pick a palette from **User Settings → Appearance** (`src/components/settings/appearance-picker.tsx`); the ⌘K command palette also lists palettes as quick shortcuts. To add a theme:
 
 1. Add a variable set under `:root[data-theme="your-theme"]` in `styles.css`.
 2. Register it in `themeDefinitions` with a `label`, `mode`, and three `preview` swatches.
@@ -95,7 +96,7 @@ The app is built to serve multiple workspaces from one client.
 
 - `TenantProvider` (`src/features/tenants/tenant-context.tsx`) holds the active tenant and persists it to `localStorage`.
 - `src/lib/http.ts` attaches the active tenant as the `X-Tenant-Id` header on every request; changing the tenant invalidates all TanStack Query caches.
-- The topbar workspace switcher (`Switch tenant`) lets users move between tenants.
+- The branded workspace switcher in the top navbar (**ADMIN DASH** + active tenant, `src/components/layout/workspace-switcher.tsx`) lets users move between tenants.
 - Seed tenants live in `src/mocks/data.ts` (`tenantsPayload`); the mock API serves `/api/tenants`.
 
 ## Authentication & session
@@ -112,9 +113,10 @@ The client session model is deliberately production-shaped:
 The UI ships translated through `react-i18next`:
 
 - Locale bundles live in `src/features/i18n/locales/{en,es,fr}.json`; `en` mirrors the original English copy so existing behavior is preserved.
-- `I18nProvider` is wired into the app and the test harness; the browser language detector persists the choice to `localStorage`.
+- `I18nProvider` is wired into the app and the test harness; the browser language detector persists the choice to `localStorage` (`admin-dashboard-template:lang`).
 - Nav labels, group labels, the app shell, topbar, login CTA, and the overview header use `t()`.
-- Add a language: drop a new JSON bundle, register it in `supportedLanguages` (`src/features/i18n/i18n.ts`), and add a `LocaleSwitcher` entry (or reuse the existing one).
+- Users change language from **User Settings → Language** (`src/components/settings/language-picker.tsx`); it is also reachable from the avatar menu.
+- Add a language: drop a new JSON bundle and register it in `supportedLanguages` (`src/features/i18n/i18n.ts`) — the User Settings picker renders it automatically.
 
 ## Observability
 

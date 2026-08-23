@@ -11,7 +11,7 @@ Architectural reference for the **admin-dashboard-template** repository. The rep
 | Project Name | admin-dashboard-template |
 | Repository URL | Initialize your own remote (e.g. `git remote add origin <url>`); the working copy is a git repository with a baseline history. |
 | Primary Team | Your team — set when the repository is published. |
-| Date of Last Update | 2026-08-22 |
+| Date of Last Update | 2026-08-23 |
 
 ---
 
@@ -46,11 +46,11 @@ admin-dashboard-template/
 │   │   ├── layout/              # AppShell, SidebarNav, Topbar, nav-items
 │   │   ├── shared/              # KPI cards, tables, state panels, page header
 │   │   ├── users/               # UsersTable
-│   │   └── settings/            # SettingsForm
+│   │   └── settings/            # SettingsForm, AppearancePicker, LanguagePicker (user settings)
 │   ├── features/
 │   │   ├── auth/                # AuthProvider, auth-api, protected-route
 │   │   ├── tenants/             # TenantProvider, tenants-api (X-Tenant-Id scoping)
-│   │   ├── i18n/                # i18n init, provider, locale switcher, locale bundles
+│   │   ├── i18n/                # i18n init, provider, locale bundles
 │   │   ├── theme/               # ThemeProvider, theme-config
 │   │   ├── overview/            # overview-api (dashboard data access)
 │   │   ├── users/               # users-api
@@ -109,8 +109,9 @@ admin-dashboard-template/
    |     ├── /app/notifications  → NotificationsPage (protected, Engage)
    |     ├── /app/support        → SupportPage    (protected, Engage)
    |     ├── /app/integrations   → IntegrationsPage (protected, Engage)
-   |     ├── /app/settings       → SettingsPage   (protected, Settings)
-   |     └── *                   → NotFoundPage
+    |     ├── /app/settings       → SettingsPage   (protected, Settings)
+    |     ├── /app/settings/user → UserSettingsPage (protected, Settings; per-user personalization)
+    |     └── *                   → NotFoundPage
    |
     |  API calls via lib/http.ts (fetch)
     v
@@ -137,14 +138,15 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | `AppProviders` | Composition root wiring React Query, Router, I18n, Theme, Auth, Tenant, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
 | `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` + `RoleRoute` for `/app/*`. | React Router v7 | Bundled SPA |
 | `AuthProvider` / `auth-api` | Client-side session state with access/refresh tokens; reads/writes session to `localStorage`; registers HTTP auth handlers; silently refreshes expired sessions. | React Context, `lib/http.ts` | Bundled SPA |
-| `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. | React Context, `lib/http.ts` | Bundled SPA |
+| `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. Switched from the branded **ADMIN DASH** workspace switcher in the top navbar (`workspace-switcher.tsx`). | React Context, `lib/http.ts` | Bundled SPA |
 | `I18nProvider` / `i18n` | `react-i18next` integration with `en`/`es`/`fr` bundles and a browser language detector. | react-i18next, i18next | Bundled SPA |
 | `ProtectedRoute` | Guards `/app/*`; redirects unauthenticated users to `/login`. | React Router | Bundled SPA |
 | `RoleRoute` / `lib/rbac` | Enforces client-side RBAC: `canAccess(role, allowed)` gates nav visibility and protected routes by `AppRole`. | React Router, React Context | Bundled SPA |
 | `ErrorBoundary` | Global + route-level error boundary with a recoverable fallback (Try again / back to dashboard); reports caught errors to monitoring. | React | Bundled SPA |
 | `lib/monitoring` | `initMonitoring` / `reportError` / `reportEvent`; lazily initializes Sentry when `VITE_SENTRY_DSN` is set, else console fallback; captures window errors/unhandled rejections. | @sentry/browser (optional) | Bundled SPA |
 | `lib/notify` | Centralized toast helpers; all TanStack Query mutation errors surface via `notifyError`. | sonner | Bundled SPA |
-| `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. Four presets: Core Light, Midnight Ops, Sunset Ember, Forest Deep. | React Context | Bundled SPA |
+| `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. Four presets: Core Light, Midnight Ops, Sunset Ember, Forest Deep. Selected from the User Settings screen (`AppearancePicker`); the ⌘K palette keeps theme shortcuts. | React Context | Bundled SPA |
+| `UserSettingsPage` (`/app/settings/user`) | Per-user personalization screen: appearance (palette radios with preview swatches), interface language, and read-only session identity from `AuthProvider`. Client-only preferences — no API surface; reachable from the Settings nav group and the avatar menu. | React Context, Tailwind | Bundled SPA |
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
 | `lib/http.ts` | Thin `fetch` wrapper; attaches bearer token + `X-Tenant-Id`; on `401` refreshes once and retries; throws on non-2xx. | Fetch API | Bundled SPA |
 | shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, AlertDialog, DropdownMenu (+ CheckboxItem), Command, Input, Switch, Avatar, Badge, Label, Skeleton. | Radix UI, cmdk, Tailwind, CVA | Bundled SPA |
@@ -187,7 +189,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 
 ### Data Stores
 - No persistent/server data store. Data is in-memory mock state (`src/mocks/handlers.ts`), resettable per test.
-- Browser `localStorage` is used for client-side session (`admin-dashboard-template:session`) and theme (`admin-dashboard-theme`). See section 9.
+- Browser `localStorage` is used for client-side session (`admin-dashboard-template:session`), theme (`admin-dashboard-theme`), language (`admin-dashboard-template:lang`), and active tenant (`admin-dashboard-template:tenant`). See section 9.
 
 ### Infrastructure
 - None. No cloud provider, container, IaC, or orchestration files exist in the repository.
@@ -232,6 +234,8 @@ There are no backend, payment, auth-provider, or third-party SDK integrations. A
 - **Keys / schemas:**
   - `admin-dashboard-template:session` → JSON `Session` (`{ user: {id,name,email,role,organization}, isAuthenticated }`).
   - `admin-dashboard-theme` → `ThemeId` string (`"oneui-ash"` default, or `"midnight-ops"`).
+  - `admin-dashboard-template:lang` → active locale code (`"en"`, `"es"`, `"fr"`), written by the i18next detector when the user picks a language in User Settings.
+  - `admin-dashboard-template:tenant` → JSON string with the active tenant id, written by `TenantProvider`.
 
 No database, cache, object store, or queue is used.
 
