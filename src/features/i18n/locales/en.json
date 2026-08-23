@@ -9,13 +9,13 @@
     "notifications": "Notifications",
     "support": "Support",
     "integrations": "Integrations",
-    "settings": "Settings"
-  },
-  "nav.group": {
-    "dashboard": "Dashboard",
-    "manage": "Manage",
-    "engage": "Engage",
-    "settings": "Settings"
+    "settings": "Settings",
+    "group": {
+      "dashboard": "Dashboard",
+      "manage": "Manage",
+      "engage": "Engage",
+      "settings": "Settings"
+    }
   },
   "common": {
     "skipToMain": "Skip to main content",
