@@ -19,7 +19,7 @@ Architectural reference for the **admin-dashboard-template** repository. The rep
 
 The application is a **client-side rendered Single Page Application (SPA)** organized in a **feature-module / layered** structure. There is no server, no backend services, and no microservices — all data is served by an in-browser mock layer (MSW). Evidence:
 
-- `src/main.tsx` bootstraps a React app directly into `#root`; no server framework is present.
+- `src/main.tsx` bootstraps a React app directly into `#root`; no server framework is present. It also initializes monitoring (see section 6).
 - `src/mocks/` provides the entire API surface via Mock Service Worker.
 - Layers are separated: `pages/` (routing/screens) → `components/` (UI) → `features/` (state + API) → `lib/` (data access) → `mocks/` (mock backend).
 
@@ -38,7 +38,7 @@ admin-dashboard-template/
 │   ├── main.tsx                 # App bootstrap; starts MSW worker in dev/test
 │   ├── app/
 │   │   ├── app.tsx              # Root component → AppRouter
-│   │   ├── providers.tsx        # React Query, Router, Theme, Auth, Toaster wiring
+│   │   ├── providers.tsx        # React Query, Router, Theme, Auth, Tenant, I18n, Toaster wiring
 │   │   ├── router.tsx           # Route table (lazy routes + protected routes)
 │   │   └── query-client.ts      # TanStack Query client configuration
 │   ├── components/
@@ -49,6 +49,8 @@ admin-dashboard-template/
 │   │   └── settings/            # SettingsForm
 │   ├── features/
 │   │   ├── auth/                # AuthProvider, auth-api, protected-route
+│   │   ├── tenants/             # TenantProvider, tenants-api (X-Tenant-Id scoping)
+│   │   ├── i18n/                # i18n init, provider, locale switcher, locale bundles
 │   │   ├── theme/               # ThemeProvider, theme-config
 │   │   ├── overview/            # overview-api (dashboard data access)
 │   │   ├── users/               # users-api
@@ -60,16 +62,19 @@ admin-dashboard-template/
 │   │   ├── transactions/        # transactions-api (ledger)
 │   │   ├── integrations/        # integrations-api (apps + api keys)
 │   │   └── support/             # support-api (tickets)
-│   ├── lib/                     # http() fetch wrapper, cn() util, formatters
+│   ├── lib/                     # http() fetch wrapper, cn() util, formatters, monitoring
 │   ├── mocks/                   # MSW handlers, browser worker, mock data
 │   ├── pages/                   # Route components (one per module + login + not-found)
 │   ├── test/                    # Vitest setup, node MSW server, test-app, tests
 │   ├── types/                   # Shared domain TypeScript types
 │   └── styles.css               # Tailwind v4 entry + CSS theme variables
+├── e2e/                        # Playwright specs (auth, navigation) + helpers
+├── playwright.config.ts        # Playwright config (boots pnpm dev as webServer)
 ├── index.html                   # HTML shell; loads Google Fonts + /src/main.tsx
 ├── vite.config.ts               # Vite + Vitest + Tailwind + @/ path alias
 ├── tsconfig*.json               # Project-references TypeScript config
 ├── components.json              # shadcn/ui configuration
+├── biome.json                   # Biome config (format + lint + import organization)
 └── package.json                 # Scripts and dependencies
 ```
 
@@ -84,14 +89,16 @@ admin-dashboard-template/
    v
 [React SPA]
    |
-   |-- AppProviders
-   |     ├── QueryClientProvider (TanStack Query)
-   |     ├── BrowserRouter (React Router v7)
-   |     ├── ThemeProvider (localStorage-driven theme)
-   |     ├── AuthProvider  (session in localStorage)
-   |     └── Toaster (sonner)
-   |
-   |-- AppRouter (lazy routes, grouped sidebar nav)
+    |-- AppProviders
+    |     ├── QueryClientProvider (TanStack Query)
+    |     ├── BrowserRouter (React Router v7)
+    |     ├── I18nProvider (react-i18next; browser language detector)
+    |     ├── ThemeProvider (localStorage-driven theme)
+    |     ├── AuthProvider  (session in localStorage; registers http auth)
+    |     ├── TenantProvider (active tenant; X-Tenant-Id header)
+    |     └── Toaster (sonner)
+    |
+    |-- AppRouter (lazy routes, grouped sidebar nav)
    |     ├── /login              → LoginPage (public)
    |     ├── /app/overview       → OverviewPage  (protected, Dashboard)
    |     ├── /app/analytics      → AnalyticsPage (protected, Dashboard)
@@ -105,16 +112,17 @@ admin-dashboard-template/
    |     ├── /app/settings       → SettingsPage   (protected, Settings)
    |     └── *                   → NotFoundPage
    |
-   |  API calls via lib/http.ts (fetch)
-   v
+    |  API calls via lib/http.ts (fetch)
+    v
 [Mock Service Worker]  intercept  /api/*  requests
-   |
-   +--> /api/auth/session | login | logout
-   +--> /api/dashboard/overview
-   +--> /api/users
-   +--> /api/settings
-   |
-   v
+    |
+    +--> /api/auth/session | login | logout | refresh
+    +--> /api/tenants
+    +--> /api/dashboard/overview
+    +--> /api/users
+    +--> /api/settings
+    |
+    v
 [In-memory mock state]  (src/mocks/handlers.ts + data.ts; resets per test)
 ```
 
@@ -126,20 +134,24 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 
 | Name | Description | Technologies | Deployment |
 | --- | --- | --- | --- |
-| `AppProviders` | Composition root wiring React Query, Router, Theme, Auth, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
+| `AppProviders` | Composition root wiring React Query, Router, I18n, Theme, Auth, Tenant, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
 | `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` + `RoleRoute` for `/app/*`. | React Router v7 | Bundled SPA |
-| `AuthProvider` / `auth-api` | Client-side session state; reads/writes session to `localStorage`; calls mock auth endpoints. | React Context, `lib/http.ts` | Bundled SPA |
+| `AuthProvider` / `auth-api` | Client-side session state with access/refresh tokens; reads/writes session to `localStorage`; registers HTTP auth handlers; silently refreshes expired sessions. | React Context, `lib/http.ts` | Bundled SPA |
+| `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. | React Context, `lib/http.ts` | Bundled SPA |
+| `I18nProvider` / `i18n` | `react-i18next` integration with `en`/`es`/`fr` bundles and a browser language detector. | react-i18next, i18next | Bundled SPA |
 | `ProtectedRoute` | Guards `/app/*`; redirects unauthenticated users to `/login`. | React Router | Bundled SPA |
 | `RoleRoute` / `lib/rbac` | Enforces client-side RBAC: `canAccess(role, allowed)` gates nav visibility and protected routes by `AppRole`. | React Router, React Context | Bundled SPA |
-| `ErrorBoundary` | Global + route-level error boundary with a recoverable fallback (Try again / back to dashboard). | React | Bundled SPA |
+| `ErrorBoundary` | Global + route-level error boundary with a recoverable fallback (Try again / back to dashboard); reports caught errors to monitoring. | React | Bundled SPA |
+| `lib/monitoring` | `initMonitoring` / `reportError` / `reportEvent`; lazily initializes Sentry when `VITE_SENTRY_DSN` is set, else console fallback; captures window errors/unhandled rejections. | @sentry/browser (optional) | Bundled SPA |
 | `lib/notify` | Centralized toast helpers; all TanStack Query mutation errors surface via `notifyError`. | sonner | Bundled SPA |
 | `ThemeProvider` / `theme-config` | Theme selection persisted in `localStorage`; sets `data-theme` on `<html>`. Four presets: Core Light, Midnight Ops, Sunset Ember, Forest Deep. | React Context | Bundled SPA |
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
-| `lib/http.ts` | Thin `fetch` wrapper; sets JSON headers; throws on non-2xx. | Fetch API | Bundled SPA |
+| `lib/http.ts` | Thin `fetch` wrapper; attaches bearer token + `X-Tenant-Id`; on `401` refreshes once and retries; throws on non-2xx. | Fetch API | Bundled SPA |
 | shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, DropdownMenu, Input, Switch, Avatar, Badge, Label. | Radix UI, Tailwind, CVA | Bundled SPA |
 | Pages (`src/pages`) | Login, Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, NotFound. | React, Recharts, RHF+Zod | Bundled SPA |
 | `DataTable` / `DetailDrawer` | Reusable generic table (`data-table.tsx`) and right-side detail panel + `DefinitionList` (`detail-drawer.tsx`). | React | Bundled SPA |
 | Vitest test harness (`src/test`) | Node MSW server, jsdom env, `renderApp` helper, routing + module smoke tests. | Vitest, Testing Library | Test only |
+| Playwright suite (`e2e/`) | Browser tests driving the running app (auth, routing, tenant, language, theme). | @playwright/test | E2E only |
 
 ---
 
@@ -156,6 +168,10 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 - Recharts (charts on the Overview page).
 - sonner (toast notifications).
 - lucide-react (icons).
+- react-i18next + i18next + i18next-browser-languagedetector (internationalization).
+- @sentry/browser (optional, loaded only when `VITE_SENTRY_DSN` is set).
+- Biome (format + lint + import organization; replaces ESLint/Prettier).
+- @playwright/test (end-to-end tests in `e2e/`).
 
 ### Backend
 - None. The repository contains no server, API, or backend framework. The API is mocked entirely client-side by MSW.
@@ -168,7 +184,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 - None. No cloud provider, container, IaC, or orchestration files exist in the repository.
 
 ### Observability
-- None. No logging, metrics, tracing, or monitoring tooling is present.
+- `src/lib/monitoring.ts` provides `initMonitoring`, `reportError`, and `reportEvent`. When `VITE_SENTRY_DSN` is set, it lazily imports and initializes `@sentry/browser` (environment tagged by `VITE_APP_ENV` or the Vite mode) and forwards exceptions/events; otherwise it falls back to `console.error` / `console.warn`. Global `error` and `unhandledrejection` listeners forward to the reporter, and the route `ErrorBoundary` reports caught render errors. There is no metrics/tracing pipeline beyond Sentry exception reporting.
 
 ---
 
@@ -184,7 +200,7 @@ There are no backend, payment, auth-provider, or third-party SDK integrations. A
 
 ## 8. Security
 
-- **Authentication (mock):** A `Session` object (with `isAuthenticated`) is stored in `localStorage` under `admin-dashboard-template:session`. `AuthProvider` reads it on init; `ProtectedRoute` redirects to `/login` when absent/invalid. This is a client-side mock only — there is no real credential verification or backend auth.
+- **Authentication (mock):** A `Session` object (with `isAuthenticated`, `accessToken`, optional `refreshToken`, and `expiresAt`) is stored in `localStorage` under `admin-dashboard-template:session`. `AuthProvider` reads it on init; `ProtectedRoute` redirects to `/login` when absent/invalid. `lib/http.ts` sends `Authorization: Bearer <accessToken>` and, on a `401`, calls `POST /api/auth/refresh` once and retries the request; if refresh fails it triggers the `unauthorized` handler (redirect to `/login`). An expired session is silently refreshed on load. This is a client-side mock only — there is no real credential verification or backend auth.
 - **Authorization (client-side, mock):** Role strings exist in the `Session` (`Owner`/`Admin`/`Manager` — typed as `AppRole`) and `UserRecord` (`Owner`/`Admin`/`Support`/`Analyst`). RBAC is now enforced in the UI: `RoleRoute` redirects unauthorized roles away from gated `/app/*` routes, and `SidebarNav`/`Topbar` hide nav items the user's role cannot access (`canAccess`). This is a UI convenience only — real authorization must be enforced server-side when a backend is connected.
 - **Transport:** `lib/http.ts` only adds JSON `Content-Type` headers; no tokens, signing, or encryption are applied. It optionally prefixes requests with `import.meta.env.VITE_API_BASE_URL` so a real backend can replace MSW.
 - **Secrets management:** None present; no environment variables or secret files are used.
@@ -216,7 +232,7 @@ No database, cache, object store, or queue is used.
 
 - **Build:** `pnpm build` runs `tsc -b` (typecheck via project references) then `vite build`, emitting static assets to `dist/`.
 - **Serve:** `pnpm preview` serves the built `dist/`; `pnpm dev` runs the Vite dev server (auto-starting the MSW worker).
-- **CI/CD:** A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs typecheck (`tsc -b`), `eslint`, `vitest`, and `vite build` on push/PR to `main`/`master`.
+- **CI/CD:** A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs typecheck (`tsc -b`), `biome ci`, `vitest`, `vite build`, and a separate `e2e` job that installs Chromium and runs the Playwright suite (`pnpm e2e`, which boots `pnpm dev` via the Playwright webServer).
 - **Infrastructure / hosting:** No Docker/Kubernetes/Terraform manifests present. The output is a static SPA that can be hosted on any static file host (Vercel, Netlify, S3+CloudFront, etc.).
 
 ---
@@ -227,7 +243,7 @@ No database, cache, object store, or queue is used.
 - `localStorage` is used to store the session; this is not secure for real credentials and should be reconsidered before production use.
 - A real backend can be wired in without touching feature code: set `VITE_API_BASE_URL` (see `.env.example`) and implement the same `/api/*` paths the MSW handlers expose. In a production build the MSW worker is not started, so requests go straight to the configured base URL.
 - Client-side RBAC (nav gating + `RoleRoute`) is a UI convenience only; enforce authorization server-side on the real backend.
-- Lint/format are configured: ESLint (flat config), Prettier, a Husky pre-commit running `lint-staged`, plus `pnpm lint` / `pnpm format` scripts. There are no TODO/FIXME markers or deprecated modules in the source.
+- Lint/format use Biome (`biome.json`): `pnpm lint` → `biome check`, `pnpm format` → `biome format --write .`; a Husky pre-commit runs `lint-staged` (Biome) on changed files. There are no TODO/FIXME markers or deprecated modules in the source.
 
 No explicit roadmap or architectural debt (beyond the mock-backend substitution noted above) identified in repository analysis.
 
@@ -244,10 +260,13 @@ No explicit roadmap or architectural debt (beyond the mock-backend substitution 
 | TanStack Query | Async server-state data-fetching/caching library used for `/api/*` reads/writes. |
 | RHF + Zod | React Hook Form paired with Zod schemas for typed form validation. |
 | `@/` alias | Path alias (via Vite + `tsconfig`) mapping to `src/`. |
-| Session | Client-side auth object persisted in `localStorage` under `admin-dashboard-template:session`. |
+| Session | Client-side auth object persisted in `localStorage` under `admin-dashboard-template:session`; carries `accessToken`, optional `refreshToken`, `expiresAt`, and `isAuthenticated`. |
 | ThemeId | Identifier for a UI theme (`oneui-ash` default light, `midnight-ops` dark), persisted under `admin-dashboard-theme`. |
+| Tenant | Workspace entity; the active tenant is persisted and sent as the `X-Tenant-Id` header on every request. |
+| I18nProvider | `react-i18next` provider; locale bundles live in `src/features/i18n/locales/*.json`. |
+| `monitoring` | `src/lib/monitoring.ts`: error/event reporting that activates Sentry when `VITE_SENTRY_DSN` is set. |
 | ProtectedRoute | Route guard that redirects unauthenticated users to `/login`. |
-| `http()` | Thin fetch wrapper in `src/lib/http.ts` that throws on non-2xx responses. |
+| `http()` | Thin fetch wrapper in `src/lib/http.ts` that attaches the bearer token + `X-Tenant-Id`, retries once after a `401` refresh, and throws on non-2xx responses. |
 | `renderApp` | Test helper in `src/test/test-app.tsx` that renders the app with a configurable router history. |
 | `defaultSession` | Seed session fixture in `src/mocks/data.ts`, used to authenticate tests. |
 | BillingPayload | Mock aggregate of `subscription` + `plans` + `invoices` served at `/api/billing`. |
