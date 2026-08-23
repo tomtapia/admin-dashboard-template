@@ -46,7 +46,7 @@ export const AppShell = () => {
       <main
         id="main-content"
         className={cn(
-          "min-h-screen px-3 py-3 transition-[padding] md:px-4 md:py-4 lg:pl-[19rem]",
+          "min-h-screen px-3 py-3 transition-[padding] pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-4 md:py-4 lg:pl-[19rem]",
           collapsed && "lg:pl-[8rem]",
         )}
       >
