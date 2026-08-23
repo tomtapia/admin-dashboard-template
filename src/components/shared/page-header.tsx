@@ -22,7 +22,10 @@ export const PageHeader = ({
         {eyebrow}
       </p>
       <div className="space-y-2">
-        <h1 className="text-[1.8rem] font-semibold leading-[1] tracking-[-0.04em] text-[var(--foreground)] md:text-[2.2rem]">
+        <h1
+          tabIndex={-1}
+          className="text-[1.8rem] font-semibold leading-[1] tracking-[-0.04em] text-[var(--foreground)] outline-none md:text-[2.2rem]"
+        >
           {title}
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-[var(--foreground-muted)]">{description}</p>

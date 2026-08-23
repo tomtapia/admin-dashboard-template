@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/app/error-boundary";
+import { navItems } from "@/components/layout/nav-items";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { cn } from "@/lib/utils";
@@ -10,11 +11,25 @@ export const AppShell = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
 
   const pageKey = useMemo(
     () => location.pathname.split("/").at(-1) ?? "overview",
     [location.pathname],
   );
+
+  useEffect(() => {
+    const current = navItems.find((item) => location.pathname.startsWith(item.href));
+    const pageTitle = t(current?.title ?? "nav.overview");
+    document.title = `${pageTitle} · Admin Dash`;
+    setAnnouncement(pageTitle);
+
+    const frame = window.requestAnimationFrame(() => {
+      const heading = document.querySelector<HTMLElement>("#main-content h1");
+      heading?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.pathname, t]);
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -24,6 +39,9 @@ export const AppShell = () => {
       >
         {t("common.skipToMain")}
       </a>
+      <div aria-live="polite" role="status" className="sr-only">
+        {announcement ? `${announcement} page loaded` : ""}
+      </div>
       <SidebarNav collapsed={collapsed} />
       <main
         id="main-content"
