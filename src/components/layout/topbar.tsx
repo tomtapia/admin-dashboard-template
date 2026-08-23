@@ -11,14 +11,13 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { navItems } from "@/components/layout/nav-items";
+import { navGroups, navItems } from "@/components/layout/nav-items";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -60,8 +59,8 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
-  const visibleNavItems = navItems.filter((item) => canAccess(session?.user.role, item.roles));
 
   const notificationsQuery = useQuery<NotificationItem[]>({
     queryKey: ["notifications"],
@@ -91,7 +90,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   return (
     <header className="sticky top-4 z-10 flex flex-col gap-3 rounded-[0.9rem] border border-[var(--topbar-border)] bg-[var(--topbar)] px-3 py-3 shadow-[var(--shadow-topbar)] backdrop-blur md:flex-row md:items-center md:justify-between md:px-4">
       <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Dialog>
+        <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <DialogTrigger asChild>
             <Button
               variant="outline"
@@ -109,24 +108,37 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
                 Move through the admin template.
               </DialogDescription>
             </div>
-            <nav className="space-y-2 p-4">
-              {visibleNavItems.map((item) => (
-                <DialogClose asChild key={item.href}>
-                  <NavLink
-                    to={item.href}
-                    className={({ isActive }) =>
-                      cn(
-                        "block rounded-lg px-4 py-3 text-sm font-medium transition-colors",
-                        isActive
-                          ? "bg-[var(--foreground)] text-[var(--background)]"
-                          : "bg-[var(--surface-subtle)] text-[var(--foreground)]",
-                      )
-                    }
-                  >
-                    {t(item.title)}
-                  </NavLink>
-                </DialogClose>
-              ))}
+            <nav className="max-h-[70vh] space-y-5 overflow-y-auto p-4">
+              {navGroups.map((group) => {
+                const items = group.items.filter((item) =>
+                  canAccess(session?.user.role, item.roles),
+                );
+                if (items.length === 0) return null;
+                return (
+                  <div key={group.label} className="space-y-2">
+                    <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+                      {t(group.label)}
+                    </p>
+                    {items.map((item) => (
+                      <NavLink
+                        key={item.href}
+                        to={item.href}
+                        onClick={() => setMobileNavOpen(false)}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex min-h-11 items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-[var(--foreground)] text-[var(--background)]"
+                              : "bg-[var(--surface-subtle)] text-[var(--foreground)]",
+                          )
+                        }
+                      >
+                        {t(item.title)}
+                      </NavLink>
+                    ))}
+                  </div>
+                );
+              })}
             </nav>
           </DialogContent>
         </Dialog>
