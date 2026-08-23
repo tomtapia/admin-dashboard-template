@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -8,9 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import type { SettingsPayload } from "@/types";
 
 const settingsSchema = z.object({
-  companyName: z.string().min(2),
-  contactEmail: z.string().email(),
-  timezone: z.string().min(2),
+  companyName: z.string().min(2, "Company name needs at least 2 characters."),
+  contactEmail: z.string().email("Enter a valid email address."),
+  timezone: z.string().min(2, "Enter a valid timezone (e.g. Europe/Berlin)."),
   weeklyDigest: z.boolean(),
   productUpdates: z.boolean(),
 });
@@ -26,6 +27,7 @@ type SettingsFormProps = {
 export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsFormProps) => {
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
+    mode: "onBlur",
     values: {
       companyName: defaultValues.profile.companyName,
       contactEmail: defaultValues.profile.contactEmail,
@@ -35,7 +37,16 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
     },
   });
 
-  const submit = form.handleSubmit(async (values) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isDirty },
+  } = form;
+
+  const submit = handleSubmit(async (values) => {
     await onSubmit({
       profile: {
         companyName: values.companyName,
@@ -49,8 +60,46 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
     });
   });
 
+  const textField = (
+    id: keyof Pick<SettingsFormValues, "companyName" | "contactEmail" | "timezone">,
+    label: string,
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        aria-invalid={errors[id] ? true : undefined}
+        aria-describedby={errors[id] ? `${id}-error` : undefined}
+        {...register(id)}
+      />
+      {errors[id] ? (
+        <p id={`${id}-error`} role="alert" className="text-sm text-[var(--danger)]">
+          {errors[id]?.message}
+        </p>
+      ) : null}
+    </div>
+  );
+
   return (
-    <form className="space-y-6" onSubmit={submit}>
+    <form className="space-y-6" onSubmit={submit} noValidate>
+      {isDirty ? (
+        <div
+          role="status"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-[0.8rem] border border-[var(--warning)] bg-[var(--warning-soft)] px-4 py-3"
+        >
+          <p className="text-sm font-medium text-[var(--foreground)]">Unsaved changes</p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => reset()}
+            disabled={isSaving}
+          >
+            Discard changes
+          </Button>
+        </div>
+      ) : null}
+
       <div className="space-y-4">
         <div>
           <p className="text-sm font-semibold">Workspace identity</p>
@@ -59,18 +108,9 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
           </p>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="companyName">Company name</Label>
-            <Input id="companyName" {...form.register("companyName")} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="contactEmail">Contact email</Label>
-            <Input id="contactEmail" {...form.register("contactEmail")} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
-            <Input id="timezone" {...form.register("timezone")} />
-          </div>
+          {textField("companyName", "Company name")}
+          {textField("contactEmail", "Contact email")}
+          {textField("timezone", "Timezone")}
           <div className="space-y-2">
             <p className="text-sm font-medium">Regional behavior</p>
             <p className="self-center text-sm text-[var(--muted-foreground)]">
@@ -89,32 +129,43 @@ export const SettingsForm = ({ defaultValues, onSubmit, isSaving }: SettingsForm
         </div>
         <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
-            <p className="font-medium">Weekly digest</p>
+            <Label htmlFor="weeklyDigest" className="font-medium">
+              Weekly digest
+            </Label>
             <p className="text-sm text-[var(--muted-foreground)]">
               Receive a weekly summary of product health.
             </p>
           </div>
           <Switch
-            checked={form.watch("weeklyDigest")}
-            onCheckedChange={(checked) => form.setValue("weeklyDigest", checked)}
+            id="weeklyDigest"
+            checked={watch("weeklyDigest")}
+            onCheckedChange={(checked) => setValue("weeklyDigest", checked, { shouldDirty: true })}
           />
         </div>
         <div className="flex items-center justify-between gap-4 rounded-[0.8rem] border border-[var(--border)] bg-[var(--surface-panel)] p-4">
           <div>
-            <p className="font-medium">Product updates</p>
+            <Label htmlFor="productUpdates" className="font-medium">
+              Product updates
+            </Label>
             <p className="text-sm text-[var(--muted-foreground)]">
               Get notified about new releases and changes.
             </p>
           </div>
           <Switch
-            checked={form.watch("productUpdates")}
-            onCheckedChange={(checked) => form.setValue("productUpdates", checked)}
+            id="productUpdates"
+            checked={watch("productUpdates")}
+            onCheckedChange={(checked) =>
+              setValue("productUpdates", checked, { shouldDirty: true })
+            }
           />
         </div>
       </div>
 
-      <Button type="submit" disabled={isSaving}>
-        {isSaving ? "Saving..." : "Save settings"}
+      <Button type="submit" disabled={isSaving} aria-busy={isSaving}>
+        <span className="flex items-center gap-2">
+          {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+          {isSaving ? "Saving…" : "Save settings"}
+        </span>
       </Button>
     </form>
   );
