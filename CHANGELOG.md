@@ -1,3 +1,12 @@
+## v0.3.0 (2026-08-22)
+
+### Feat
+
+- **observability**: add error tracking and monitoring foundation
+- **i18n**: add react-i18next with locale switcher and translated UI
+- **auth**: add token refresh, session expiry, and 401 retry
+- **tenancy**: add tenant context, switcher, and API scoping
+
 ## v0.2.1 (2026-08-22)
 
 ### Fix
