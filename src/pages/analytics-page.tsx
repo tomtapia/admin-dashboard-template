@@ -138,7 +138,11 @@ export const AnalyticsPage = () => {
       <div className="grid gap-6 xl:grid-cols-2">
         <SectionCard title="Conversion funnel">
           {canRenderChart ? (
-            <div className="h-72">
+            <div
+              className="h-72"
+              role="img"
+              aria-label="Horizontal bar chart of visitors per funnel stage"
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={funnel} layout="vertical">
                   <CartesianGrid horizontal={false} stroke="var(--chart-grid)" />
@@ -162,11 +166,32 @@ export const AnalyticsPage = () => {
               </ResponsiveContainer>
             </div>
           ) : null}
+          <table className="sr-only">
+            <caption>Conversion funnel</caption>
+            <thead>
+              <tr>
+                <th scope="col">Stage</th>
+                <th scope="col">Visitors</th>
+              </tr>
+            </thead>
+            <tbody>
+              {funnel.map((stage) => (
+                <tr key={stage.stage}>
+                  <td>{stage.stage}</td>
+                  <td>{stage.value.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </SectionCard>
 
         <SectionCard title="Acquisition channels">
           {canRenderChart ? (
-            <div className="h-72">
+            <div
+              className="h-72"
+              role="img"
+              aria-label="Bar chart of visitors and conversions per acquisition channel"
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={channels}>
                   <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
@@ -189,7 +214,11 @@ export const AnalyticsPage = () => {
 
       <SectionCard title="Recurring revenue" description="Monthly recurring revenue over time.">
         {canRenderChart ? (
-          <div className="h-72">
+          <div
+            className="h-72"
+            role="img"
+            aria-label="Area chart of monthly recurring revenue in thousands of dollars"
+          >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={mrr}>
                 <defs>
@@ -223,6 +252,23 @@ export const AnalyticsPage = () => {
             </ResponsiveContainer>
           </div>
         ) : null}
+        <table className="sr-only">
+          <caption>Monthly recurring revenue</caption>
+          <thead>
+            <tr>
+              <th scope="col">Month</th>
+              <th scope="col">Revenue (USD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mrr.map((point) => (
+              <tr key={point.name}>
+                <td>{point.name}</td>
+                <td>{point.revenue.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </SectionCard>
 
       <div className="grid gap-6 xl:grid-cols-2">

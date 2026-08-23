@@ -190,7 +190,11 @@ export const OverviewPage = () => {
       <div className="grid gap-6 xl:grid-cols-[1.45fr_0.65fr]">
         <SectionCard tone="secondary" title="Monthly Sales & Revenue">
           {canRenderChart ? (
-            <div className="h-64 md:h-80">
+            <div
+              className="h-64 md:h-80"
+              role="img"
+              aria-label="Area chart of monthly revenue in thousands of dollars"
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -224,11 +228,32 @@ export const OverviewPage = () => {
               </ResponsiveContainer>
             </div>
           ) : null}
+          <table className="sr-only">
+            <caption>Monthly revenue</caption>
+            <thead>
+              <tr>
+                <th scope="col">Month</th>
+                <th scope="col">Revenue (USD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartData.map((point) => (
+                <tr key={point.name}>
+                  <td>{point.name}</td>
+                  <td>{point.revenue.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </SectionCard>
 
         <SectionCard tone="secondary" title="Sales by Category">
           {canRenderChart ? (
-            <div className="h-64 md:h-80">
+            <div
+              className="h-64 md:h-80"
+              role="img"
+              aria-label="Bar chart comparing sales by category for the current and previous period"
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={salesByCategory} barGap={8}>
                   <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
@@ -250,6 +275,25 @@ export const OverviewPage = () => {
               </ResponsiveContainer>
             </div>
           ) : null}
+          <table className="sr-only">
+            <caption>Sales by category</caption>
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                {showCurrentSeries ? <th scope="col">Current period</th> : null}
+                {showPreviousSeries ? <th scope="col">Previous period</th> : null}
+              </tr>
+            </thead>
+            <tbody>
+              {salesByCategory.map((row) => (
+                <tr key={row.name}>
+                  <td>{row.name}</td>
+                  {showCurrentSeries ? <td>{row.current}</td> : null}
+                  {showPreviousSeries ? <td>{row.previous}</td> : null}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </SectionCard>
       </div>
 
@@ -293,7 +337,7 @@ export const OverviewPage = () => {
 
         <SectionCard tone="secondary" title="User Demographics">
           {canRenderChart ? (
-            <div className="h-64">
+            <div className="h-64" role="img" aria-label="Donut chart of users by age group">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -322,7 +366,7 @@ export const OverviewPage = () => {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: entry.color }}
                 />
-                {entry.name}
+                {entry.name} · {entry.value}%
               </div>
             ))}
           </div>
