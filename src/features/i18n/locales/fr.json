@@ -33,6 +33,7 @@
     "filters": "Filtres"
   },
   "login": {
-    "enter": "Accéder au tableau de bord"
+    "enter": "Accéder au tableau de bord",
+    "entering": "Connexion…"
   }
 }

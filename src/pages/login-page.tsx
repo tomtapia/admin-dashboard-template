@@ -1,4 +1,5 @@
-import { ArrowRight, LockKeyhole } from "lucide-react";
+import { ArrowRight, LoaderCircle, LockKeyhole } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/auth-context";
@@ -6,6 +7,16 @@ import { useAuth } from "@/features/auth/auth-context";
 export const LoginPage = () => {
   const { login } = useAuth();
   const { t } = useTranslation();
+  const [isPending, setIsPending] = useState(false);
+
+  const handleLogin = async () => {
+    setIsPending(true);
+    try {
+      await login();
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--background)] px-4 py-10">
@@ -117,9 +128,20 @@ export const LoginPage = () => {
                   Overview, users, settings, theme switcher and mock auth flow.
                 </p>
               </div>
-              <Button onClick={() => void login()} className="w-full justify-between" size="lg">
-                {t("login.enter")}
-                <ArrowRight className="h-4 w-4" />
+              <Button
+                onClick={() => void handleLogin()}
+                className="w-full justify-between"
+                size="lg"
+                disabled={isPending}
+                aria-busy={isPending}
+              >
+                <span className="flex items-center gap-2">
+                  {isPending ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : null}
+                  {isPending ? t("login.entering") : t("login.enter")}
+                </span>
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
           </div>

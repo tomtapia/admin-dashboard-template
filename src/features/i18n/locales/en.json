@@ -33,6 +33,7 @@
     "filters": "Filters"
   },
   "login": {
-    "enter": "Enter dashboard"
+    "enter": "Enter dashboard",
+    "entering": "Entering…"
   }
 }

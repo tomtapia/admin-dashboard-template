@@ -33,6 +33,7 @@
     "filters": "Filtros"
   },
   "login": {
-    "enter": "Entrar al panel"
+    "enter": "Entrar al panel",
+    "entering": "Accediendo…"
   }
 }
