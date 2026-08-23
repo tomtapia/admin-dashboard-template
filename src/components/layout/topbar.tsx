@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, Menu, Palette, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -21,18 +21,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-context";
-import { LocaleSwitcher } from "@/features/i18n/locale-switcher";
 import {
   getNotificationsRequest,
   markNotificationReadRequest,
 } from "@/features/notifications/notifications-api";
-import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 import type { NotificationItem } from "@/types";
@@ -44,7 +40,6 @@ type TopbarProps = {
 
 export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { session, logout } = useAuth();
-  const { themeId, themes, setThemeId } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -184,45 +179,6 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
       </div>
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Theme switcher">
-              <Palette className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>{t("common.themePalette")}</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              value={themeId}
-              onValueChange={(value) => setThemeId(value as typeof themeId)}
-            >
-              {themes.map((entry) => (
-                <DropdownMenuRadioItem key={entry.id} value={entry.id}>
-                  <div className="flex w-full items-center justify-between gap-4">
-                    <div>
-                      <p className="font-medium">{entry.label}</p>
-                      <p className="text-xs text-[var(--muted-foreground)]">
-                        {entry.mode === "dark" ? "Dark" : "Light"} palette
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {entry.preview.map((swatch) => (
-                        <span
-                          key={swatch}
-                          className="h-3.5 w-3.5 rounded-full border border-black/10"
-                          style={{ backgroundColor: swatch }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <LocaleSwitcher />
-
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

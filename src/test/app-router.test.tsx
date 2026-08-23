@@ -4,18 +4,18 @@ import { defaultSession } from "@/mocks/data";
 import { renderApp } from "@/test/test-app";
 
 describe("app routing", () => {
-  it("shows a theme switcher and persists the selected theme", async () => {
+  it("renders user settings and persists the selected theme", async () => {
     const user = userEvent.setup();
     window.localStorage.setItem("admin-dashboard-template:session", JSON.stringify(defaultSession));
 
-    renderApp({ initialEntries: ["/app/overview"] });
+    renderApp({ initialEntries: ["/app/settings/user"] });
 
-    await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 });
-    await user.click(screen.getByRole("button", { name: /theme switcher/i }));
-    const midnightOption = await screen.findByRole("menuitemradio", { name: /midnight ops/i });
+    await screen.findByRole("heading", { name: /personalize your experience/i });
+    const midnightOption = screen.getByRole("radio", { name: /midnight ops/i });
     await user.click(midnightOption);
 
     await waitFor(() => {
+      expect(midnightOption).toBeChecked();
       expect(document.documentElement.dataset.theme).toBe("midnight-ops");
       expect(window.localStorage.getItem("admin-dashboard-theme")).toBe("midnight-ops");
     });

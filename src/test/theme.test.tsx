@@ -4,12 +4,12 @@ import { defaultSession } from "@/mocks/data";
 import { renderApp } from "@/test/test-app";
 
 describe("theme switching", () => {
-  it("applies and persists each available theme", async () => {
+  it("applies and persists each available theme from user settings", async () => {
     const user = userEvent.setup();
     window.localStorage.setItem("admin-dashboard-template:session", JSON.stringify(defaultSession));
-    renderApp({ initialEntries: ["/app/overview"] });
+    renderApp({ initialEntries: ["/app/settings/user"] });
 
-    await screen.findByText(/dashboard overview/i);
+    await screen.findByRole("heading", { name: /personalize your experience/i });
 
     const themes: [string, string][] = [
       ["Midnight Ops", "midnight-ops"],
@@ -19,11 +19,12 @@ describe("theme switching", () => {
     ];
 
     for (const [label, id] of themes) {
-      await user.click(screen.getByRole("button", { name: /theme switcher/i }));
-      await user.click(screen.getByRole("menuitemradio", { name: new RegExp(label, "i") }));
+      await user.click(screen.getByRole("radio", { name: new RegExp(label, "i") }));
       await waitFor(() => expect(document.documentElement.dataset.theme).toBe(id));
       await waitFor(() => expect(window.localStorage.getItem("admin-dashboard-theme")).toBe(id));
-      await user.keyboard("{Escape}");
+      await waitFor(() =>
+        expect(screen.getByRole("radio", { name: new RegExp(label, "i") })).toBeChecked(),
+      );
     }
   });
 });

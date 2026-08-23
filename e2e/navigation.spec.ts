@@ -24,24 +24,21 @@ test("switches the active workspace", async ({ page }) => {
   );
 });
 
-test("switches the UI language", async ({ page }) => {
+test("switches the UI language from user settings", async ({ page }) => {
   await login(page);
 
-  await page.getByRole("button", { name: /language/i }).click();
-  await page.getByRole("menuitemradio", { name: /español/i }).click();
+  await page.goto("/app/settings/user");
+  await page.getByRole("radio", { name: /español/i }).click();
 
   await expect(page.getByRole("link", { name: /visión general/i }).first()).toBeVisible();
 });
 
-test("opens the theme palette and selects a palette", async ({ page }) => {
+test("selects a palette from user settings", async ({ page }) => {
   await login(page);
 
-  await page.getByRole("button", { name: /theme switcher/i }).click();
-  await page.getByRole("menuitemradio", { name: /midnight ops/i }).click();
-
-  await page.getByRole("button", { name: /theme switcher/i }).click();
-  await expect(page.getByRole("menuitemradio", { name: /midnight ops/i })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  await page.goto("/app/settings/user");
+  await page.getByRole("radio", { name: /midnight ops/i }).click();
+  await expect(page.getByRole("radio", { name: /midnight ops/i })).toBeChecked();
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-theme", "midnight-ops");
 });
