@@ -35,5 +35,8 @@
   "login": {
     "enter": "Entrar al panel",
     "entering": "Accediendo…"
+  },
+  "notifications": {
+    "allCaughtUp": "Todo al día"
   }
 }

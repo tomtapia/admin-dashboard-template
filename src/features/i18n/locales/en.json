@@ -35,5 +35,8 @@
   "login": {
     "enter": "Enter dashboard",
     "entering": "Entering…"
+  },
+  "notifications": {
+    "allCaughtUp": "All caught up"
   }
 }

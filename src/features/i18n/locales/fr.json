@@ -35,5 +35,8 @@
   "login": {
     "enter": "Accéder au tableau de bord",
     "entering": "Connexion…"
+  },
+  "notifications": {
+    "allCaughtUp": "Tout est à jour"
   }
 }

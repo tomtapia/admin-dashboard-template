@@ -1,17 +1,20 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
   Building2,
-  Mail,
   Menu,
   Palette,
   PanelLeftClose,
   PanelLeftOpen,
   Search,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { navItems } from "@/components/layout/nav-items";
+import { CommandPalette } from "@/components/shared/command-palette";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,10 +36,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/auth-context";
 import { LocaleSwitcher } from "@/features/i18n/locale-switcher";
+import {
+  getNotificationsRequest,
+  markNotificationReadRequest,
+} from "@/features/notifications/notifications-api";
 import { useTenant } from "@/features/tenants/tenant-context";
 import { useTheme } from "@/features/theme/theme-context";
 import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
+import type { NotificationItem } from "@/types";
 
 type TopbarProps = {
   collapsed: boolean;
@@ -49,8 +57,36 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const { theme, themeId, themes, setThemeId } = useTheme();
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
   const visibleNavItems = navItems.filter((item) => canAccess(session?.user.role, item.roles));
+
+  const notificationsQuery = useQuery<NotificationItem[]>({
+    queryKey: ["notifications"],
+    queryFn: getNotificationsRequest,
+  });
+  const notifications = notificationsQuery.data ?? [];
+  const unreadCount = notifications.filter((item) => !item.read).length;
+
+  const invalidateNotifications = () =>
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  const markRead = useMutation({
+    mutationFn: (id: string) => markNotificationReadRequest(id),
+    onSuccess: invalidateNotifications,
+  });
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setPaletteOpen((value) => !value);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <header className="sticky top-4 z-10 flex flex-col gap-3 rounded-[0.9rem] border border-[var(--topbar-border)] bg-[var(--topbar)] px-3 py-3 shadow-[var(--shadow-topbar)] backdrop-blur md:flex-row md:items-center md:justify-between md:px-4">
@@ -110,17 +146,33 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
         </Button>
 
         <div className="relative hidden flex-1 md:block">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
-          <input
-            aria-label="Search dashboard data"
-            className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-panel)] pl-9 pr-4 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--ring)]"
-            placeholder={t("common.search")}
-            type="search"
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]"
+            aria-hidden="true"
           />
+          <Button
+            variant="outline"
+            onClick={() => setPaletteOpen(true)}
+            aria-label={t("common.search")}
+            className="h-10 w-full justify-start gap-2 pl-9 pr-3 font-normal text-[var(--muted-foreground)]"
+          >
+            <span className="flex-1 text-left">{t("common.search")}</span>
+            <kbd className="rounded border border-[var(--border)] bg-[var(--surface-panel)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--muted-foreground)]">
+              ⌘K
+            </kbd>
+          </Button>
         </div>
 
-        <div className="min-w-0 md:hidden">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
+        <div className="flex min-w-0 flex-1 items-center gap-2 md:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setPaletteOpen(true)}
+            aria-label={t("common.search")}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
             {t(currentItem?.title ?? "nav.overview")}
           </p>
         </div>
@@ -192,17 +244,67 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
 
         <LocaleSwitcher />
 
-        <Button variant="ghost" size="icon" aria-label="Messages" className="hidden sm:inline-flex">
-          <Mail className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Notifications"
-          className="hidden sm:inline-flex"
-        >
-          <Bell className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative hidden sm:inline-flex"
+              aria-label={
+                unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications, all read"
+              }
+            >
+              <Bell className="h-4 w-4" />
+              {unreadCount > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--danger)] px-1 text-[9px] font-bold leading-none text-white"
+                >
+                  {unreadCount}
+                </span>
+              ) : null}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuLabel>
+              {unreadCount > 0 ? `${unreadCount} unread` : t("notifications.allCaughtUp")}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {notifications.slice(0, 4).map((item) => (
+              <DropdownMenuItem key={item.id} className="flex-col items-start gap-1" asChild>
+                <div>
+                  <div className="flex w-full items-center gap-2">
+                    <p className={cn("text-sm", item.read && "text-[var(--muted-foreground)]")}>
+                      {item.title}
+                    </p>
+                    {!item.read ? <Badge variant="default">New</Badge> : null}
+                    <span className="ml-auto text-xs text-[var(--muted-foreground)]">
+                      {item.triggeredAt}
+                    </span>
+                  </div>
+                  {!item.read ? (
+                    <button
+                      type="button"
+                      className="self-end text-xs font-medium text-[var(--accent)] underline-offset-2 hover:underline"
+                      onClick={() => markRead.mutate(item.id)}
+                    >
+                      Mark read
+                    </button>
+                  ) : null}
+                </div>
+              </DropdownMenuItem>
+            ))}
+            {notifications.length === 0 ? (
+              <p className="px-3 py-6 text-center text-sm text-[var(--muted-foreground)]">
+                Nothing here yet.
+              </p>
+            ) : null}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate("/app/notifications")}>
+              View all notifications
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -227,6 +329,8 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </header>
   );
 };
