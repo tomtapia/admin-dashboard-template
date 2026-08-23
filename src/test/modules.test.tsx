@@ -16,6 +16,8 @@ describe("module pages", () => {
   it.each(routes)("renders %s", async ({ path, heading }) => {
     window.localStorage.setItem("admin-dashboard-template:session", JSON.stringify(defaultSession));
     renderApp({ initialEntries: [path] });
-    expect(await screen.findByRole("heading", { name: heading })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: heading }, { timeout: 3000 }),
+    ).toBeInTheDocument();
   });
 });

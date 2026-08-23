@@ -3,7 +3,10 @@ import ReactDOM from "react-dom/client";
 import { App } from "@/app/app";
 import { ErrorBoundary } from "@/app/error-boundary";
 import { AppProviders } from "@/app/providers";
+import { initMonitoring } from "@/lib/monitoring";
 import "@/styles.css";
+
+void initMonitoring();
 
 const enableMocking = async () => {
   if (import.meta.env.DEV || import.meta.env.MODE === "test") {

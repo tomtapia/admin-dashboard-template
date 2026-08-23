@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { reportError } from "@/lib/monitoring";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -18,6 +19,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
+    reportError(error, { componentStack: info.componentStack });
     if (import.meta.env.DEV) {
       console.error("ErrorBoundary caught an error:", error, info.componentStack);
     }
