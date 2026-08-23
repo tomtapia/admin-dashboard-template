@@ -1,3 +1,9 @@
+## v0.2.1 (2026-08-22)
+
+### Fix
+
+- **deps**: upgrade dependencies and resolve deprecation warnings
+
 ## v0.2.0 (2026-08-22)
 
 ### Feat
