@@ -20,3 +20,12 @@ export const loginRequest = () => http<Session>("/api/auth/login", { method: "PO
 
 export const logoutRequest = () =>
   http<{ success: boolean }>("/api/auth/logout", { method: "POST" });
+
+export const refreshRequest = () => http<Session>("/api/auth/refresh", { method: "POST" });
+
+export const isSessionExpired = (session: Session | null): boolean => {
+  if (!session) {
+    return true;
+  }
+  return session.expiresAt <= Date.now();
+};

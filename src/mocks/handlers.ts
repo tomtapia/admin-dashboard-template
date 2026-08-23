@@ -66,6 +66,15 @@ export const handlers = [
     activeSession = { ...defaultSession, isAuthenticated: false };
     return HttpResponse.json({ success: true });
   }),
+  http.post("/api/auth/refresh", async () => {
+    await delay(300);
+    activeSession = {
+      ...defaultSession,
+      accessToken: "mock-access-token-refreshed",
+      expiresAt: Date.now() + 1000 * 60 * 60,
+    };
+    return HttpResponse.json(activeSession);
+  }),
 
   // Dashboard
   http.get("/api/dashboard/overview", async () => {

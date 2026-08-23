@@ -12,6 +12,8 @@ const managerSession: Session = {
     organization: "Northstar",
   },
   isAuthenticated: true,
+  accessToken: "mock-access-token",
+  expiresAt: 4102444800000,
 };
 
 const seed = (session: Session) =>

@@ -16,6 +16,9 @@ export type Session = {
     organization: string;
   };
   isAuthenticated: boolean;
+  accessToken: string;
+  refreshToken?: string;
+  expiresAt: number;
 };
 
 export type DashboardKpi = {

@@ -23,6 +23,9 @@ export const defaultSession: Session = {
     organization: "Northstar",
   },
   isAuthenticated: true,
+  accessToken: "mock-access-token",
+  refreshToken: "mock-refresh-token",
+  expiresAt: 4102444800000,
 };
 
 export const overviewPayload: OverviewPayload = {
