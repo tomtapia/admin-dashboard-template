@@ -65,7 +65,7 @@ Then:
 2. Click **Enter dashboard** — the mock sign-in issues a real-shaped access/refresh token session (no credentials needed).
 3. You land on the Overview. Press **⌘K / Ctrl+K** to explore the command palette, or switch workspaces from the top of the sidebar.
 
-The MSW worker starts automatically in dev, so all data, invites, and mutations work immediately against seeded fixtures.
+The MSW worker starts automatically unless a real backend is configured via `VITE_API_BASE_URL`, so all data, invites, and mutations work immediately against seeded fixtures.
 
 ## Usage & Examples
 
@@ -94,7 +94,7 @@ VITE_SENTRY_DSN=            # optional: enables Sentry error reporting
 VITE_APP_ENV=production     # optional: tags Sentry events
 ```
 
-Build and deploy `dist/` to any static host (Vercel, Netlify, S3 + CloudFront…). Production builds never start the MSW worker — just implement the same `/api/*` paths defined in [`src/mocks/handlers.ts`](src/mocks/handlers.ts).
+Build and deploy `dist/` to any static host (Vercel, Netlify, S3 + CloudFront…). As soon as `VITE_API_BASE_URL` is set at build time, the MSW mock layer stays off and all requests go straight to your backend — just implement the same `/api/*` paths defined in [`src/mocks/handlers.ts`](src/mocks/handlers.ts). Without it (as on the live demo), the app runs fully interactive against the seeded mocks.
 
 ### Restrict a feature by role
 
