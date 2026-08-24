@@ -246,6 +246,7 @@ No database, cache, object store, or queue is used.
 - **Build:** `pnpm build` runs `tsc -b` (typecheck via project references) then `vite build`, emitting static assets to `dist/`.
 - **Serve:** `pnpm preview` serves the built `dist/`; `pnpm dev` runs the Vite dev server (auto-starting the MSW worker).
 - **CI/CD:** A GitHub Actions pipeline (`.github/workflows/ci.yml`) runs typecheck (`tsc -b`), `biome ci`, `vitest`, `vite build`, and a separate `e2e` job that installs Chromium and runs the Playwright suite (`pnpm e2e`, which boots `pnpm dev` via the Playwright webServer).
+- **Demo deployments:** Publishing a GitHub release triggers `Deploy Demo` (`.github/workflows/deploy-demo.yml`), which checks out the release tag and deploys it to Vercel production via `BetaHuhn/deploy-to-vercel-action` (repository secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`). `vercel.json` rewrites all routes to `/index.html` so SPA deep links resolve on the static host; static assets are served before rewrites apply.
 - **Infrastructure / hosting:** No Docker/Kubernetes/Terraform manifests present. The output is a static SPA that can be hosted on any static file host (Vercel, Netlify, S3+CloudFront, etc.).
 
 ---
