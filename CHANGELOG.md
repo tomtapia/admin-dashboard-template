@@ -1,3 +1,22 @@
+## v0.5.0 (2026-08-24)
+
+### Feat
+
+- **ci**: deploy demo to vercel on release publish
+- **github**: add security policy, issue templates, and pull request template
+
+### Docs
+
+- **contributing**: add contributor guide and code of conduct
+- **readme**: finalize public-repo badges, live demo link, licensing, and community resources
+- **architecture**: document the release demo deployment pipeline
+
+### Chore
+
+- **license**: add MIT license
+- **config**: pin packageManager and node engine, ignore local env files
+- **ci**: enforce least-privilege permissions and concurrency in the pipeline
+
 ## v0.4.0 (2026-08-23)
 
 ### Feat
