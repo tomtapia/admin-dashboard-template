@@ -14,3 +14,6 @@ e2e/.cache/
 # Local/AI tooling — not part of the distributed template
 .codegraph/
 AGENTS.md
+
+# Vercel project link (contains org/project ids)
+.vercel/
