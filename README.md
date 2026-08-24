@@ -2,7 +2,7 @@
 
 A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter — 13 fully wired module pages, multi-tenancy, RBAC, theming, i18n, and a complete in-browser mock API so it runs with **zero backend**, then drops onto your real API with a single env var.
 
-**Live demo:** [admin-dashboard-template.vercel.app](https://admin-dashboard-template.vercel.app) — rebuilt and redeployed automatically on every release.
+**Live demo:** [admin-dashboard-template.vercel.app](https://admin-dashboard-template.vercel.app)
 
 [![CI](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml)
 [![Deploy Demo](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml)
