@@ -1,3 +1,9 @@
+## v0.5.1 (2026-08-24)
+
+### Fix
+
+- **mocks**: boot msw in production so the zero-backend demo stays interactive
+
 ## v0.5.0 (2026-08-24)
 
 ### Feat
