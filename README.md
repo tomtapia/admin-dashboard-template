@@ -1,158 +1,168 @@
 # Admin Dashboard Template
 
-A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter. It ships with a full set of SaaS module pages, a themeable design system, role-aware navigation, and a mock API layer so it runs with zero backend dependencies — then drops cleanly onto a real API when you are ready.
+A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter — 13 fully wired module pages, multi-tenancy, RBAC, theming, i18n, and a complete in-browser mock API so it runs with **zero backend**, then drops onto your real API with a single env var.
 
-![Example](./Admin-Dashboard-Template-Example.png)
+**Live demo:** [admin-dashboard-template.vercel.app](https://admin-dashboard-template.vercel.app) — rebuilt and redeployed automatically on every release.
 
-## Features
+[![CI](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml)
+[![Deploy Demo](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2563eb)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.5.0-2563eb)](CHANGELOG.md)
+[![React](https://img.shields.io/badge/React-19-087ea4?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8_strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)](https://vite.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
-- **11 module pages** wired through lazy routes and a protected shell: Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, plus Login and 404.
-- **Multi-tenant foundation** — a `TenantProvider` scopes every request with an `X-Tenant-Id` header and persists the active workspace; the branded **ADMIN DASH** workspace switcher sits at the top of the left sidebar (and inside the mobile navigation dialog) so users can move between tenants.
-- **Hardened session lifecycle** — access/refresh tokens, automatic `401 → refresh → retry` on the `http()` layer, and a silent refresh on load when the session has expired.
-- **Internationalization** — `react-i18next` with `en` / `es` / `fr` bundles, selectable from User Settings; nav, shell, and key surfaces are translated through `t()`.
-- **User settings** — a per-user personalization screen (`/app/settings/user`) holding the theme palette and interface language switches (also reachable from the avatar menu); preferences apply instantly and persist on the device.
-- **Observability-ready** — a `monitoring` module reports errors/events to Sentry when `VITE_SENTRY_DSN` is set, and captures window errors/unhandled rejections; it is inert (console fallback) in the demo.
-- **End-to-end tests** — a Playwright suite (`e2e/`) drives the running app (MSW-backed) across auth, routing, theming, tenancy, and language.
-- **Themeable design system** with four presets (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables; selected from User Settings and persisted in `localStorage`.
-- **Role-based access control** — nav items and protected routes are gated by the signed-in user's role (Owner / Admin / Manager) via a shared `canAccess` helper and `RoleRoute`.
-- **Mock API via MSW** — the entire `/api/*` surface is served from in-browser mocking, with per-test reset. Swap in a real backend with a single env var (see [Going to production](#going-to-production)).
-- **Resilient UI** — global + route-level error boundaries, skeleton screens that mirror final layouts (no spinner swaps or layout shift), retryable error panels on every module page, empty states with recovery actions, and centralized mutation error toasts.
-- **Mistake-friendly flows** — destructive actions (team removal, API-key revoke) run through a confirm dialog with an **Undo** toast; the settings form shows inline validation, an unsaved-changes banner with discard, and pending-state buttons everywhere.
-- **Command palette** — `⌘K` / `Ctrl+K` opens a `cmdk` palette for fuzzy page navigation, theme switching, and sign-out; the topbar search is its trigger. The notification bell is live (unread badge, mark-as-read, view-all).
-- **Working controls** — no decorative buttons: role filter chips, roster/team/transaction CSV exports, invite-user flow, overview period selector, and chart-series filters are all wired to real state and mock endpoints.
-- **Accessible (WCAG 2.2 AA)** — skip link, focus-visible rings, route announcements (`document.title` + `aria-live`) with focus moved to the page heading, keyboard-operable sortable/paginated tables, ≥44 px touch targets on mobile, sr-only chart data tables, AA-contrast tokens in every palette, `prefers-reduced-motion` support, `prefers-color-scheme` default theme, and jest-axe checks across key routes in CI.
-- **Mobile-first continuity** — grouped scrollable mobile nav dialog, responsive roster cards vs. tables, safe-area insets, and a Playwright mobile viewport suite (`e2e/mobile.spec.ts`).
-- **Accessible** — see the WCAG 2.2 AA bullet above; jest-axe runs in CI.
-- **Tooling** — [Biome](https://biomejs.dev) (format + lint + import organization), Husky pre-commit, and a GitHub Actions CI pipeline (typecheck → biome → test → e2e → build).
+## About
 
-## Tech stack
+Standing up an internal admin console usually means weeks of plumbing before the first real feature: session handling, tenant scoping, data tables, theme tokens, loading/error states, accessibility, and a test pipeline. This template makes those decisions for you — and proves them with unit and end-to-end tests.
 
-React 19 · TypeScript 5 (strict, project references) · Vite 6 · React Router v7 · TanStack Query v5 · Tailwind CSS v4 (CSS-first) · shadcn/ui (Radix) · React Hook Form + Zod · Recharts · MSW · i18next · Sentry (browser) · Biome · Vitest · Playwright.
+Every screen runs against a [Mock Service Worker](https://mswjs.io) API layer, so the app is a fully interactive product demo out of the box. When it's time for production, set `VITE_API_BASE_URL` and the same `/api/*` requests flow straight to your backend — no feature-code changes required.
 
-## Quickstart
+## Key Features
+
+- **13 routed pages** — Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, User Settings, Login, 404 — all lazy-loaded behind a protected shell.
+- **Multi-tenancy built in** — every request is scoped with an `X-Tenant-Id` header; a branded workspace switcher lives at the top of the sidebar and mobile nav.
+- **Production-shaped auth** — access/refresh tokens, automatic `401 → refresh → retry`, silent refresh on load, and redirect-to-login on failure.
+- **Role-based access control** — nav visibility and route guards gated by Owner / Admin / Manager through a single `canAccess()` source of truth.
+- **Four theme presets** (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables, honoring `prefers-color-scheme` by default.
+- **Internationalized** — English, Spanish, and French bundles via `react-i18next`, switchable per user.
+- **Resilient UX contract** — skeleton-first loading (no spinner page-swaps), retryable error panels, confirm dialogs with **Undo** toasts, and zero decorative buttons.
+- **Accessible to WCAG 2.2 AA** — skip link, focus management on navigation, keyboard-operable tables, sr-only chart data tables, AA-contrast tokens, `prefers-reduced-motion`; enforced by jest-axe in CI.
+- **Observability-ready** — Sentry error reporting activates lazily when `VITE_SENTRY_DSN` is set; console fallback otherwise.
+- **Quality pipeline** — Vitest (jsdom) + Playwright suites, Biome lint/format, Husky pre-commit, and a GitHub Actions gate (typecheck → lint → test → build → e2e).
+- **⌘K command palette** — fuzzy page navigation, theme switching, and account actions.
+
+## Getting Started
+
+### Prerequisites
+
+| Tool   | Version |
+| ------ | ------- |
+| Node.js | ≥ 22 |
+| pnpm    | ≥ 11 |
+
+### Installation
 
 ```bash
-pnpm install      # install dependencies
-pnpm dev          # start the Vite dev server (auto-starts the MSW worker)
-pnpm build        # tsc -b (typecheck) + vite build -> dist/
-pnpm preview      # serve the production build
-pnpm test         # run the Vitest suite once
-pnpm typecheck    # tsc -b (project-references typecheck)
-pnpm lint         # biome check
-pnpm format       # biome format --write .
-pnpm e2e          # run the Playwright suite (boots pnpm dev automatically)
+# 1. Get the code (or click "Use this template" on GitHub)
+git clone <your-repo-url> admin-dashboard
+cd admin-dashboard
+
+# 2. Install dependencies
+pnpm install
 ```
 
-Requires Node 22+ and pnpm 11+.
+### Quickstart — running in under 2 minutes
 
-## Project structure
+```bash
+pnpm dev
+```
+
+Then:
+
+1. Open **http://localhost:5173** — unauthenticated visits redirect to `/login`.
+2. Click **Enter dashboard** — the mock sign-in issues a real-shaped access/refresh token session (no credentials needed).
+3. You land on the Overview. Press **⌘K / Ctrl+K** to explore the command palette, or switch workspaces from the top of the sidebar.
+
+The MSW worker starts automatically in dev, so all data, invites, and mutations work immediately against seeded fixtures.
+
+## Usage & Examples
+
+### Everyday commands
+
+```bash
+pnpm dev          # Vite dev server + MSW worker
+pnpm build        # tsc -b typecheck + vite build -> dist/
+pnpm preview      # serve the production build
+pnpm test         # Vitest suite (unit/integration, jsdom)
+pnpm e2e          # Playwright suite (boots pnpm dev automatically)
+pnpm typecheck    # tsc -b alone
+pnpm lint         # Biome check
+pnpm format       # Biome format --write .
+```
+
+### Point it at a real backend
+
+```bash
+cp .env.example .env.local
+```
+
+```dotenv
+VITE_API_BASE_URL=https://api.example.com
+VITE_SENTRY_DSN=            # optional: enables Sentry error reporting
+VITE_APP_ENV=production     # optional: tags Sentry events
+```
+
+Build and deploy `dist/` to any static host (Vercel, Netlify, S3 + CloudFront…). Production builds never start the MSW worker — just implement the same `/api/*` paths defined in [`src/mocks/handlers.ts`](src/mocks/handlers.ts).
+
+### Restrict a feature by role
+
+RBAC is wired in two places, both backed by [`src/lib/rbac.ts`](src/lib/rbac.ts):
+
+```ts
+// src/components/layout/nav-items.ts — hide the nav entry
+{ title: "Audit Log", href: "/app/audit", icon: "scroll-text", roles: ["Owner", "Admin"] }
+```
+
+```tsx
+// src/app/router.tsx — guard the route itself
+<RoleRoute roles={["Owner", "Admin"]}>
+  <Suspense>{/* <AuditPage /> */}</Suspense>
+</RoleRoute>
+```
+
+Unauthorized roles are redirected to `/app/overview`. Note this is client-side gating only — enforce authorization on your backend.
+
+## Project Structure
 
 ```text
 src/
-├── app/            # AppProviders, AppRouter, AppShell, ErrorBoundary, QueryClient
+├── app/            # Providers, Router, ErrorBoundary, QueryClient
 ├── components/
-│   ├── ui/         # shadcn/ui primitives (button, card, dialog, ...)
+│   ├── ui/         # shadcn/ui primitives (Radix-based)
 │   ├── layout/     # AppShell, SidebarNav, Topbar, nav-items
-│   ├── shared/     # PageHeader, SectionCard, DataTable (sortable/paginated), DetailDrawer, StatePanel (retryable), EmptyState, KpiCard, skeletons, ConfirmDialog, CommandPalette
+│   ├── shared/     # DataTable, DetailDrawer, StatePanel, skeletons, ConfirmDialog, CommandPalette…
 │   ├── users/      # UsersTable, InviteUserDialog
-│   └── settings/   # SettingsForm, AppearancePicker, LanguagePicker (user settings)
-├── features/       # per-module context + data-access
-│   ├── auth/       # AuthProvider, auth-api, protected-route
-│   ├── tenants/    # TenantProvider, tenants-api (X-Tenant-Id scoping)
-│   ├── i18n/       # i18n init, provider, locale switcher, locale bundles
-│   ├── theme/      # ThemeProvider, theme-config
-│   └── <module>/   # overview, users, settings, billing, analytics, team, ...
-├── lib/            # http() fetch wrapper, cn(), rbac, notify, monitoring, download (CSV export)
+│   └── settings/   # SettingsForm, AppearancePicker, LanguagePicker
+├── features/       # Per-module contexts + data access (auth, tenants, theme, i18n, overview, users…)
+├── lib/            # http() fetch wrapper, rbac(), notify, monitoring, download (CSV), cn()
 ├── mocks/          # MSW handlers, browser worker, seed data
-├── pages/          # route components (one per module + login + not-found)
-├── test/           # Vitest setup, node MSW server, renderApp, tests
-├── types/          # shared domain types
+├── pages/          # Route components (one per module + login + 404)
+├── test/           # Vitest setup, MSW node server, renderApp helper
+├── types/          # Shared domain types
 └── styles.css      # Tailwind v4 entry + theme CSS variables
-e2e/                # Playwright specs + helpers (auth, navigation, mobile)
+e2e/                # Playwright specs (auth, navigation, mobile @ 390×844)
 ```
 
-Path alias: `@/` → `src/`. Always import via the alias.
+Imports always use the `@/` path alias (mapped to `src/`).
 
-## Theming
+## Roadmap / Status
 
-Themes are defined in `src/features/theme/theme-config.ts` and backed by CSS variable blocks in `src/styles.css` (`[data-theme="..."]`). Users pick a palette from **User Settings → Appearance** (`src/components/settings/appearance-picker.tsx`); the ⌘K command palette also lists palettes as quick shortcuts. To add a theme:
+**Status:** actively developed, pre-1.0. Releases are cut locally with [Commitizen](https://commitizen-tools.github.io/commitizen/) (`czg bump`) and documented in the [changelog](CHANGELOG.md); publishing a release also deploys the live demo to Vercel.
 
-1. Add a variable set under `:root[data-theme="your-theme"]` in `styles.css`.
-2. Register it in `themeDefinitions` with a `label`, `mode`, and three `preview` swatches.
+Recently shipped (v0.3–v0.4): tenancy scoping, token refresh lifecycle, i18n, Sentry foundation, and a full UX/a11y overhaul (skeletons, undo flows, command palette, keyboard-accessible tables).
 
-With no stored preference the app follows `prefers-color-scheme` (dark → first dark theme). All text tokens are verified against WCAG AA contrast on every palette; keep that true when adding one.
+Candidate milestones toward **v1.0**:
 
-## Role-based access control
+- Hardened production auth story (server-issued sessions instead of `localStorage` tokens)
+- Documented server-side authorization contract alongside the client RBAC
+- Coverage reporting wired into CI
+- Additional themes and locale bundles
 
-- Add `roles?: AppRole[]` to a nav item in `src/components/layout/nav-items.ts` to restrict visibility.
-- Wrap a protected route in `<RoleRoute roles={[...]}>` in `src/app/router.tsx` to redirect unauthorized roles to `/app/overview`.
-- `canAccess(role, allowed)` (in `src/lib/rbac.ts`) is the single source of truth used by both the nav and the route guard.
+## Community & Ecosystem
 
-> RBAC here is client-side and runs against the mock session. Enforcing real authorization still requires server-side checks when you connect a backend.
+| Resource | Description |
+| -------- | ----------- |
+| [Architecture guide](ARCHITECTURE.md) | Full architectural reference — components, data flow, security notes, and the recipe for adding new modules |
+| [Contributing guide](CONTRIBUTING.md) | Setup, branch/commit conventions, testing expectations, PR checklist |
+| [Security policy](.github/SECURITY.md) | How to report vulnerabilities privately |
+| [Code of conduct](.github/CODE_OF_CONDUCT.md) | Contributor Covenant 2.1 |
+| [Changelog](CHANGELOG.md) | Release history, generated from Conventional Commits |
+| [Environment variables](.env.example) | Backend URL, Sentry DSN, environment label |
 
-## Multi-tenancy
+**Contributing** — see the [contributing guide](CONTRIBUTING.md) for setup and conventions. In short: commits follow [Conventional Commits](https://www.conventionalcommits.org/), a Husky pre-commit hook runs Biome on staged files, and PRs must pass the full CI pipeline: typecheck, Biome, unit tests, E2E, and build.
 
-The app is built to serve multiple workspaces from one client.
+**Support** — please open a GitHub issue for bugs and feature requests.
 
-- `TenantProvider` (`src/features/tenants/tenant-context.tsx`) holds the active tenant and persists it to `localStorage`.
-- `src/lib/http.ts` attaches the active tenant as the `X-Tenant-Id` header on every request; changing the tenant invalidates all TanStack Query caches.
-- The branded workspace switcher at the top of the left sidebar (**ADMIN DASH** logo + active tenant, `src/components/layout/workspace-switcher.tsx`) lets users move between tenants; on mobile it lives at the top of the navigation dialog, and it collapses to the logo mark when the sidebar is icon-only.
-- Seed tenants live in `src/mocks/data.ts` (`tenantsPayload`); the mock API serves `/api/tenants`.
-
-## Authentication & session
-
-The client session model is deliberately production-shaped:
-
-- `Session` carries `accessToken`, optional `refreshToken`, and `expiresAt` (`src/types/index.ts`).
-- `src/lib/http.ts` sends `Authorization: Bearer <token>` and, on a `401`, calls `POST /api/auth/refresh` once and retries the original request; if refresh fails it invokes the registered `unauthorized` handler (redirect to `/login`).
-- `AuthProvider` registers the HTTP auth handlers and silently refreshes an expired session on load (`src/features/auth/auth-context.tsx`).
-- The mock login returns tokens; `POST /api/auth/refresh` issues a fresh access token.
-
-## Internationalization
-
-The UI ships translated through `react-i18next`:
-
-- Locale bundles live in `src/features/i18n/locales/{en,es,fr}.json`; `en` mirrors the original English copy so existing behavior is preserved.
-- `I18nProvider` is wired into the app and the test harness; the browser language detector persists the choice to `localStorage` (`admin-dashboard-template:lang`).
-- Nav labels, group labels, the app shell, topbar, login CTA, and the overview header use `t()`.
-- Users change language from **User Settings → Language** (`src/components/settings/language-picker.tsx`); it is also reachable from the avatar menu.
-- Add a language: drop a new JSON bundle and register it in `supportedLanguages` (`src/features/i18n/i18n.ts`) — the User Settings picker renders it automatically.
-
-## Observability
-
-A small `monitoring` module (`src/lib/monitoring.ts`) provides a production-ready hook without forcing a dependency on the demo:
-
-- Set `VITE_SENTRY_DSN` to lazily initialize `@sentry/browser` and report exceptions/events.
-- With no DSN it falls back to `console.error` / `console.warn` (inert in the demo).
-- Global `error` and `unhandledrejection` listeners forward to the reporter; caught render errors are reported from the route `ErrorBoundary`.
-- Configure `VITE_APP_ENV` to tag the Sentry environment.
-
-## End-to-end testing
-
-`e2e/` holds a Playwright suite that runs against the live app (MSW stays active in dev):
-
-- `playwright.config.ts` boots `pnpm dev` as the web server on `:5173`.
-- `auth.spec.ts` exercises the mock sign-in flow; `navigation.spec.ts` covers routing, tenant switching, language switching, and theming; `mobile.spec.ts` runs a 390×844 viewport through grouped nav, roster cards, invite dialog, and the command palette.
-- Run with `pnpm e2e` (or `pnpm e2e:ui` / `pnpm e2e:report`). CI installs Chromium and runs the suite.
-
-## Going to production
-
-The template is backend-free by default. To point it at a real API:
-
-1. Copy `.env.example` to `.env` (or `.env.local`) and set `VITE_API_BASE_URL` to your API origin, e.g. `https://api.example.com`.
-2. Ensure your backend exposes the same `/api/*` paths the MSW handlers use (see `src/mocks/handlers.ts`).
-3. Build and deploy the static SPA (`pnpm build` → `dist/`). In a production build the MSW worker is not started, so requests go straight to your backend.
-4. Replace the mock `AuthProvider`/session model with real credential handling and add server-side authorization — the client RBAC is a UI convenience only.
-
-## Releases
-
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
-- Versioning and changelog are managed with [Commitizen](https://commitizen-tools.github.io/commitizen/): run `cz bump` to bump the version, tag it, and regenerate `CHANGELOG.md` from the conventional commits.
-- CI publishes nothing; the release is created locally and pushed by the maintainer.
-
-## Contributing
-
-- Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
-- A Husky pre-commit hook runs `lint-staged` (Biome check + format) on changed files.
-- PRs run the CI pipeline: typecheck, Biome, unit tests, E2E, and build.
-- See `AGENTS.md` for the agent-oriented development conventions and `ARCHITECTURE.md` for the full architectural reference.
+**License** — released under the [MIT License](LICENSE).
