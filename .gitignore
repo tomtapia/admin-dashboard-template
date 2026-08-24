@@ -17,3 +17,7 @@ AGENTS.md
 
 # Vercel project link (contains org/project ids)
 .vercel/
+
+# Local env files (keep .env.example tracked)
+.env
+.env*.local
