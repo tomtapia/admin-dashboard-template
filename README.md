@@ -7,7 +7,7 @@ A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter â
 [![CI](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/ci.yml)
 [![Deploy Demo](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/tomtapia/admin-dashboard-template/actions/workflows/deploy-demo.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2563eb)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.5.0-2563eb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.1-2563eb)](CHANGELOG.md)
 [![React](https://img.shields.io/badge/React-19-087ea4?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8_strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)](https://vite.dev)
