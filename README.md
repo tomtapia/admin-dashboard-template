@@ -13,6 +13,8 @@ A production-shaped **React 19 + Vite 6 + TypeScript** admin dashboard starter �
 [![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)](https://vite.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
+![Admin Dashboard Template — Overview page with KPI cards, revenue chart, and category breakdown](docs/images/dashboard-overview.png)
+
 ## About
 
 Standing up an internal admin console usually means weeks of plumbing before the first real feature: session handling, tenant scoping, data tables, theme tokens, loading/error states, accessibility, and a test pipeline. This template makes those decisions for you — and proves them with unit and end-to-end tests.
