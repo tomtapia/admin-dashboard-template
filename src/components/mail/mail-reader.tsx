@@ -10,7 +10,7 @@ type MailReaderProps = {
 
 export const MailReader = ({ message, onBack, onMarkUnread }: MailReaderProps) => (
   <div className="flex h-full flex-col">
-    <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-3">
+    <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3">
       <Button
         variant="outline"
         size="icon"
@@ -21,9 +21,13 @@ export const MailReader = ({ message, onBack, onMarkUnread }: MailReaderProps) =
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       </Button>
       <div className="min-w-0 flex-1">
-        <h2 className="truncate text-base font-semibold tracking-[-0.02em]">{message.subject}</h2>
+        <h2 className="truncate text-base font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+          {message.subject}
+        </h2>
         <p className="mt-0.5 truncate text-xs text-[var(--muted-foreground)]">
-          {message.from} · to {message.to} · {message.receivedAt}
+          <span className="font-medium text-[var(--foreground-muted)]">{message.from}</span>
+          {" · to "}
+          {message.to} · {message.receivedAt}
         </p>
       </div>
       {message.read ? (
@@ -34,11 +38,13 @@ export const MailReader = ({ message, onBack, onMarkUnread }: MailReaderProps) =
       ) : null}
     </div>
     <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 text-sm leading-6 text-[var(--foreground-muted)]">
-      {message.body.split("\n\n").map((paragraph) => (
-        <p key={paragraph} className="whitespace-pre-line">
-          {paragraph}
-        </p>
-      ))}
+      <div className="mx-auto max-w-prose space-y-4">
+        {message.body.split("\n\n").map((paragraph) => (
+          <p key={paragraph} className="whitespace-pre-line">
+            {paragraph}
+          </p>
+        ))}
+      </div>
     </div>
   </div>
 );

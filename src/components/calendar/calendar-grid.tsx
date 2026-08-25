@@ -15,11 +15,11 @@ type MonthCell = {
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const toneClass: Record<CalendarEvent["tone"], string> = {
-  accent: "border-l-[var(--accent)]",
-  success: "border-l-[var(--success)]",
-  warning: "border-l-amber-500",
-  neutral: "border-l-[var(--muted-foreground)]",
+const toneChipClass: Record<CalendarEvent["tone"], string> = {
+  accent: "border-l-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]",
+  success: "border-l-[var(--success)] bg-[var(--success-soft)] text-[var(--success)]",
+  warning: "border-l-amber-500 bg-[var(--warning-soft)] text-[var(--warning)]",
+  neutral: "border-l-[var(--muted-foreground)] bg-[var(--surface-subtle)]",
 };
 
 const eventToneDot: Record<CalendarEvent["tone"], string> = {
@@ -97,14 +97,14 @@ export const CalendarGrid = ({ year, month, events }: CalendarGridProps) => {
                   key={cell.key}
                   className={cn(
                     "h-24 border-b border-[var(--border)] p-1.5 align-top",
-                    isToday && "bg-[var(--surface-panel)]",
+                    isToday && "bg-[var(--surface-panel)] ring-1 ring-inset ring-[var(--accent)]",
                   )}
                 >
                   <span
                     className={cn(
                       "inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-medium",
                       isToday
-                        ? "bg-[var(--foreground)] text-[var(--background)]"
+                        ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
                         : "text-[var(--foreground-muted)]",
                     )}
                   >
@@ -115,8 +115,8 @@ export const CalendarGrid = ({ year, month, events }: CalendarGridProps) => {
                       <div
                         key={event.id}
                         className={cn(
-                          "truncate rounded-md border-l-2 bg-[var(--surface-subtle)] px-1.5 py-0.5 text-[11px] text-[var(--foreground-muted)]",
-                          toneClass[event.tone],
+                          "truncate rounded-md border-l-2 px-1.5 py-0.5 text-[11px] font-medium text-[var(--foreground-muted)]",
+                          toneChipClass[event.tone],
                         )}
                         title={`${event.title} · ${event.time}`}
                       >
