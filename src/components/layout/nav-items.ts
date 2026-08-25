@@ -94,6 +94,10 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: "nav.group.uiElements",
+    items: [{ title: "nav.uiKit", href: "/app/ui", icon: "Shapes" }],
+  },
+  {
     label: "nav.group.settings",
     items: [
       { title: "nav.userSettings", href: "/app/settings/user", icon: "UserRoundCog" },
