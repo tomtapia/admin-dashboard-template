@@ -1,6 +1,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -11,17 +12,25 @@ import { useNavigate } from "react-router-dom";
 import {
   authStorage,
   isSessionExpired,
+  type LoginMethod,
   loginRequest,
   logoutRequest,
   refreshRequest,
+  rememberedUserStorage,
 } from "@/features/auth/auth-api";
 import { setHttpAuth } from "@/lib/http";
 import type { Session } from "@/types";
 
+export type LoginOptions = {
+  redirectTo?: string;
+  method?: LoginMethod;
+  email?: string;
+};
+
 type AuthContextValue = {
   session: Session | null;
   isAuthenticated: boolean;
-  login: () => Promise<void>;
+  login: (options?: LoginOptions) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<boolean>;
 };
@@ -52,25 +61,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
 
+  const rememberCurrentUser = useCallback(() => {
+    const current = sessionRef.current;
+    if (current?.isAuthenticated) {
+      rememberedUserStorage.set({ name: current.user.name, email: current.user.email });
+    }
+  }, []);
+
   const logout = useMemo(
     () => async (): Promise<void> => {
       await logoutRequest().catch(() => undefined);
+      rememberCurrentUser();
       authStorage.clear();
       sessionRef.current = null;
       setSession(null);
       navigate("/login", { replace: true });
     },
-    [navigate],
+    [navigate, rememberCurrentUser],
   );
 
   const unauthorized = useMemo(
     () => () => {
+      rememberCurrentUser();
       authStorage.clear();
       sessionRef.current = null;
       setSession(null);
       navigate("/login", { replace: true });
     },
-    [navigate],
+    [navigate, rememberCurrentUser],
   );
 
   useEffect(() => {
@@ -91,12 +109,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       session,
       isAuthenticated: Boolean(session?.isAuthenticated),
-      login: async () => {
-        const nextSession = await loginRequest();
+      login: async (options) => {
+        const nextSession = await loginRequest({
+          method: options?.method,
+          email: options?.email,
+        });
         sessionRef.current = nextSession;
         authStorage.set(nextSession);
+        rememberedUserStorage.set({
+          name: nextSession.user.name,
+          email: nextSession.user.email,
+        });
         setSession(nextSession);
-        navigate("/app/overview", { replace: true });
+        navigate(options?.redirectTo ?? "/app/overview", { replace: true });
       },
       logout,
       refreshSession,
