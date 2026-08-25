@@ -45,12 +45,13 @@ admin-dashboard-template/
 │   │   ├── ui/                  # shadcn/ui primitives (button, card, dialog, alert, tabs, tooltip, ...)
 │   │   ├── layout/              # AppShell, SidebarNav, Topbar, nav-items, nav-group-list, nav-icons
 │   │   ├── shared/              # KPI cards, DataTable, DetailDrawer, Breadcrumbs, state panels, page header
+│   │   ├── auth/                # RememberedAccount, PasswordSignInForm, OAuthButtons (login screen)
 │   │   ├── mail/                # MailList, MailReader
 │   │   ├── calendar/            # CalendarGrid
 │   │   ├── users/               # UsersTable
 │   │   └── settings/            # SettingsForm, AppearancePicker, LanguagePicker (user settings)
 │   ├── features/
-│   │   ├── auth/                # AuthProvider, auth-api, protected-route
+│   │   ├── auth/                # AuthProvider, auth-api (session + remembered account), protected-route
 │   │   ├── tenants/             # TenantProvider, tenants-api (X-Tenant-Id scoping)
 │   │   ├── i18n/                # i18n init, provider, locale bundles
 │   │   ├── theme/               # ThemeProvider, theme-config
@@ -133,7 +134,7 @@ Rules that keep the IA scalable:
     |     ├── BrowserRouter (React Router v7)
     |     ├── I18nProvider (react-i18next; browser language detector)
     |     ├── ThemeProvider (localStorage-driven theme)
-    |     ├── AuthProvider  (session in localStorage; registers http auth)
+    |     ├── AuthProvider  (session + remembered account in localStorage; registers http auth)
     |     ├── TenantProvider (active tenant; X-Tenant-Id header)
     |     └── Toaster (sonner)
     |
@@ -156,7 +157,7 @@ Rules that keep the IA scalable:
     v
 [Mock Service Worker]  intercept  /api/*  requests
     |
-    +--> /api/auth/session | login | logout | refresh
+    +--> /api/auth/session | login ({method,email}) | logout | refresh
     +--> /api/tenants
     +--> /api/dashboard/overview
     +--> /api/users
@@ -176,7 +177,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | --- | --- | --- | --- |
 | `AppProviders` | Composition root wiring React Query, Router, I18n, Theme, Auth, Tenant, and Toaster contexts. | React, TanStack Query, React Router | Bundled SPA |
 | `AppRouter` | Declarative route table; lazy-loads pages; enforces `ProtectedRoute` + `RoleRoute` for `/app/*`. | React Router v7 | Bundled SPA |
-| `AuthProvider` / `auth-api` | Client-side session state with access/refresh tokens; reads/writes session to `localStorage`; registers HTTP auth handlers; silently refreshes expired sessions. | React Context, `lib/http.ts` | Bundled SPA |
+| `AuthProvider` / `auth-api` | Client-side session state with access/refresh tokens; reads/writes session to `localStorage`; remembers the last signed-in account (`rememberedUserStorage`) on login/logout/expiry for the continue-as card; accepts `login({ redirectTo, method, email })` and honors `ProtectedRoute`'s redirect target; registers HTTP auth handlers; silently refreshes expired sessions. | React Context, `lib/http.ts` | Bundled SPA |
 | `TenantProvider` / `tenants-api` | Holds the active tenant (persisted); scopes requests via `X-Tenant-Id`; invalidates queries on switch. Switched from the branded **ADMIN DASH** workspace switcher at the top of the left sidebar (`workspace-switcher.tsx`; logo-only when collapsed, and placed inside the mobile navigation dialog). | React Context, `lib/http.ts` | Bundled SPA |
 | `I18nProvider` / `i18n` | `react-i18next` integration with `en`/`es`/`fr` bundles and a browser language detector. | react-i18next, i18next | Bundled SPA |
 | `ProtectedRoute` | Guards `/app/*`; redirects unauthenticated users to `/login`. | React Router | Bundled SPA |
@@ -197,6 +198,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | `CommandPalette` (`cmdk`) | `⌘K`/`Ctrl+K` command menu: fuzzy page navigation (RBAC-filtered), theme switching, sign-out. The topbar search field is its trigger button. | cmdk, Radix Dialog | Bundled SPA |
 | Topbar notifications dropdown | Live unread badge + mark-as-read + view-all over the notifications query cache; replaced decorative bell/mail buttons. | TanStack Query, Radix DropdownMenu | Bundled SPA |
 | `UsersTable` / `InviteUserDialog` | Roster with mobile card list + desktop grid; row actions open a profile drawer, resend invites (`POST /api/users/invite`), or toggle access with undo (`PATCH /api/users/:id`). Invite dialog uses RHF+Zod with inline errors. | RHF+Zod, Radix Dialog | Bundled SPA |
+| Login screen (`login-page.tsx` + `components/auth`) | Centered auth card over a token-adaptive dot grid, modeled on modern SaaS re-auth flows: remembered-account panel with "Continue as \<name\>" (falls back to the seeded demo persona), "Switch or remove account" toggling an inline RHF+Zod email/password form, dashed "or sign in with" divider with mock Google/Apple buttons (`POST /api/auth/login` carrying `{method,email}`), and a help-center footer. Both modes are jest-axe checked. | React Context, RHF+Zod, Tailwind | Bundled SPA |
 | Route announcements (`AppShell`) | On navigation: sets `document.title`, updates an `aria-live=polite` region ("X page loaded"), and moves focus to the page `<h1>` (`tabIndex=-1` in `PageHeader`). | React Router | Bundled SPA |
 | Chart text alternatives | Every Recharts surface carries `role="img"` + descriptive `aria-label`; revenue/funnel/MRR charts add sr-only data tables so screen readers get equivalent data. | Recharts | Bundled SPA |
 | `lib/download.ts` | Client-side CSV export helper used by roster/team/transaction export buttons. | Blob API | Bundled SPA |
@@ -228,7 +230,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 
 ### Data Stores
 - No persistent/server data store. Data is in-memory mock state (`src/mocks/handlers.ts`), resettable per test.
-- Browser `localStorage` is used for client-side session (`admin-dashboard-template:session`), theme (`admin-dashboard-theme`), language (`admin-dashboard-template:lang`), and active tenant (`admin-dashboard-template:tenant`). See section 9.
+- Browser `localStorage` is used for client-side session (`admin-dashboard-template:session`), theme (`admin-dashboard-theme`), language (`admin-dashboard-template:lang`), active tenant (`admin-dashboard-template:tenant`), and the remembered account (`admin-dashboard-template:last-user`). See section 9.
 
 ### Infrastructure
 - None. No cloud provider, container, IaC, or orchestration files exist in the repository.
@@ -250,7 +252,7 @@ There are no backend, payment, auth-provider, or third-party SDK integrations. A
 
 ## 8. Security
 
-- **Authentication (mock):** A `Session` object (with `isAuthenticated`, `accessToken`, optional `refreshToken`, and `expiresAt`) is stored in `localStorage` under `admin-dashboard-template:session`. `AuthProvider` reads it on init; `ProtectedRoute` redirects to `/login` when absent/invalid. `lib/http.ts` sends `Authorization: Bearer <accessToken>` and, on a `401`, calls `POST /api/auth/refresh` once and retries the request; if refresh fails it triggers the `unauthorized` handler (redirect to `/login`). An expired session is silently refreshed on load. This is a client-side mock only — there is no real credential verification or backend auth.
+- **Authentication (mock):** A `Session` object (with `isAuthenticated`, `accessToken`, optional `refreshToken`, and `expiresAt`) is stored in `localStorage` under `admin-dashboard-template:session`. `AuthProvider` reads it on init; `ProtectedRoute` redirects to `/login` when absent/invalid. `lib/http.ts` sends `Authorization: Bearer <accessToken>` and, on a `401`, calls `POST /api/auth/refresh` once and retries the request; if refresh fails it triggers the `unauthorized` handler (redirect to `/login`). An expired session is silently refreshed on load. The last signed-in identity is also kept in `localStorage` under `admin-dashboard-template:last-user` (`{name,email}` only — display data for the continue-as card; no tokens) and can be cleared via "Remove saved account". This is a client-side mock only — there is no real credential verification or backend auth.
 - **Authorization (client-side, mock):** Role strings exist in the `Session` (`Owner`/`Admin`/`Manager` — typed as `AppRole`) and `UserRecord` (`Owner`/`Admin`/`Support`/`Analyst`). RBAC is now enforced in the UI: `RoleRoute` redirects unauthorized roles away from gated `/app/*` routes, and `SidebarNav`/`Topbar` hide nav items the user's role cannot access (`canAccess`). This is a UI convenience only — real authorization must be enforced server-side when a backend is connected.
 - **Transport:** `lib/http.ts` only adds JSON `Content-Type` headers; no tokens, signing, or encryption are applied. It optionally prefixes requests with `import.meta.env.VITE_API_BASE_URL` so a real backend can replace MSW.
 - **Secrets management:** None present; no environment variables or secret files are used.
@@ -275,6 +277,7 @@ There are no backend, payment, auth-provider, or third-party SDK integrations. A
   - `admin-dashboard-theme` → `ThemeId` string (`"oneui-ash"` default, or `"midnight-ops"`).
   - `admin-dashboard-template:lang` → active locale code (`"en"`, `"es"`, `"fr"`), written by the i18next detector when the user picks a language in User Settings.
   - `admin-dashboard-template:tenant` → JSON string with the active tenant id, written by `TenantProvider`.
+  - `admin-dashboard-template:last-user` → JSON `{name,email}` of the last signed-in account, written by `AuthProvider`; drives the login screen's continue-as card ("Remove saved account" clears it).
 
 No database, cache, object store, or queue is used.
 
@@ -316,6 +319,7 @@ No explicit roadmap or architectural debt (beyond the mock-backend substitution 
 | RHF + Zod | React Hook Form paired with Zod schemas for typed form validation. |
 | `@/` alias | Path alias (via Vite + `tsconfig`) mapping to `src/`. |
 | Session | Client-side auth object persisted in `localStorage` under `admin-dashboard-template:session`; carries `accessToken`, optional `refreshToken`, `expiresAt`, and `isAuthenticated`. |
+| RememberedUser | Display-only `{name,email}` of the last signed-in account, persisted under `admin-dashboard-template:last-user`; powers the login screen's continue-as card (demo fallback: `demoPersona`). |
 | ThemeId | Identifier for a UI theme (`oneui-ash` default light, `midnight-ops` dark), persisted under `admin-dashboard-theme`. |
 | Tenant | Workspace entity; the active tenant is persisted and sent as the `X-Tenant-Id` header on every request. |
 | I18nProvider | `react-i18next` provider; locale bundles live in `src/features/i18n/locales/*.json`. |
