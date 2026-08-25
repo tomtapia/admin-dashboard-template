@@ -5,6 +5,7 @@ import { ErrorBoundary } from "@/app/error-boundary";
 import { resolveNavTrail } from "@/components/layout/nav-items";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { cn } from "@/lib/utils";
 
 export const AppShell = () => {
@@ -52,7 +53,8 @@ export const AppShell = () => {
       >
         <div className="mx-auto max-w-7xl space-y-5 md:space-y-6">
           <Topbar collapsed={collapsed} onToggleSidebar={() => setCollapsed((value) => !value)} />
-          <div key={pageKey} className="animate-[fade-in_320ms_ease]">
+          <div key={pageKey} className="animate-[fade-in_320ms_ease] space-y-4">
+            <Breadcrumbs />
             <ErrorBoundary>
               <Outlet />
             </ErrorBoundary>

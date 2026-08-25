@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { navLeafItems, resolveNavTrail } from "@/components/layout/nav-items";
@@ -81,5 +81,27 @@ describe("navigation information architecture", () => {
     expect(screen.queryByRole("link", { name: /team/i })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /transactions/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
+  });
+
+  it("renders breadcrumbs for nested routes with the current page last", async () => {
+    seed();
+    renderApp({ initialEntries: ["/app/team"] });
+
+    const breadcrumb = await screen.findByRole("navigation", { name: /breadcrumb/i });
+    const items = within(breadcrumb).getAllByRole("listitem");
+    expect(items).toHaveLength(3);
+    expect(items[0]).toHaveTextContent(/pages/i);
+    expect(items[1]).toHaveTextContent(/people/i);
+    expect(within(items[2]).getByText(/team/i)).toHaveAttribute("aria-current", "page");
+  });
+
+  it("renders two-level breadcrumbs for flat pages", async () => {
+    seed();
+    renderApp({ initialEntries: ["/app/overview"] });
+
+    const breadcrumb = await screen.findByRole("navigation", { name: /breadcrumb/i });
+    const items = within(breadcrumb).getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[1]).getByText(/overview/i)).toHaveAttribute("aria-current", "page");
   });
 });
