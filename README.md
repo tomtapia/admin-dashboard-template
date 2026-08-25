@@ -23,17 +23,19 @@ Every screen runs against a [Mock Service Worker](https://mswjs.io) API layer, s
 
 ## Key Features
 
-- **13 routed pages** — Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, User Settings, Login, 404 — all lazy-loaded behind a protected shell.
+- **20 routed pages** across a strict 3-level information architecture — Overview, Analytics, Mail (Inbox/Sent), Calendar, Notifications, Support, Integrations, Users, Team, Billing, Transactions, Profile, UI Kit, Tables & Charts galleries, Settings, User Settings, Login and 404 — all lazy-loaded behind a protected shell.
+- **Three-level sidebar** (Group › Section › Subsection) with collapsible sections, RBAC-aware subtrees, and route-driven **breadcrumbs** above every page.
 - **Multi-tenancy built in** — every request is scoped with an `X-Tenant-Id` header; a branded workspace switcher lives at the top of the sidebar and mobile nav.
 - **Production-shaped auth** — access/refresh tokens, automatic `401 → refresh → retry`, silent refresh on load, and redirect-to-login on failure.
 - **Role-based access control** — nav visibility and route guards gated by Owner / Admin / Manager through a single `canAccess()` source of truth.
 - **Four theme presets** (Core Light, Midnight Ops, Sunset Ember, Forest Deep) driven by CSS variables, honoring `prefers-color-scheme` by default.
 - **Internationalized** — English, Spanish, and French bundles via `react-i18next`, switchable per user.
 - **Resilient UX contract** — skeleton-first loading (no spinner page-swaps), retryable error panels, confirm dialogs with **Undo** toasts, and zero decorative buttons.
+- **Dashboard hierarchy done right** — KPI cards with sparklines on top, interactive charts in the middle, operational tables at the bottom (inverted pyramid).
 - **Accessible to WCAG 2.2 AA** — skip link, focus management on navigation, keyboard-operable tables, sr-only chart data tables, AA-contrast tokens, `prefers-reduced-motion`; enforced by jest-axe in CI.
 - **Observability-ready** — Sentry error reporting activates lazily when `VITE_SENTRY_DSN` is set; console fallback otherwise.
 - **Quality pipeline** — Vitest (jsdom) + Playwright suites, Biome lint/format, Husky pre-commit, and a GitHub Actions gate (typecheck → lint → test → build → e2e).
-- **⌘K command palette** — fuzzy page navigation, theme switching, and account actions.
+- **⌘K command palette** — fuzzy navigation across every routable page (auto-flattened from the nav tree), theme switching, and account actions.
 
 ## Getting Started
 
@@ -123,11 +125,13 @@ src/
 ├── app/            # Providers, Router, ErrorBoundary, QueryClient
 ├── components/
 │   ├── ui/         # shadcn/ui primitives (Radix-based)
-│   ├── layout/     # AppShell, SidebarNav, Topbar, nav-items
+│   ├── layout/     # AppShell, SidebarNav, Topbar, nav-items (3-level tree), nav-group-list, Breadcrumbs
 │   ├── shared/     # DataTable, DetailDrawer, StatePanel, skeletons, ConfirmDialog, CommandPalette…
+│   ├── mail/       # MailList, MailReader
+│   ├── calendar/   # CalendarGrid
 │   ├── users/      # UsersTable, InviteUserDialog
 │   └── settings/   # SettingsForm, AppearancePicker, LanguagePicker
-├── features/       # Per-module contexts + data access (auth, tenants, theme, i18n, overview, users…)
+├── features/       # Per-module contexts + data access (auth, tenants, theme, i18n, mail, calendar…)
 ├── lib/            # http() fetch wrapper, rbac(), notify, monitoring, download (CSV), cn()
 ├── mocks/          # MSW handlers, browser worker, seed data
 ├── pages/          # Route components (one per module + login + 404)

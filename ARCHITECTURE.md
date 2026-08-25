@@ -35,7 +35,7 @@ admin-dashboard-template/
 │   ├── mockServiceWorker.js     # MSW service worker (mock API in the browser)
 │   └── favicon.svg
 ├── src/
-│   ├── main.tsx                 # App bootstrap; starts MSW worker in dev/test
+│   ├── main.tsx                 # App bootstrap; starts MSW unless a backend URL is set
 │   ├── app/
 │   │   ├── app.tsx              # Root component → AppRouter
 │   │   ├── providers.tsx        # React Query, Router, Theme, Auth, Tenant, I18n, Toaster wiring
@@ -43,8 +43,10 @@ admin-dashboard-template/
 │   │   └── query-client.ts      # TanStack Query client configuration
 │   ├── components/
 │   │   ├── ui/                  # shadcn/ui primitives (button, card, dialog, ...)
-│   │   ├── layout/              # AppShell, SidebarNav, Topbar, nav-items
-│   │   ├── shared/              # KPI cards, tables, state panels, page header
+│   │   ├── layout/              # AppShell, SidebarNav, Topbar, nav-items, nav-group-list, nav-icons
+│   │   ├── shared/              # KPI cards, DataTable, DetailDrawer, Breadcrumbs, state panels, page header
+│   │   ├── mail/                # MailList, MailReader
+│   │   ├── calendar/            # CalendarGrid
 │   │   ├── users/               # UsersTable
 │   │   └── settings/            # SettingsForm, AppearancePicker, LanguagePicker (user settings)
 │   ├── features/
@@ -61,7 +63,10 @@ admin-dashboard-template/
 │   │   ├── notifications/       # notifications-api (read state)
 │   │   ├── transactions/        # transactions-api (ledger)
 │   │   ├── integrations/        # integrations-api (apps + api keys)
-│   │   └── support/             # support-api (tickets)
+│   │   ├── support/             # support-api (tickets)
+│   │   ├── mail/                # mail-api (folders, read state)
+│   │   ├── calendar/            # calendar-api (month events)
+│   │   └── profile/             # profile-api (identity + activity)
 │   ├── lib/                     # http() fetch wrapper, cn() util, formatters, monitoring
 │   ├── mocks/                   # MSW handlers, browser worker, mock data
 │   ├── pages/                   # Route components (one per module + login + not-found)
@@ -75,8 +80,41 @@ admin-dashboard-template/
 ├── tsconfig*.json               # Project-references TypeScript config
 ├── components.json              # shadcn/ui configuration
 ├── biome.json                   # Biome config (format + lint + import organization)
+├── vercel.json                  # SPA rewrites for the static demo deployment
 └── package.json                 # Scripts and dependencies
 ```
+
+### 3.1 Information architecture
+
+The navigation follows a strict three-level hierarchy — **Group › Section › Subsection** — and never goes deeper:
+
+| Group (`navGroups`) | Contents |
+| --- | --- |
+| Dashboard | Overview, Analytics |
+| Apps | Mail (▸ Inbox, Sent), Calendar, Notifications, Support, Integrations |
+| Pages | People (▸ Users, Team), Finance (▸ Billing, Transactions), Profile, Authentication, Not found |
+| UI Elements | UI Kit |
+| Data & Charts | Tables, Charts |
+| Settings | User settings, Workspace settings |
+
+Rules that keep the IA scalable:
+
+- `NavItem.children` models subsections; a section parent has **no `href`** — it expands/collapses only. Leaves always carry an `href`.
+- `navLeafItems` flattens every routable destination for the ⌘K command palette; new pages appear there automatically once registered in `navGroups`.
+- `resolveNavTrail(pathname)` resolves the longest matching route to `{ group, item, child }`; the AppShell uses it for `document.title`, and the `Breadcrumbs` component renders the same trail above every page header.
+- RBAC filters whole subtrees: a section whose children are all restricted disappears (`filterNavGroupsByRole`).
+- Adding a module = one entry in `navGroups` (+ optional children), an icon in `nav-icons.ts`, a lazy route, and nested `nav.*` i18n keys in all three locales. Nothing else moves.
+
+### 3.2 Naming contract
+
+| Artifact | Pattern | Example |
+| --- | --- | --- |
+| Route | `/app/<module>` | `/app/mail/sent` |
+| Page component + file | `<Module>Page` in `src/pages/<module>-page.tsx` | `MailPage` / `mail-page.tsx` |
+| Feature data access | `src/features/<module>/<module>-api.ts` | `features/mail/mail-api.ts` |
+| Module components | `src/components/<module>/` | `components/mail/MailList` |
+| Mock endpoint | `/api/<module>` in `src/mocks/handlers.ts` | `/api/mail?folder=inbox` |
+| Nav label key | `nav.<module>` in all locale bundles | `nav.mailInbox` |
 
 ---
 
@@ -259,6 +297,7 @@ No database, cache, object store, or queue is used.
 - Client-side RBAC (nav gating + `RoleRoute`) is a UI convenience only; enforce authorization server-side on the real backend.
 - Lint/format use Biome (`biome.json`): `pnpm lint` → `biome check`, `pnpm format` → `biome format --write .`; a Husky pre-commit runs `lint-staged` (Biome) on changed files. There are no TODO/FIXME markers or deprecated modules in the source.
 - UX conventions introduced in the 0.4 overhaul are now part of the contract: skeleton-first loading (never swap full pages for spinners), retryable error panels, ConfirmDialog + Undo for destructive mutations, no decorative controls (every button must act), keyboard-operable tables with ≥44 px mobile touch targets, and WCAG 2.2 AA as the accessibility floor (jest-axe enforced in CI).
+- IA roadmap (deferred modules from the 0.6 information-architecture rework): Chat and File Manager under **Apps**, a Register screen beside Login under **Pages ▸ Authentication**, and a dedicated 500 error page. The 3-level nav, breadcrumbs and command-palette flattening already support them without structural change.
 
 No explicit roadmap or architectural debt (beyond the mock-backend substitution noted above) identified in repository analysis.
 
