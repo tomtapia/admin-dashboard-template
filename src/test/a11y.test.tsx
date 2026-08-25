@@ -93,7 +93,7 @@ describe("accessibility", () => {
   it("ui kit page has no detectable violations", async () => {
     seedSession();
     const { container } = renderApp({ initialEntries: ["/app/ui"] });
-    await screen.findByRole("heading", { name: /ui kit/i, level: 1 });
+    await screen.findByRole("heading", { name: /color tokens/i });
     const results = await axe(container);
     expect(results.violations).toHaveLength(0);
   });
