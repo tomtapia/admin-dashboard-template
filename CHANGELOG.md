@@ -1,3 +1,10 @@
+## v0.8.0 (2026-08-25)
+
+### Feat
+
+- **login**: rebuild login screen after paceui auth-3 reference
+- **auth**: remember last signed-in account and support login methods
+
 ## v0.7.0 (2026-08-25)
 
 ### Feat
