@@ -42,7 +42,7 @@ admin-dashboard-template/
 │   │   ├── router.tsx           # Route table (lazy routes + protected routes)
 │   │   └── query-client.ts      # TanStack Query client configuration
 │   ├── components/
-│   │   ├── ui/                  # shadcn/ui primitives (button, card, dialog, ...)
+│   │   ├── ui/                  # shadcn/ui primitives (button, card, dialog, alert, tabs, tooltip, ...)
 │   │   ├── layout/              # AppShell, SidebarNav, Topbar, nav-items, nav-group-list, nav-icons
 │   │   ├── shared/              # KPI cards, DataTable, DetailDrawer, Breadcrumbs, state panels, page header
 │   │   ├── mail/                # MailList, MailReader
@@ -101,7 +101,8 @@ Rules that keep the IA scalable:
 
 - `NavItem.children` models subsections; a section parent has **no `href`** — it expands/collapses only. Leaves always carry an `href`.
 - `navLeafItems` flattens every routable destination for the ⌘K command palette; new pages appear there automatically once registered in `navGroups`.
-- `resolveNavTrail(pathname)` resolves the longest matching route to `{ group, item, child }`; the AppShell uses it for `document.title`, and the `Breadcrumbs` component renders the same trail above every page header.
+- `resolveNavTrail(pathname)` resolves the longest matching route to `{ group, item, child }`; the AppShell uses it for `document.title`, and the `Breadcrumbs` component renders the same trail above every page header. Breadcrumbs are navigable: section crumbs link to their first child, the current page is non-link text with `aria-current="page"`.
+- Sidebar sections start **collapsed** and auto-expand along the active trail; users can toggle sections freely (overrides persist until navigation re-evaluates the default). The scroll area hides its scrollbar until hover (`.sidebar-scroll` in `styles.css`) with fade masks top and bottom.
 - RBAC filters whole subtrees: a section whose children are all restricted disappears (`filterNavGroupsByRole`).
 - Adding a module = one entry in `navGroups` (+ optional children), an icon in `nav-icons.ts`, a lazy route, and nested `nav.*` i18n keys in all three locales. Nothing else moves.
 
@@ -187,7 +188,7 @@ No network backend exists. Every `/api/*` request is intercepted and served from
 | `UserSettingsPage` (`/app/settings/user`) | Per-user personalization screen: appearance (palette radios with preview swatches), interface language, and read-only session identity from `AuthProvider`. Client-only preferences — no API surface; reachable from the Settings nav group and the avatar menu. | React Context, Tailwind | Bundled SPA |
 | MSW Mock Layer (`src/mocks`) | Full fake API surface (`handlers.ts`, `browser.ts` worker, `data.ts`). | MSW v2 | Bundled, dev/test only |
 | `lib/http.ts` | Thin `fetch` wrapper; attaches bearer token + `X-Tenant-Id`; on `401` refreshes once and retries; throws on non-2xx. | Fetch API | Bundled SPA |
-| shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, AlertDialog, DropdownMenu (+ CheckboxItem), Command, Input, Switch, Avatar, Badge, Label, Skeleton. | Radix UI, cmdk, Tailwind, CVA | Bundled SPA |
+| shadcn/ui primitives (`src/components/ui`) | Button, Card, Dialog, AlertDialog, DropdownMenu (+ CheckboxItem), Command, Input, Switch, Avatar, Badge, Label, Skeleton, Alert, Tabs, Tooltip. | Radix UI, cmdk, Tailwind, CVA | Bundled SPA |
 | Pages (`src/pages`) | Login, Overview, Analytics, Users, Team, Billing, Transactions, Notifications, Support, Integrations, Settings, NotFound. | React, Recharts, RHF+Zod | Bundled SPA |
 | `DataTable` / `DetailDrawer` | Reusable generic table (`data-table.tsx`) and right-side detail panel + `DefinitionList` (`detail-drawer.tsx`). The table is keyboard-operable (rows focusable, Enter/Space activates), sortable via `Column.sortValue` (`aria-sort` on headers), paginated client-side (default 10 rows/page) with a range footer, and exposes `getRowLabel` for row aria-labels. | React | Bundled SPA |
 | `skeletons.tsx` | Layout-stable loading placeholders (`KpiGridSkeleton`, `TableSkeleton`, `ChartSkeleton`, `ListSkeleton`, `FormSkeleton`) mirroring final content dimensions; each announces "loading" via `role="status"` + sr-only text. Pages render skeletons instead of swapping in spinner panels, eliminating layout shift; all motion is disabled under `prefers-reduced-motion`. | React, Tailwind | Bundled SPA |

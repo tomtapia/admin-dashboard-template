@@ -4,6 +4,7 @@ import { login } from "./helpers";
 test("navigates between module pages", async ({ page }) => {
   await login(page);
 
+  await page.getByRole("button", { name: /people/i }).click();
   await page.getByRole("link", { name: /users/i }).click();
   await expect(page).toHaveURL(/.*\/app\/users/);
   await expect(
