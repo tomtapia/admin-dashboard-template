@@ -11,7 +11,7 @@ test.describe("mobile continuity", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
 
-    for (const group of ["Dashboard", "Manage", "Engage", "Settings"]) {
+    for (const group of ["Dashboard", "Apps", "Pages", "Settings"]) {
       await expect(dialog.getByRole("paragraph").filter({ hasText: group })).toBeVisible();
     }
 

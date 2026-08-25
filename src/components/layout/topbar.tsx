@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { navGroups, navItems } from "@/components/layout/nav-items";
+import { useLocation, useNavigate } from "react-router-dom";
+import { NavGroupList } from "@/components/layout/nav-group-list";
+import { filterNavGroupsByRole, navGroups, resolveNavTrail } from "@/components/layout/nav-items";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -29,7 +30,6 @@ import {
   getNotificationsRequest,
   markNotificationReadRequest,
 } from "@/features/notifications/notifications-api";
-import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 import type { NotificationItem } from "@/types";
 
@@ -46,7 +46,8 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
   const queryClient = useQueryClient();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const currentItem = navItems.find((item) => location.pathname.startsWith(item.href));
+  const trail = resolveNavTrail(location.pathname);
+  const currentItemTitle = trail?.child?.title ?? trail?.item.title ?? "nav.overview";
 
   const notificationsQuery = useQuery<NotificationItem[]>({
     queryKey: ["notifications"],
@@ -98,36 +99,10 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
               <div className="border-b border-[var(--border)] pb-5">
                 <WorkspaceSwitcher />
               </div>
-              {navGroups.map((group) => {
-                const items = group.items.filter((item) =>
-                  canAccess(session?.user.role, item.roles),
-                );
-                if (items.length === 0) return null;
-                return (
-                  <div key={group.label} className="space-y-2">
-                    <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
-                      {t(group.label)}
-                    </p>
-                    {items.map((item) => (
-                      <NavLink
-                        key={item.href}
-                        to={item.href}
-                        onClick={() => setMobileNavOpen(false)}
-                        className={({ isActive }) =>
-                          cn(
-                            "flex min-h-11 items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors",
-                            isActive
-                              ? "bg-[var(--foreground)] text-[var(--background)]"
-                              : "bg-[var(--surface-subtle)] text-[var(--foreground)]",
-                          )
-                        }
-                      >
-                        {t(item.title)}
-                      </NavLink>
-                    ))}
-                  </div>
-                );
-              })}
+              <NavGroupList
+                groups={filterNavGroupsByRole(navGroups, session?.user.role)}
+                onNavigate={() => setMobileNavOpen(false)}
+              />
             </nav>
           </DialogContent>
         </Dialog>
@@ -174,7 +149,7 @@ export const Topbar = ({ collapsed, onToggleSidebar }: TopbarProps) => {
             <Search className="h-4 w-4" />
           </Button>
           <p className="truncate text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]">
-            {t(currentItem?.title ?? "nav.overview")}
+            {t(currentItemTitle)}
           </p>
         </div>
       </div>

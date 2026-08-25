@@ -1,8 +1,9 @@
 export type NavItem = {
   title: string;
-  href: string;
+  href?: string;
   icon: string;
   roles?: AppRole[];
+  children?: NavItem[];
 };
 
 export type AppRole = "Owner" | "Admin" | "Manager";

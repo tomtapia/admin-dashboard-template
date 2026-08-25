@@ -2,19 +2,33 @@
   "nav": {
     "overview": "Visión general",
     "analytics": "Analíticas",
+    "mail": "Correo",
+    "mailInbox": "Recibidos",
+    "mailSent": "Enviados",
+    "calendar": "Calendario",
     "users": "Usuarios",
     "team": "Equipo",
+    "people": "Personas",
+    "finance": "Finanzas",
+    "profile": "Perfil",
+    "authentication": "Autenticación",
+    "notFound": "No encontrado",
     "billing": "Facturación",
     "transactions": "Transacciones",
     "notifications": "Notificaciones",
     "support": "Soporte",
     "integrations": "Integraciones",
+    "uiKit": "Kit de UI",
+    "dataTables": "Tablas",
+    "dataCharts": "Gráficos",
     "userSettings": "Ajustes de usuario",
     "settings": "Ajustes del espacio de trabajo",
     "group": {
       "dashboard": "Panel",
-      "manage": "Gestionar",
-      "engage": "Interactuar",
+      "apps": "Aplicaciones",
+      "pages": "Páginas",
+      "uiElements": "Elementos UI",
+      "data": "Datos y gráficos",
       "settings": "Ajustes"
     }
   },
@@ -25,7 +39,8 @@
     "workspace": "Espacio de trabajo",
     "switchWorkspace": "Cambiar de espacio de trabajo",
     "navigation": "Navegación",
-    "language": "Idioma"
+    "language": "Idioma",
+    "breadcrumb": "Ruta de navegación"
   },
   "overview": {
     "eyebrow": "Resumen",

@@ -1,7 +1,7 @@
 import { LogOut, Palette } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { navItems } from "@/components/layout/nav-items";
+import { navLeafItems } from "@/components/layout/nav-items";
 import {
   Command,
   CommandEmpty,
@@ -43,7 +43,7 @@ export const CommandPalette = ({ open, onOpenChange }: CommandPaletteProps) => {
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Pages">
-              {navItems
+              {navLeafItems
                 .filter((item) => canAccess(session?.user.role, item.roles))
                 .map((item) => (
                   <CommandItem

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/app/error-boundary";
-import { navItems } from "@/components/layout/nav-items";
+import { resolveNavTrail } from "@/components/layout/nav-items";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { cn } from "@/lib/utils";
@@ -19,8 +19,8 @@ export const AppShell = () => {
   );
 
   useEffect(() => {
-    const current = navItems.find((item) => location.pathname.startsWith(item.href));
-    const pageTitle = t(current?.title ?? "nav.overview");
+    const trail = resolveNavTrail(location.pathname);
+    const pageTitle = t(trail?.child?.title ?? trail?.item.title ?? "nav.overview");
     document.title = `${pageTitle} · Admin Dash`;
     setAnnouncement(pageTitle);
 

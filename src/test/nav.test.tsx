@@ -1,0 +1,85 @@
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import { navLeafItems, resolveNavTrail } from "@/components/layout/nav-items";
+import { defaultSession } from "@/mocks/data";
+import { renderApp } from "@/test/test-app";
+import type { Session } from "@/types";
+
+const managerSession: Session = {
+  user: {
+    id: "m1",
+    name: "Dana Manager",
+    email: "dana@northstar.app",
+    role: "Manager",
+    organization: "Northstar",
+  },
+  isAuthenticated: true,
+  accessToken: "mock-access-token",
+  expiresAt: 4102444800000,
+};
+
+const seed = (session: Session = defaultSession) =>
+  window.localStorage.setItem("admin-dashboard-template:session", JSON.stringify(session));
+
+describe("navigation information architecture", () => {
+  it("exposes leaf items for search regardless of nesting", () => {
+    const hrefs = navLeafItems.map((item) => item.href);
+    expect(hrefs).toContain("/app/users");
+    expect(hrefs).toContain("/app/settings/user");
+    expect(hrefs).not.toContain(undefined);
+  });
+
+  it("resolves trails through section parents", () => {
+    const trail = resolveNavTrail("/app/team");
+    expect(trail?.group.label).toBe("nav.group.pages");
+    expect(trail?.item.title).toBe("nav.people");
+    expect(trail?.child?.title).toBe("nav.team");
+  });
+
+  it("resolves the longest href match for nested routes", () => {
+    expect(resolveNavTrail("/app/settings/user")?.item.title).toBe("nav.userSettings");
+    expect(resolveNavTrail("/app/settings")?.item.title).toBe("nav.settings");
+  });
+
+  it("renders collapsible sections expanded by default", async () => {
+    seed();
+    renderApp({ initialEntries: ["/app/overview"] });
+
+    expect(await screen.findByRole("link", { name: /users/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /people/i })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: /finance/i })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+  });
+
+  it("collapses and re-expands a section", async () => {
+    seed();
+    const user = userEvent.setup();
+    renderApp({ initialEntries: ["/app/overview"] });
+    await screen.findByRole("link", { name: /overview/i });
+
+    const finance = screen.getByRole("button", { name: /finance/i });
+    await user.click(finance);
+    expect(finance).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
+
+    await user.click(finance);
+    expect(screen.getByRole("link", { name: /billing/i })).toBeInTheDocument();
+  });
+
+  it("hides restricted children for a Manager while keeping allowed ones", async () => {
+    seed(managerSession);
+    renderApp({ initialEntries: ["/app/overview"] });
+
+    expect(await screen.findByRole("link", { name: /users/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /people/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /team/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /transactions/i })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
+  });
+});

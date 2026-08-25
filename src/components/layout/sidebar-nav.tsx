@@ -1,48 +1,14 @@
-import {
-  Bell,
-  CreditCard,
-  LayoutDashboard,
-  LifeBuoy,
-  LineChart,
-  Plug,
-  Receipt,
-  Settings,
-  UserCog,
-  UserRoundCog,
-  Users,
-} from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
-import { navGroups } from "@/components/layout/nav-items";
+import { NavGroupList } from "@/components/layout/nav-group-list";
+import { filterNavGroupsByRole, navGroups } from "@/components/layout/nav-items";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import { useAuth } from "@/features/auth/auth-context";
-import { canAccess } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
-
-const iconMap = {
-  LayoutDashboard,
-  LineChart,
-  Users,
-  UserCog,
-  UserRoundCog,
-  CreditCard,
-  Receipt,
-  Bell,
-  LifeBuoy,
-  Plug,
-  Settings,
-};
 
 export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
   const { session } = useAuth();
   const { t } = useTranslation();
-  const role = session?.user.role;
-  const visibleGroups = navGroups
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => canAccess(role, item.roles)),
-    }))
-    .filter((group) => group.items.length > 0);
+  const visibleGroups = filterNavGroupsByRole(navGroups, session?.user.role);
 
   return (
     <aside
@@ -55,36 +21,8 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
         <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 
-      <nav className="space-y-6 overflow-y-auto">
-        {visibleGroups.map((group) => (
-          <div key={group.label} className="space-y-1">
-            {!collapsed ? (
-              <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--sidebar-muted)]">
-                {t(group.label)}
-              </p>
-            ) : null}
-            {group.items.map((item) => {
-              const Icon = iconMap[item.icon as keyof typeof iconMap];
-              return (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) =>
-                    cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-                      isActive
-                        ? "bg-[var(--sidebar-active)] text-[var(--sidebar-active-foreground)]"
-                        : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]",
-                    )
-                  }
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {!collapsed ? <span>{t(item.title)}</span> : null}
-                </NavLink>
-              );
-            })}
-          </div>
-        ))}
+      <nav className="space-y-6 overflow-y-auto" aria-label={t("common.navigation")}>
+        <NavGroupList groups={visibleGroups} collapsed={collapsed} />
       </nav>
 
       <div className="mt-auto rounded-[0.9rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-elevated)] p-4">

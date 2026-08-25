@@ -2,19 +2,33 @@
   "nav": {
     "overview": "Overview",
     "analytics": "Analytics",
+    "mail": "Mail",
+    "mailInbox": "Inbox",
+    "mailSent": "Sent",
+    "calendar": "Calendar",
     "users": "Users",
     "team": "Team",
+    "people": "People",
+    "finance": "Finance",
+    "profile": "Profile",
+    "authentication": "Authentication",
+    "notFound": "Not found",
     "billing": "Billing",
     "transactions": "Transactions",
     "notifications": "Notifications",
     "support": "Support",
     "integrations": "Integrations",
+    "uiKit": "UI Kit",
+    "dataTables": "Tables",
+    "dataCharts": "Charts",
     "userSettings": "User settings",
     "settings": "Workspace settings",
     "group": {
       "dashboard": "Dashboard",
-      "manage": "Manage",
-      "engage": "Engage",
+      "apps": "Apps",
+      "pages": "Pages",
+      "uiElements": "UI Elements",
+      "data": "Data & Charts",
       "settings": "Settings"
     }
   },
@@ -25,7 +39,8 @@
     "workspace": "Workspace",
     "switchWorkspace": "Switch workspace",
     "navigation": "Navigation",
-    "language": "Language"
+    "language": "Language",
+    "breadcrumb": "Breadcrumb"
   },
   "overview": {
     "eyebrow": "Overview",
