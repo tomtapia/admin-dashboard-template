@@ -91,7 +91,10 @@ describe("navigation information architecture", () => {
     const items = within(breadcrumb).getAllByRole("listitem");
     expect(items).toHaveLength(3);
     expect(items[0]).toHaveTextContent(/pages/i);
-    expect(items[1]).toHaveTextContent(/people/i);
+    expect(within(items[1]).getByRole("link", { name: /people/i })).toHaveAttribute(
+      "href",
+      "/app/users",
+    );
     expect(within(items[2]).getByText(/team/i)).toHaveAttribute("aria-current", "page");
   });
 
