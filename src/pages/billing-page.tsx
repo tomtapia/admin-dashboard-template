@@ -104,6 +104,7 @@ export const BillingPage = () => {
             value: plans.find((p) => p.id === subscription.planId)?.priceMonthly ?? 0,
             change: 0,
             tone: "positive",
+            spark: [149, 149, 149, 199, 199, 199],
           }}
         />
         <KpiCard
@@ -113,6 +114,7 @@ export const BillingPage = () => {
             value: subscription.seatsUsed,
             change: 0,
             tone: "neutral",
+            spark: [12, 13, 14, 15, 16, 17, 18],
           }}
         />
         <KpiCard
@@ -122,6 +124,7 @@ export const BillingPage = () => {
             value: subscription.usagePercent,
             change: 0,
             tone: "positive",
+            spark: [48, 52, 55, 60, 66, 72],
           }}
         />
       </div>

@@ -6,10 +6,13 @@ import {
   TrendingUp,
   UserRoundPlus,
 } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { DashboardKpi } from "@/types";
+
+const canRenderChart = typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
 
 const formatValue = (kpi: DashboardKpi) => {
   if (kpi.label === "ARR") {
@@ -83,6 +86,27 @@ export const KpiCard = ({ kpi }: { kpi: DashboardKpi }) => {
             </span>
             <span className="text-[var(--muted-foreground)]">vs last month</span>
           </div>
+          {canRenderChart ? (
+            <div className="-mx-1 -mb-1 h-9" aria-hidden="true">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={kpi.spark.map((value) => ({ value }))}>
+                  <defs>
+                    <linearGradient id={`spark-${kpi.id}`} x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.28} />
+                      <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="var(--accent)"
+                    strokeWidth={1.5}
+                    fill={`url(#spark-${kpi.id})`}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : null}
         </div>
       </CardContent>
     </Card>

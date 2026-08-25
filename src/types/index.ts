@@ -28,6 +28,7 @@ export type DashboardKpi = {
   value: number;
   change: number;
   tone: "positive" | "neutral";
+  spark: number[];
 };
 
 export type ActivityItem = {

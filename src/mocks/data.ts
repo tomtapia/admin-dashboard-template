@@ -33,10 +33,38 @@ export const defaultSession: Session = {
 
 export const overviewPayload: OverviewPayload = {
   kpis: [
-    { id: "arr", label: "ARR", value: 482000, change: 14, tone: "positive" },
-    { id: "accounts", label: "Active Accounts", value: 1284, change: 8, tone: "positive" },
-    { id: "retention", label: "Retention", value: 94, change: 2, tone: "positive" },
-    { id: "tickets", label: "Open Tickets", value: 38, change: -5, tone: "neutral" },
+    {
+      id: "arr",
+      label: "ARR",
+      value: 482000,
+      change: 14,
+      tone: "positive",
+      spark: [380, 392, 401, 415, 424, 438, 451, 462, 474, 482],
+    },
+    {
+      id: "accounts",
+      label: "Active Accounts",
+      value: 1284,
+      change: 8,
+      tone: "positive",
+      spark: [1120, 1148, 1163, 1181, 1204, 1219, 1240, 1258, 1271, 1284],
+    },
+    {
+      id: "retention",
+      label: "Retention",
+      value: 94,
+      change: 2,
+      tone: "positive",
+      spark: [90, 90, 91, 91, 92, 92, 93, 93, 94, 94],
+    },
+    {
+      id: "tickets",
+      label: "Open Tickets",
+      value: 38,
+      change: -5,
+      tone: "neutral",
+      spark: [52, 50, 49, 47, 45, 43, 41, 40, 39, 38],
+    },
   ],
   chart: [
     { name: "Jan", revenue: 24000, activeUsers: 320 },

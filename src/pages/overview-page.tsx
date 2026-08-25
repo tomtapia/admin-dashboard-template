@@ -37,8 +37,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getOverviewRequest } from "@/features/overview/overview-api";
+import { getTransactionsRequest } from "@/features/transactions/transactions-api";
+import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { OverviewPayload } from "@/types";
+import type { OverviewPayload, TransactionStatus } from "@/types";
 
 const periodOptions = [
   { id: "3", label: "Last 3 months" },
@@ -61,18 +63,12 @@ const demographics = [
   { name: "45+", value: 16, color: "#cbd5e1" },
 ];
 
-const platformActivity = [
-  "Recent events successfully processed 2 minutes ago",
-  "Recent events routed to owners 1 hour ago",
-  "Recent events completed in the account queue",
-] as const;
-
-const transactions = [
-  { id: "1", customer: "Northstar Labs", date: "2025-10-13", amount: "$10.00", status: "Status" },
-  { id: "2", customer: "Aperture Group", date: "2025-10-12", amount: "$10.00", status: "Status" },
-  { id: "4", customer: "Granite Ops", date: "2025-10-11", amount: "$10.00", status: "Status" },
-  { id: "5", customer: "Helio Commerce", date: "2025-10-10", amount: "$10.00", status: "Active" },
-] as const;
+const transactionTone: Record<TransactionStatus, string> = {
+  succeeded: "bg-[var(--success-soft)] text-[var(--success)]",
+  pending: "bg-[var(--surface-secondary)] text-[var(--foreground-muted)]",
+  failed: "bg-[rgba(239,68,68,0.12)] text-[var(--danger)]",
+  refunded: "bg-[var(--surface-secondary)] text-[var(--foreground-muted)]",
+};
 
 export const OverviewPage = () => {
   const { t } = useTranslation();
@@ -84,7 +80,13 @@ export const OverviewPage = () => {
     queryKey: ["overview"],
     queryFn: getOverviewRequest,
   });
+  const transactionsQuery = useQuery({
+    queryKey: ["transactions", "recent"],
+    queryFn: () => getTransactionsRequest(),
+  });
   const canRenderChart = typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
+
+  const recentTransactions = (transactionsQuery.data ?? []).slice(0, 5);
 
   const chartData = useMemo(() => {
     const data = overviewQuery.data?.chart ?? [];
@@ -298,41 +300,50 @@ export const OverviewPage = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.7fr_0.8fr]">
-        <SectionCard tone="secondary" title="Recent Transactions">
-          <div className="overflow-hidden rounded-[0.75rem] border border-[var(--border)]">
-            <div className="grid grid-cols-[56px_1.4fr_1fr_0.8fr_0.9fr] gap-3 border-b border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-              <span>ID</span>
-              <span>Customer</span>
-              <span>Date</span>
-              <span>Amount</span>
-              <span>Status</span>
-            </div>
-            <div className="divide-y divide-[var(--border)]">
-              {transactions.map((row) => (
-                <div
-                  key={row.id}
-                  className="grid grid-cols-[56px_1.4fr_1fr_0.8fr_0.9fr] gap-3 px-4 py-3 text-sm"
-                >
-                  <span>{row.id}</span>
-                  <span className="font-medium text-[var(--foreground)]">{row.customer}</span>
-                  <span className="text-[var(--muted-foreground)]">{row.date}</span>
-                  <span>{row.amount}</span>
-                  <span>
-                    <span
-                      className={cn(
-                        "inline-flex rounded-full px-2 py-1 text-[11px] font-medium",
-                        row.status === "Active"
-                          ? "bg-[var(--success-soft)] text-[var(--success)]"
-                          : "bg-[var(--surface-secondary)] text-[var(--foreground-muted)]",
-                      )}
-                    >
-                      {row.status}
+        <SectionCard title="Recent Transactions" description="Latest payments from the ledger.">
+          {transactionsQuery.isLoading ? (
+            <TableSkeleton count={4} className="border-0 shadow-none" />
+          ) : transactionsQuery.isError ? (
+            <StatePanel
+              kind="error"
+              title="Could not load transactions"
+              description="The mock transactions endpoint failed."
+              onRetry={() => void transactionsQuery.refetch()}
+            />
+          ) : (
+            <div className="overflow-hidden rounded-[0.75rem] border border-[var(--border)]">
+              <div className="grid grid-cols-[1.4fr_1fr_0.8fr_0.9fr] gap-3 border-b border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+                <span>Customer</span>
+                <span>Date</span>
+                <span>Amount</span>
+                <span>Status</span>
+              </div>
+              <div className="divide-y divide-[var(--border)]">
+                {recentTransactions.map((row) => (
+                  <div
+                    key={row.id}
+                    className="grid grid-cols-[1.4fr_1fr_0.8fr_0.9fr] gap-3 px-4 py-3 text-sm"
+                  >
+                    <span className="truncate font-medium text-[var(--foreground)]">
+                      {row.customer}
                     </span>
-                  </span>
-                </div>
-              ))}
+                    <span className="truncate text-[var(--muted-foreground)]">{row.date}</span>
+                    <span>{formatCurrency(row.amount)}</span>
+                    <span>
+                      <span
+                        className={cn(
+                          "inline-flex rounded-full px-2 py-1 text-[11px] font-medium",
+                          transactionTone[row.status],
+                        )}
+                      >
+                        {row.status}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </SectionCard>
 
         <SectionCard tone="secondary" title="User Demographics">
@@ -372,15 +383,24 @@ export const OverviewPage = () => {
           </div>
         </SectionCard>
 
-        <SectionCard tone="secondary" title="Platform Activity">
+        <SectionCard
+          tone="secondary"
+          title="Platform Activity"
+          description="Latest workspace events."
+        >
           <div className="space-y-3">
-            {platformActivity.map((item) => (
+            {overviewQuery.data.activity.map((item) => (
               <div
-                key={item}
+                key={item.id}
                 className="flex gap-3 rounded-[0.9rem] border border-[var(--border)] bg-[var(--surface-panel)] px-4 py-3 text-sm text-[var(--foreground-muted)]"
               >
                 <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
-                <span>{item}</span>
+                <div className="min-w-0">
+                  <p className="text-sm text-[var(--foreground)]">{item.title}</p>
+                  <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">
+                    {item.subtitle} · {item.at}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

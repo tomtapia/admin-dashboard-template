@@ -113,6 +113,7 @@ export const AnalyticsPage = () => {
             value: totalVisitors,
             change: 12,
             tone: "positive",
+            spark: channels.map((channel) => channel.visitors),
           }}
         />
         <KpiCard
@@ -122,6 +123,7 @@ export const AnalyticsPage = () => {
             value: conversions,
             change: 6,
             tone: "positive",
+            spark: channels.map((channel) => channel.conversions),
           }}
         />
         <KpiCard
@@ -131,6 +133,7 @@ export const AnalyticsPage = () => {
             value: mrr[mrr.length - 1]?.revenue ?? 0,
             change: 9,
             tone: "positive",
+            spark: mrr.map((point) => point.revenue),
           }}
         />
       </div>

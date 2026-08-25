@@ -20,4 +20,13 @@ describe("module pages", () => {
       await screen.findByRole("heading", { name: heading }, { timeout: 3000 }),
     ).toBeInTheDocument();
   });
+
+  it("renders overview bottom zone from live mock endpoints", async () => {
+    window.localStorage.setItem("admin-dashboard-template:session", JSON.stringify(defaultSession));
+    renderApp({ initialEntries: ["/app/overview"] });
+
+    expect(await screen.findByText(/q2 expansion won/i)).toBeInTheDocument();
+    expect(await screen.findByText(/northstar labs/i)).toBeInTheDocument();
+    expect(screen.getByText(/latest payments from the ledger/i)).toBeInTheDocument();
+  });
 });
