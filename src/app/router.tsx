@@ -41,6 +41,12 @@ const ProfilePage = lazy(() =>
 const UiKitPage = lazy(() =>
   import("@/pages/ui-kit-page").then((module) => ({ default: module.UiKitPage })),
 );
+const DataTablesPage = lazy(() =>
+  import("@/pages/data-tables-page").then((module) => ({ default: module.DataTablesPage })),
+);
+const DataChartsPage = lazy(() =>
+  import("@/pages/data-charts-page").then((module) => ({ default: module.DataChartsPage })),
+);
 const SupportPage = lazy(() =>
   import("@/pages/support-page").then((module) => ({ default: module.SupportPage })),
 );
@@ -77,6 +83,8 @@ export const AppRouter = () => (
           <Route path="/app/profile" element={<ProfilePage />} />
           <Route path="/app/404" element={<NotFoundPage embedded />} />
           <Route path="/app/ui" element={<UiKitPage />} />
+          <Route path="/app/data/tables" element={<DataTablesPage />} />
+          <Route path="/app/data/charts" element={<DataChartsPage />} />
           <Route
             path="/app/users"
             element={

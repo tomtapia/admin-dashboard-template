@@ -98,6 +98,22 @@ describe("accessibility", () => {
     expect(results.violations).toHaveLength(0);
   });
 
+  it("data tables page has no detectable violations", async () => {
+    seedSession();
+    const { container } = renderApp({ initialEntries: ["/app/data/tables"] });
+    await screen.findByText(/granite ops/i);
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it("data charts page has no detectable violations", async () => {
+    seedSession();
+    const { container } = renderApp({ initialEntries: ["/app/data/charts"] });
+    await screen.findByRole("heading", { name: /area — monthly revenue/i });
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it("notifications page has no detectable violations", async () => {
     seedSession();
     const { container } = renderApp({ initialEntries: ["/app/notifications"] });
