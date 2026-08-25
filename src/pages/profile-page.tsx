@@ -51,7 +51,7 @@ export const ProfilePage = () => {
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <SectionCard title="Identity" description="Details attached to your session.">
           <div className="flex items-start gap-4">
-            <Avatar className="h-14 w-14">
+            <Avatar className="h-14 w-14 ring-2 ring-[var(--border)] ring-offset-2 ring-offset-[var(--surface)]">
               <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="min-w-0 space-y-1">
@@ -65,14 +65,14 @@ export const ProfilePage = () => {
               </div>
             </div>
           </div>
-          <dl className="mt-6 grid gap-4 border-t border-[var(--border)] pt-5 text-sm sm:grid-cols-2">
-            <div>
+          <dl className="mt-6 grid gap-x-6 gap-y-4 border-t border-[var(--border)] pt-5 text-sm sm:grid-cols-2">
+            <div className="border-b border-[var(--border)] pb-4 sm:border-b-0">
               <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
                 Member since
               </dt>
               <dd className="mt-1 text-[var(--foreground)]">{memberSince}</dd>
             </div>
-            <div>
+            <div className="border-b border-[var(--border)] pb-4">
               <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
                 Timezone
               </dt>
