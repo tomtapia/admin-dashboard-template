@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
 import { describe, expect, it } from "vitest";
 import { defaultSession } from "@/mocks/data";
@@ -9,9 +10,24 @@ const seedSession = () => {
 };
 
 describe("accessibility", () => {
-  it("login page has no detectable violations", async () => {
+  it("login page has no detectable violations in the remembered-account mode", async () => {
+    window.localStorage.setItem(
+      "admin-dashboard-template:last-user",
+      JSON.stringify({ name: "Alex Chen", email: "alex.chen@company.com" }),
+    );
     const { container } = renderApp({ initialEntries: ["/login"] });
-    expect(await screen.findByRole("button", { name: /enter dashboard/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /continue as alex chen/i }),
+    ).toBeInTheDocument();
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it("login page has no detectable violations in the password mode", async () => {
+    const user = userEvent.setup();
+    const { container } = renderApp({ initialEntries: ["/login"] });
+    await user.click(await screen.findByRole("button", { name: /switch or remove account/i }));
+    expect(await screen.findByLabelText(/email/i)).toBeInTheDocument();
     const results = await axe(container);
     expect(results.violations).toHaveLength(0);
   });

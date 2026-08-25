@@ -24,7 +24,7 @@ describe("app routing", () => {
   it("redirects protected routes to login when there is no session", async () => {
     renderApp({ initialEntries: ["/app/overview"] });
 
-    expect(await screen.findByText(/mock sign in/i)).toBeInTheDocument();
+    expect(await screen.findByText(/welcome back/i)).toBeInTheDocument();
   });
 
   it("renders a skip link for authenticated routes", async () => {
@@ -39,7 +39,7 @@ describe("app routing", () => {
     const user = userEvent.setup();
     renderApp({ initialEntries: ["/login"] });
 
-    await user.click(screen.getByRole("button", { name: /enter dashboard/i }));
+    await user.click(screen.getByRole("button", { name: /continue as avery stone/i }));
 
     expect(
       await screen.findByText(/dashboard overview/i, {}, { timeout: 3000 }),

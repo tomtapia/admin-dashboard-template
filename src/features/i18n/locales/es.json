@@ -49,8 +49,23 @@
     "filters": "Filtros"
   },
   "login": {
-    "enter": "Entrar al panel",
-    "entering": "Accediendo…"
+    "welcomeTitle": "Bienvenido de nuevo",
+    "subtitle": "Inicia sesión para continuar en el espacio Admin Dash",
+    "continueAs": "Continuar como {{name}}",
+    "switchAccount": "Cambiar o quitar cuenta",
+    "orSignInWith": "o inicia sesión con",
+    "needAssistance": "¿Necesitas ayuda?",
+    "helpCenter": "Centro de ayuda para empresas",
+    "signIn": "Iniciar sesión",
+    "signingIn": "Iniciando sesión…",
+    "emailLabel": "Correo electrónico",
+    "passwordLabel": "Contraseña",
+    "errorEmailRequired": "Introduce tu correo electrónico.",
+    "errorInvalidEmail": "Introduce un correo electrónico válido.",
+    "errorPasswordLength": "La contraseña debe tener al menos 8 caracteres.",
+    "errorGeneric": "No pudimos iniciar sesión. Inténtalo de nuevo.",
+    "useSavedAccount": "Usar cuenta guardada",
+    "removeSavedAccount": "Eliminar cuenta guardada"
   },
   "notifications": {
     "allCaughtUp": "Todo al día"

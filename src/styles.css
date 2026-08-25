@@ -213,6 +213,14 @@ body {
   backdrop-filter: blur(18px);
 }
 
+.auth-dot-grid {
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--foreground) 10%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

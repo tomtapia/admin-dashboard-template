@@ -49,8 +49,23 @@
     "filters": "Filters"
   },
   "login": {
-    "enter": "Enter dashboard",
-    "entering": "Entering…"
+    "welcomeTitle": "Welcome back",
+    "subtitle": "Sign in to continue to the Admin Dash workspace",
+    "continueAs": "Continue as {{name}}",
+    "switchAccount": "Switch or remove account",
+    "orSignInWith": "or sign in with",
+    "needAssistance": "Need assistance?",
+    "helpCenter": "Enterprise Help Center",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "errorEmailRequired": "Enter your email address.",
+    "errorInvalidEmail": "Enter a valid email address.",
+    "errorPasswordLength": "Your password must be at least 8 characters.",
+    "errorGeneric": "We couldn't sign you in. Please try again.",
+    "useSavedAccount": "Use saved account",
+    "removeSavedAccount": "Remove saved account"
   },
   "notifications": {
     "allCaughtUp": "All caught up"
