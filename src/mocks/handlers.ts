@@ -9,6 +9,7 @@ import {
   mailPayload,
   notificationsPayload,
   overviewPayload,
+  profilePayload,
   settingsPayload,
   supportPayload,
   teamPayload,
@@ -390,5 +391,11 @@ export const handlers = [
       ? activeCalendar.filter((event) => event.date.startsWith(month))
       : activeCalendar;
     return HttpResponse.json(events);
+  }),
+
+  // Profile
+  http.get("/api/profile", async () => {
+    await delay(220);
+    return HttpResponse.json(profilePayload);
   }),
 ];

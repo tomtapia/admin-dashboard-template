@@ -13,6 +13,7 @@ import type {
   Tenant,
   Ticket,
   Transaction,
+  UserProfile,
   UserRecord,
 } from "@/types";
 
@@ -654,3 +655,35 @@ export const calendarPayload: CalendarEvent[] = [
   },
   { id: "evt_009", date: eventDate(-1, 22), title: "Retro", time: "14:00", tone: "neutral" },
 ];
+
+export const profilePayload: UserProfile = {
+  user: {
+    id: "usr_admin_001",
+    name: "Avery Stone",
+    email: "avery@northstar.app",
+    role: "Owner",
+    organization: "Northstar",
+  },
+  memberSince: "March 2024",
+  timezone: "America/New_York",
+  activity: [
+    {
+      id: "act_p1",
+      title: "Signed in from New York, US",
+      subtitle: "Chrome on macOS",
+      at: "Just now",
+    },
+    {
+      id: "act_p2",
+      title: "Updated workspace settings",
+      subtitle: "Changed the contact email to ops@northstar.app",
+      at: "2d ago",
+    },
+    {
+      id: "act_p3",
+      title: "Invited Sandra Lee",
+      subtitle: "Member · Customer Ops",
+      at: "1w ago",
+    },
+  ],
+};

@@ -88,6 +88,9 @@ export const navGroups: NavGroup[] = [
           },
         ],
       },
+      { title: "nav.profile", href: "/app/profile", icon: "UserRound" },
+      { title: "nav.authentication", href: "/login", icon: "KeyRound" },
+      { title: "nav.notFound", href: "/app/404", icon: "FileQuestion" },
     ],
   },
   {

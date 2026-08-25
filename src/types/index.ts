@@ -198,6 +198,20 @@ export type Ticket = {
   assignee?: string;
 };
 
+// Profile
+export type UserProfile = {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: "Owner" | "Admin" | "Manager";
+    organization: string;
+  };
+  memberSince: string;
+  timezone: string;
+  activity: ActivityItem[];
+};
+
 // Calendar
 export type CalendarTone = "accent" | "success" | "warning" | "neutral";
 
