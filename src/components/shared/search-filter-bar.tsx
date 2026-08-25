@@ -13,8 +13,11 @@ type SearchFilterBarProps = {
   value: string;
   onChange: (value: string) => void;
   resultCount?: number;
+  title?: string;
+  description?: string;
   searchLabel?: string;
   searchPlaceholder?: string;
+  inputId?: string;
   chips?: FilterChip[];
   activeChip?: string;
   onChipChange?: (id: string) => void;
@@ -24,8 +27,11 @@ export const SearchFilterBar = ({
   value,
   onChange,
   resultCount,
+  title = "Search and filter",
+  description = "Narrow the list down and keep follow-up work visible without opening a detail view.",
   searchLabel = "Search",
   searchPlaceholder,
+  inputId = "search-filter-input",
   chips,
   activeChip,
   onChipChange,
@@ -33,14 +39,12 @@ export const SearchFilterBar = ({
   <div className="flex flex-col gap-4 rounded-[1rem] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-card)] md:flex-row md:items-center md:justify-between">
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-sm font-semibold">Directory controls</p>
+        <p className="text-sm font-semibold">{title}</p>
         {typeof resultCount === "number" ? (
           <Badge variant="outline">{resultCount} visible</Badge>
         ) : null}
       </div>
-      <p className="text-sm text-[var(--muted-foreground)]">
-        Search by name, email or role and keep follow-up work visible without opening a detail view.
-      </p>
+      <p className="max-w-md text-sm text-[var(--muted-foreground)]">{description}</p>
       {chips && onChipChange ? (
         <fieldset>
           <legend className="sr-only">Filters</legend>
@@ -70,7 +74,7 @@ export const SearchFilterBar = ({
     </div>
     <div className="w-full md:max-w-sm">
       <Label
-        htmlFor="users-search"
+        htmlFor={inputId}
         className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-foreground)]"
       >
         {searchLabel}
@@ -81,7 +85,7 @@ export const SearchFilterBar = ({
           aria-hidden="true"
         />
         <Input
-          id="users-search"
+          id={inputId}
           type="search"
           aria-label={searchLabel}
           value={value}

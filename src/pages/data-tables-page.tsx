@@ -109,8 +109,11 @@ export const DataTablesPage = () => {
         value={search}
         onChange={setSearch}
         resultCount={rows.length}
+        title="Ledger controls"
+        description="Search by customer or email and filter by payment status."
         searchLabel="Search transactions"
         searchPlaceholder="Customer, email…"
+        inputId="data-transactions-search"
         chips={STATUS_CHIPS}
         activeChip={status}
         onChipChange={setStatus}

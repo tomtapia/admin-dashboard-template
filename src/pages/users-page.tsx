@@ -103,7 +103,10 @@ export const UsersPage = () => {
           setRoleFilter("all");
         }}
         resultCount={filteredUsers.length}
+        title="Roster controls"
+        description="Search by name, email or role and keep follow-up work visible without opening a detail view."
         searchLabel="Search users"
+        inputId="users-search"
         chips={roleChips}
         activeChip={roleFilter}
         onChipChange={setRoleFilter}
