@@ -15,6 +15,7 @@ test.describe("mobile continuity", () => {
       await expect(dialog.getByRole("paragraph").filter({ hasText: group })).toBeVisible();
     }
 
+    await dialog.getByRole("button", { name: /people/i }).click();
     await dialog.getByRole("link", { name: "Users" }).click();
     await page.waitForURL("**/app/users");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/access control/i);

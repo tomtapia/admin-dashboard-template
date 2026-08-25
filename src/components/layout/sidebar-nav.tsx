@@ -21,9 +21,22 @@ export const SidebarNav = ({ collapsed }: { collapsed: boolean }) => {
         <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 
-      <nav className="space-y-6 overflow-y-auto" aria-label={t("common.navigation")}>
-        <NavGroupList groups={visibleGroups} collapsed={collapsed} />
-      </nav>
+      <div className="relative min-h-0 flex-1">
+        <nav
+          className="sidebar-scroll absolute inset-0 space-y-6 overflow-y-auto pb-2"
+          aria-label={t("common.navigation")}
+        >
+          <NavGroupList groups={visibleGroups} collapsed={collapsed} />
+        </nav>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-[var(--sidebar)] to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-[var(--sidebar)] to-transparent"
+        />
+      </div>
 
       <div className="mt-auto rounded-[0.9rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-elevated)] p-4">
         {!collapsed ? (

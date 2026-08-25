@@ -25,10 +25,18 @@ const isPathActive = (pathname: string, href: string) =>
 export const NavGroupList = ({ groups, collapsed = false, onNavigate }: NavGroupListProps) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const [closedSections, setClosedSections] = useState<Record<string, boolean>>({});
+  const [sectionOverrides, setSectionOverrides] = useState<Record<string, boolean>>({});
 
-  const toggleSection = (key: string) =>
-    setClosedSections((state) => ({ ...state, [key]: !state[key] }));
+  const isSectionOpen = (key: string, item: NavItem) => {
+    const override = sectionOverrides[key];
+    if (override !== undefined) return override;
+    return (
+      item.children?.some((child) => child.href && isPathActive(pathname, child.href)) ?? false
+    );
+  };
+
+  const toggleSection = (key: string, currentlyOpen: boolean) =>
+    setSectionOverrides((state) => ({ ...state, [key]: !currentlyOpen }));
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(rowClass, isActive ? rowActiveClass : rowIdleClass);
@@ -71,12 +79,12 @@ export const NavGroupList = ({ groups, collapsed = false, onNavigate }: NavGroup
                 ) : null;
               }
 
-              const isOpen = !closedSections[sectionKey];
+              const isOpen = isSectionOpen(sectionKey, item);
               return (
                 <div key={sectionKey}>
                   <button
                     type="button"
-                    onClick={() => toggleSection(sectionKey)}
+                    onClick={() => toggleSection(sectionKey, isOpen)}
                     aria-expanded={isOpen}
                     className={cn(
                       rowClass,

@@ -42,43 +42,49 @@ describe("navigation information architecture", () => {
     expect(resolveNavTrail("/app/settings")?.item.title).toBe("nav.settings");
   });
 
-  it("renders collapsible sections expanded by default", async () => {
+  it("keeps sections collapsed unless their subtree is active", async () => {
     seed();
     renderApp({ initialEntries: ["/app/overview"] });
 
-    expect(await screen.findByRole("link", { name: /users/i })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /overview/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /people/i })).toHaveAttribute(
       "aria-expanded",
-      "true",
+      "false",
     );
+    expect(screen.queryByRole("link", { name: /users/i })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /finance/i })).toHaveAttribute(
       "aria-expanded",
-      "true",
+      "false",
     );
   });
 
-  it("collapses and re-expands a section", async () => {
+  it("auto-expands the active trail and toggles on click", async () => {
     seed();
     const user = userEvent.setup();
-    renderApp({ initialEntries: ["/app/overview"] });
-    await screen.findByRole("link", { name: /overview/i });
+    renderApp({ initialEntries: ["/app/users"] });
 
-    const finance = screen.getByRole("button", { name: /finance/i });
-    await user.click(finance);
-    expect(finance).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
+    const people = await screen.findByRole("button", { name: /people/i });
+    expect(people).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: /users/i })).toBeInTheDocument();
 
-    await user.click(finance);
-    expect(screen.getByRole("link", { name: /billing/i })).toBeInTheDocument();
+    await user.click(people);
+    expect(people).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("link", { name: /users/i })).not.toBeInTheDocument();
+
+    await user.click(people);
+    expect(screen.getByRole("link", { name: /users/i })).toBeInTheDocument();
   });
 
   it("hides restricted children for a Manager while keeping allowed ones", async () => {
     seed(managerSession);
     renderApp({ initialEntries: ["/app/overview"] });
 
-    expect(await screen.findByRole("link", { name: /users/i })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /overview/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /people/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /team/i })).not.toBeInTheDocument();
+
+    const finance = screen.getByRole("button", { name: /finance/i });
+    await userEvent.setup().click(finance);
     expect(screen.getByRole("link", { name: /transactions/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
   });
