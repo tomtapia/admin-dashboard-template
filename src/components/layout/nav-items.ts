@@ -33,6 +33,7 @@ export const navGroups: NavGroup[] = [
           { title: "nav.mailSent", href: "/app/mail/sent", icon: "Send" },
         ],
       },
+      { title: "nav.calendar", href: "/app/calendar", icon: "Calendar" },
       {
         title: "nav.notifications",
         href: "/app/notifications",

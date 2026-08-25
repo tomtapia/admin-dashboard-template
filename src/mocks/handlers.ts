@@ -3,6 +3,7 @@ import {
   analyticsPayload,
   apiKeysPayload,
   billingPayload,
+  calendarPayload,
   defaultSession,
   integrationsPayload,
   mailPayload,
@@ -18,6 +19,7 @@ import {
 import type {
   ApiKey,
   BillingPayload,
+  CalendarEvent,
   Integration,
   MailMessage,
   NotificationItem,
@@ -38,6 +40,7 @@ let activeTickets: Ticket[] = supportPayload;
 let activeBilling: BillingPayload = billingPayload;
 let activeTenants: Tenant[] = tenantsPayload;
 let activeMail: MailMessage[] = mailPayload;
+let activeCalendar: CalendarEvent[] = calendarPayload;
 
 export const resetMockState = () => {
   activeSession = defaultSession;
@@ -50,6 +53,7 @@ export const resetMockState = () => {
   activeBilling = billingPayload;
   activeTenants = tenantsPayload;
   activeMail = mailPayload;
+  activeCalendar = calendarPayload;
 };
 
 const readQuery = (request: Request, key: string) =>
@@ -376,5 +380,15 @@ export const handlers = [
     const read = body.read ?? true;
     activeMail = activeMail.map((message) => (message.id === id ? { ...message, read } : message));
     return HttpResponse.json({ success: true });
+  }),
+
+  // Calendar
+  http.get("/api/calendar", async ({ request }) => {
+    await delay(240);
+    const month = readQuery(request, "month");
+    const events = month
+      ? activeCalendar.filter((event) => event.date.startsWith(month))
+      : activeCalendar;
+    return HttpResponse.json(events);
   }),
 ];

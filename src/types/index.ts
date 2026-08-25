@@ -198,6 +198,17 @@ export type Ticket = {
   assignee?: string;
 };
 
+// Calendar
+export type CalendarTone = "accent" | "success" | "warning" | "neutral";
+
+export type CalendarEvent = {
+  id: string;
+  date: string;
+  title: string;
+  time: string;
+  tone: CalendarTone;
+};
+
 // Mail
 export type MailFolder = "inbox" | "sent";
 

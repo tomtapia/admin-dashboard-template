@@ -74,6 +74,14 @@ describe("accessibility", () => {
     expect(results.violations).toHaveLength(0);
   });
 
+  it("calendar page has no detectable violations", async () => {
+    seedSession();
+    const { container } = renderApp({ initialEntries: ["/app/calendar"] });
+    await screen.findByText(/sprint planning/i);
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it("notifications page has no detectable violations", async () => {
     seedSession();
     const { container } = renderApp({ initialEntries: ["/app/notifications"] });

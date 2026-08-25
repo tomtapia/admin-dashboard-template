@@ -32,6 +32,9 @@ const NotificationsPage = lazy(() =>
 const MailPage = lazy(() =>
   import("@/pages/mail-page").then((module) => ({ default: module.MailPage })),
 );
+const CalendarPage = lazy(() =>
+  import("@/pages/calendar-page").then((module) => ({ default: module.CalendarPage })),
+);
 const SupportPage = lazy(() =>
   import("@/pages/support-page").then((module) => ({ default: module.SupportPage })),
 );
@@ -64,6 +67,7 @@ export const AppRouter = () => (
           <Route path="/app/analytics" element={<AnalyticsPage />} />
           <Route path="/app/mail" element={<MailPage />} />
           <Route path="/app/mail/sent" element={<MailPage />} />
+          <Route path="/app/calendar" element={<CalendarPage />} />
           <Route
             path="/app/users"
             element={

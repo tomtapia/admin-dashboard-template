@@ -2,6 +2,7 @@ import type {
   AnalyticsPayload,
   ApiKey,
   BillingPayload,
+  CalendarEvent,
   Integration,
   MailMessage,
   NotificationItem,
@@ -621,4 +622,35 @@ export const mailPayload: MailMessage[] = [
     receivedAt: "5d ago",
     read: true,
   },
+];
+
+const calendarNow = new Date();
+const calendarYear = calendarNow.getFullYear();
+const calendarMonth = calendarNow.getMonth();
+const pad2 = (value: number) => String(value).padStart(2, "0");
+const eventDate = (monthOffset: number, day: number) =>
+  `${calendarYear + (calendarMonth + monthOffset < 0 ? -1 : calendarMonth + monthOffset > 11 ? 1 : 0)}-${pad2(((((calendarMonth + monthOffset) % 12) + 12) % 12) + 1)}-${pad2(day)}`;
+
+export const calendarPayload: CalendarEvent[] = [
+  { id: "evt_001", date: eventDate(0, 3), title: "Sprint planning", time: "09:30", tone: "accent" },
+  { id: "evt_002", date: eventDate(0, 7), title: "1:1 with Jules", time: "11:00", tone: "neutral" },
+  { id: "evt_003", date: eventDate(0, 12), title: "Invoice run", time: "08:00", tone: "success" },
+  { id: "evt_004", date: eventDate(0, 12), title: "Design review", time: "15:30", tone: "accent" },
+  { id: "evt_005", date: eventDate(0, 18), title: "Board update", time: "13:00", tone: "warning" },
+  { id: "evt_006", date: eventDate(0, 24), title: "All-hands", time: "16:00", tone: "neutral" },
+  {
+    id: "evt_007",
+    date: eventDate(1, 5),
+    title: "Quarterly planning",
+    time: "10:00",
+    tone: "accent",
+  },
+  {
+    id: "evt_008",
+    date: eventDate(1, 15),
+    title: "Security audit",
+    time: "09:00",
+    tone: "warning",
+  },
+  { id: "evt_009", date: eventDate(-1, 22), title: "Retro", time: "14:00", tone: "neutral" },
 ];
