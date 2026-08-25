@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AppRouter } from "@/app/router";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth/auth-context";
 import { I18nProvider } from "@/features/i18n";
 import { TenantProvider } from "@/features/tenants/tenant-context";
@@ -23,18 +24,20 @@ export const renderApp = ({ initialEntries = ["/login"] }: RenderOptions = {}) =
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={initialEntries}>
-        <I18nProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <TenantProvider>
-                <AppRouter />
-                <Toaster />
-              </TenantProvider>
-            </AuthProvider>
-          </ThemeProvider>
-        </I18nProvider>
-      </MemoryRouter>
+      <TooltipProvider>
+        <MemoryRouter initialEntries={initialEntries}>
+          <I18nProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <TenantProvider>
+                  <AppRouter />
+                  <Toaster />
+                </TenantProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </I18nProvider>
+        </MemoryRouter>
+      </TooltipProvider>
     </QueryClientProvider>,
   );
 };
