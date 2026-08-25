@@ -65,6 +65,15 @@ describe("accessibility", () => {
     expect(results.violations).toHaveLength(0);
   });
 
+  it("mail page has no detectable violations", async () => {
+    seedSession();
+    const { container } = renderApp({ initialEntries: ["/app/mail"] });
+    await screen.findByRole("heading", { name: /inbox/i, level: 1 });
+    await screen.findByText(/your scale plan renews/i);
+    const results = await axe(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
   it("notifications page has no detectable violations", async () => {
     seedSession();
     const { container } = renderApp({ initialEntries: ["/app/notifications"] });

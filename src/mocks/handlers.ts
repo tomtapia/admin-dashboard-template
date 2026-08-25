@@ -5,6 +5,7 @@ import {
   billingPayload,
   defaultSession,
   integrationsPayload,
+  mailPayload,
   notificationsPayload,
   overviewPayload,
   settingsPayload,
@@ -18,6 +19,7 @@ import type {
   ApiKey,
   BillingPayload,
   Integration,
+  MailMessage,
   NotificationItem,
   SettingsPayload,
   TeamMember,
@@ -35,6 +37,7 @@ let activeApiKeys: ApiKey[] = apiKeysPayload;
 let activeTickets: Ticket[] = supportPayload;
 let activeBilling: BillingPayload = billingPayload;
 let activeTenants: Tenant[] = tenantsPayload;
+let activeMail: MailMessage[] = mailPayload;
 
 export const resetMockState = () => {
   activeSession = defaultSession;
@@ -46,6 +49,7 @@ export const resetMockState = () => {
   activeTickets = supportPayload;
   activeBilling = billingPayload;
   activeTenants = tenantsPayload;
+  activeMail = mailPayload;
 };
 
 const readQuery = (request: Request, key: string) =>
@@ -357,5 +361,20 @@ export const handlers = [
       tenant.id === id ? { ...tenant, ...updates } : tenant,
     );
     return HttpResponse.json(activeTenants.find((tenant) => tenant.id === id));
+  }),
+
+  // Mail
+  http.get("/api/mail", async ({ request }) => {
+    await delay(260);
+    const folder = readQuery(request, "folder") === "sent" ? "sent" : "inbox";
+    return HttpResponse.json(activeMail.filter((message) => message.folder === folder));
+  }),
+  http.patch("/api/mail/:id/read", async ({ params, request }) => {
+    await delay(140);
+    const { id } = params as { id: string };
+    const body = (await request.json().catch(() => ({}))) as { read?: boolean };
+    const read = body.read ?? true;
+    activeMail = activeMail.map((message) => (message.id === id ? { ...message, read } : message));
+    return HttpResponse.json({ success: true });
   }),
 ];

@@ -198,6 +198,21 @@ export type Ticket = {
   assignee?: string;
 };
 
+// Mail
+export type MailFolder = "inbox" | "sent";
+
+export type MailMessage = {
+  id: string;
+  folder: MailFolder;
+  from: string;
+  to: string;
+  subject: string;
+  preview: string;
+  body: string;
+  receivedAt: string;
+  read: boolean;
+};
+
 // Multi-tenancy
 export type TenantPlan = "starter" | "scale" | "enterprise";
 export type TenantStatus = "active" | "suspended" | "trial";

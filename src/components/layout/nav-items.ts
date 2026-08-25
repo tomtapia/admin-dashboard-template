@@ -26,6 +26,14 @@ export const navGroups: NavGroup[] = [
     label: "nav.group.apps",
     items: [
       {
+        title: "nav.mail",
+        icon: "Mail",
+        children: [
+          { title: "nav.mailInbox", href: "/app/mail", icon: "Inbox" },
+          { title: "nav.mailSent", href: "/app/mail/sent", icon: "Send" },
+        ],
+      },
+      {
         title: "nav.notifications",
         href: "/app/notifications",
         icon: "Bell",
