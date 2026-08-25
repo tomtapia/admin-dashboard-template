@@ -1,3 +1,18 @@
+## v0.7.0 (2026-08-25)
+
+### Feat
+
+- **ui**: add alert, tabs, and tooltip primitives
+- **ui**: redesign ui kit showcase with tabbed sections and token coverage
+
+### Fix
+
+- **navigation**: make breadcrumbs navigable with clear visual affordance
+- **sidebar**: collapse sections by default and restyle the scroll area
+- **data**: generalize search filter bar and polish gallery toolbar copy
+- **apps**: align mail reader and calendar events with the design system
+- **pages**: align profile identity card and detail grid with the design system
+
 ## v0.6.0 (2026-08-24)
 
 ### Feat
