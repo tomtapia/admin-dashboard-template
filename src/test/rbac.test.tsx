@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { defaultSession } from "@/mocks/data";
 import { renderApp } from "@/test/test-app";
 import type { Session } from "@/types";
@@ -21,19 +22,28 @@ const seed = (session: Session) =>
 
 describe("role-based access control", () => {
   it("shows every nav item for an Owner session", async () => {
+    const user = userEvent.setup();
     seed(defaultSession);
     renderApp({ initialEntries: ["/app/overview"] });
 
-    expect(await screen.findByRole("link", { name: /billing/i })).toBeInTheDocument();
-    expect(await screen.findByRole("link", { name: /integrations/i })).toBeInTheDocument();
-    expect(await screen.findByRole("link", { name: /team/i })).toBeInTheDocument();
+    await screen.findByRole("button", { name: /finance/i });
+    await user.click(screen.getByRole("button", { name: /finance/i }));
+    await user.click(screen.getByRole("button", { name: /people/i }));
+
+    expect(screen.getByRole("link", { name: /billing/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /integrations/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /team/i })).toBeInTheDocument();
   });
 
   it("hides role-restricted nav items for a Manager session", async () => {
+    const user = userEvent.setup();
     seed(managerSession);
     renderApp({ initialEntries: ["/app/overview"] });
 
-    expect(await screen.findByText(/dashboard overview/i)).toBeInTheDocument();
+    await screen.findByText(/dashboard overview/i);
+    await user.click(screen.getByRole("button", { name: /finance/i }));
+    await user.click(screen.getByRole("button", { name: /people/i }));
+
     expect(screen.queryByRole("link", { name: /billing/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /integrations/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /team/i })).not.toBeInTheDocument();
