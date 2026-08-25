@@ -1,3 +1,20 @@
+## v0.6.0 (2026-08-24)
+
+### Feat
+
+- **nav**: three-level information architecture with collapsible sections
+- **apps**: mail module with inbox and sent folders
+- **apps**: calendar module with month grid
+- **pages**: profile page and authentication/not-found demo entries
+- **ui**: ui kit showcase page
+- **data**: tables and charts gallery pages
+- **overview**: kpi sparklines and live bottom-zone data
+- **layout**: route-driven breadcrumbs above the page header
+
+### Docs
+
+- **docs**: information architecture, naming contract, and new modules
+
 ## v0.5.1 (2026-08-24)
 
 ### Fix
